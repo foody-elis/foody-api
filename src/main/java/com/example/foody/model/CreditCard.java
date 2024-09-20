@@ -27,6 +27,6 @@ public class CreditCard extends DefaultEntity {
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
 
-    @OneToOne(mappedBy = "credit_card")
+    @OneToOne(mappedBy = "creditCard")
     private User user;
 }

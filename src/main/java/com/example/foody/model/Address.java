@@ -28,6 +28,6 @@ public class Address extends DefaultEntity {
     @Column(name = "postal_code", length = 5, nullable = false)
     private String postalCode;
 
-    @OneToOne(mappedBy = "restaurant")
+    @OneToOne(mappedBy = "address")
     private Restaurant restaurant;
 }

@@ -15,8 +15,8 @@ public class Booking extends DefaultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "birth_date", nullable = false)
-    private LocalDate birthDate;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "sitting_time_id")

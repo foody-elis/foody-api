@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "dishes")
-public class Dish {
+public class Dish extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -35,9 +35,9 @@ public class Dish {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "orders")
+    @ManyToMany(mappedBy = "dishes")
     private List<Order> orders = new ArrayList<>();
 }
