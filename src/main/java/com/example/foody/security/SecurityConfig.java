@@ -1,5 +1,6 @@
 package com.example.foody.security;
 
+import com.example.foody.utils.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -75,6 +76,12 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers("/api/v1/auth/register-moderator").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/auth/register-restaurateur").hasRole(Role.MODERATOR.name())
+                        .requestMatchers("/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers("/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers("/api/v1/auth/logged-user").authenticated()
+                        .requestMatchers("/api/v1/auth/test").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
