@@ -31,13 +31,12 @@ public class UserRequestDTO {
     private String surname;
 
     @NotNull(message = "birthDate cannot be null")
-    @Future(message = "birthDate cannot be in the past")
+    @Past(message = "birthDate cannot be in the future")
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotBlank(message = "phoneNumber cannot be blank")
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
-    @JsonProperty("phone_number")
     private String phoneNumber;
 
     // todo aggiungere eventuale regex per il formato dell'avatar

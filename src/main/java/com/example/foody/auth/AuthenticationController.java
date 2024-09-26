@@ -7,23 +7,18 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.user.UserNotActiveException;
-import com.example.foody.mapper.UserMapper;
-import com.example.foody.model.User;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-    private final UserMapper userMapper;
 
-    public AuthenticationController(AuthenticationService authenticationService, UserMapper userMapper) {
+    public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
-        this.userMapper = userMapper;
     }
 
     @PostMapping("/register-moderator")
@@ -57,13 +52,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/logged-user")
-    public ResponseEntity<UserResponseDTO> getLoggedUser(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return new ResponseEntity<>(userMapper.userToUserResponseDTO(user), HttpStatus.OK);
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() throws EntityNotFoundException, InvalidCredentialsException {
-        return new ResponseEntity<>("Your JWT access token is valid. You are authenticated.", HttpStatus.OK);
+    public ResponseEntity<UserResponseDTO> getLoggedUser() {
+        return new ResponseEntity<>(authenticationService.getLoggedUser(), HttpStatus.OK);
     }
 }

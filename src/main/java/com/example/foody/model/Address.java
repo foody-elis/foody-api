@@ -19,8 +19,8 @@ public class Address extends DefaultEntity {
     @Column(name = "province", length = 2, nullable = false)
     private String province;
 
-    @Column(name = "road", length = 30, nullable = false)
-    private String road;
+    @Column(name = "street", length = 30, nullable = false)
+    private String street;
 
     @Column(name = "civic_number", length = 10, nullable = false)
     private String civicNumber;

@@ -42,6 +42,7 @@ public class SecurityConfig {
     static RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy(
                 """
+                ROLE_ADMIN > ROLE_CUSTOMER
                 ROLE_ADMIN > ROLE_MODERATOR
                 ROLE_MODERATOR > ROLE_RESTAURATEUR
                 ROLE_RESTAURATEUR > ROLE_COOK
@@ -81,18 +82,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers("/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers("/api/v1/auth/logged-user").authenticated()
-                        .requestMatchers("/api/v1/auth/test").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                // handle the exceptions: AuthenticationException, AccessDeniedException
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> handlerExceptionResolver.resolveException(request, response, null, authException))
                         .accessDeniedHandler((request, response, accessDeniedException) -> handlerExceptionResolver.resolveException(request, response, null, accessDeniedException))
-                );
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

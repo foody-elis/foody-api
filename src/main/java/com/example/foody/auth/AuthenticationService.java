@@ -16,6 +16,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +38,6 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
-    // todo implement CommandLineRunner been
-    // another admin cannot be created, so I call the method only in the CommandLineRunner been
     public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.ADMIN.name());
         return register(userRequestDTO);
@@ -88,20 +88,21 @@ public class AuthenticationService {
     }
 
     public TokenDTO authenticate(UserLoginDTO userLoginDTO) {
-        User user = userRepository
-                .findByEmail(userLoginDTO.getEmail())
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userLoginDTO.getEmail(), userLoginDTO.getPassword()
+                    )
+            );
+        } catch (AuthenticationException e) {
+            throw new InvalidCredentialsException();
+        }
+
+        User user = userRepository.findByEmail(userLoginDTO.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", userLoginDTO.getEmail()));
 
         if (!user.isActive()) {
             throw new UserNotActiveException(user.getEmail());
-        }
-
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword())
-            );
-        } catch (Exception e) {
-            throw new InvalidCredentialsException();
         }
 
         String accessToken = jwtService.generateToken(user.getEmail());
@@ -109,7 +110,11 @@ public class AuthenticationService {
         return new TokenDTO(accessToken);
     }
 
-    // todo implement the refresh token mechanism
+    public UserResponseDTO getLoggedUser() {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userMapper.userToUserResponseDTO(principal);
+    }
 
+    // todo implement the refresh token mechanism
     // todo implement the logout mechanism
 }
