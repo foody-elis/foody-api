@@ -1,0 +1,50 @@
+package com.example.foody.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestaurantRequestDTO {
+    @NotBlank(message = "name cannot be blank")
+    @Size(min = 1, max = 100, message = "name cannot be less than 1 character or more than 100 characters long")
+    private String name;
+
+    @NotBlank(message = "description cannot be blank")
+    @Size(min = 1, max = 65535, message = "description cannot be less than 1 character or more than 65535 characters long")
+    private String description;
+
+    @NotBlank(message = "phoneNumber cannot be blank")
+    @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
+    private String phoneNumber;
+
+    @Positive(message = "seats cannot be a negative number")
+    @NotNull(message = "seats cannot be null")
+    private int seats;
+
+    @NotBlank(message = "city cannot be blank")
+    @Size(min = 1, max = 20, message = "city cannot be less than 1 character or more than 20 characters long")
+    private String city;
+
+    @NotBlank(message = "province cannot be blank")
+    @Size(min = 1, max = 2, message = "province cannot be less than 1 character or more than 2 characters long")
+    private String province;
+
+    @NotBlank(message = "street cannot be blank")
+    @Size(min = 1, max = 30, message = "street cannot be less than 1 character or more than 30 characters long")
+    private String street;
+
+    @NotBlank(message = "civicNumber cannot be blank")
+    @Size(min = 1, max = 10, message = "civicNumber cannot be less than 1 character or more than 10 characters long")
+    private String civicNumber;
+
+    @NotBlank(message = "postalCode cannot be blank")
+    @Size(min = 1, max = 5, message = "postalCode cannot be less than 1 character or more than 5 characters long")
+    private String postalCode;
+}

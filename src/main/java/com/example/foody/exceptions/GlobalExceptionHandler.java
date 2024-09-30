@@ -48,11 +48,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             AccessDeniedException.class,
-            UserNotActiveException.class,
-            AuthenticationException.class
+            AuthenticationException.class,
+            UserNotActiveException.class
     })
     public ResponseEntity<ErrorDTO> handleForbiddenException(RuntimeException exception, WebRequest webRequest) {
-        System.out.println(exception.getMessage());
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.FORBIDDEN, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.FORBIDDEN);
     }
@@ -69,12 +68,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDTO, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(EntityCreationException.class)
-    public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_GATEWAY);
-    }
-
     @ExceptionHandler({
             MalformedJwtException.class,
             ExpiredJwtException.class,
@@ -84,6 +77,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleInvalidTokenException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(CustomHttpStatus.INVALID_TOKEN, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return ResponseEntity.status(CustomHttpStatus.INVALID_TOKEN.getValue()).body(errorDTO);
+    }
+
+    @ExceptionHandler(EntityCreationException.class)
+    public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
+        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_GATEWAY);
     }
 
     private ErrorDTO buildErrorDTO(HttpStatus httpStatus, Object message, String path) {

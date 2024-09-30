@@ -10,7 +10,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "addresses")
+@Table(name = "orders")
 public class Order extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

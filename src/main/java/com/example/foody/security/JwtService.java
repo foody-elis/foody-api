@@ -27,7 +27,6 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String username, long expiration) {
-        // todo test
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
@@ -56,7 +55,6 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        // todo test
         return Jwts.parser()
                 .verifyWith(getSignKey())
                 .build()

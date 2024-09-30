@@ -2,9 +2,18 @@ package com.example.foody;
 
 import com.example.foody.auth.AuthenticationService;
 import com.example.foody.dto.request.UserRequestDTO;
+import com.example.foody.dto.response.RestaurantResponseDTO;
+import com.example.foody.mapper.AddressMapper;
+import com.example.foody.mapper.AddressMapperImpl;
+import com.example.foody.mapper.RestaurantMapper;
+import com.example.foody.mapper.RestaurantMapperImpl;
+import com.example.foody.model.Address;
+import com.example.foody.model.Restaurant;
+import com.example.foody.model.User;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @SpringBootApplication
 public class FoodyApplication {

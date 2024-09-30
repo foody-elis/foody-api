@@ -1,7 +1,6 @@
 package com.example.foody.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,8 +38,9 @@ public class UserRequestDTO {
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
     private String phoneNumber;
 
-    // todo aggiungere eventuale regex per il formato dell'avatar
     @NotBlank(message = "avatar cannot be blank")
+    @NotBlank(message = "avatar cannot be blank")
+    @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
     private String avatar;
 
     // the role is set by the AuthenticationService during the registration process

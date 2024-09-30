@@ -110,6 +110,7 @@ public class AuthenticationService {
         return new TokenDTO(accessToken);
     }
 
+    // todo remove
     public UserResponseDTO getLoggedUser() {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userMapper.userToUserResponseDTO(principal);

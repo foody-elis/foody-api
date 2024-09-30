@@ -20,15 +20,13 @@ public class Dish extends DefaultEntity {
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    // todo check
-    @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "price", precision = 8, scale = 2, nullable = false)
     private BigDecimal price;
 
-    // todo String ?
+    @Column(name = "photo")
     private String photo;
 
     @ManyToOne

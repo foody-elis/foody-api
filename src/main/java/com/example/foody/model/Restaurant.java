@@ -1,6 +1,7 @@
 package com.example.foody.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,15 +20,14 @@ public class Restaurant extends DefaultEntity {
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    // todo check
-    @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "phone_number", length = 16, nullable = false)
     private String phoneNumber;
 
     @Column(name = "seats", nullable = false)
+    @Min(0)
     private int seats;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -46,7 +46,7 @@ public class Restaurant extends DefaultEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
 }

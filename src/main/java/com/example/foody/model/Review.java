@@ -18,12 +18,9 @@ public class Review extends DefaultEntity {
     @Column(name = "title", length = 100)
     private String title;
 
-    // todo check
-    @Lob
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    // todo from 1 to 5
     @Column(name = "rating", nullable = false)
     @Min(1)
     @Max(5)

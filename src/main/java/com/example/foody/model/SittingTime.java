@@ -17,13 +17,11 @@ public class SittingTime extends DefaultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    // todo check min e max
     @Column(name = "week_day", nullable = false)
     @Min(1)
     @Max(7)
     private int weekDay;
 
-    // todo LocalTime ?
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 

@@ -37,10 +37,10 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "phone_number", length = 16, nullable = false)
+    @Column(name = "phone_number", length = 16)
     private String phoneNumber;
 
-    // todo String ?
+    @Column(name = "avatar")
     private String avatar;
 
     @Enumerated(EnumType.STRING)

@@ -21,6 +21,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -61,13 +62,16 @@ public class SecurityConfig {
     // todo test
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowCredentials(true);
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
         return source;
     }
 
@@ -77,15 +81,21 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/v1/auth/register-moderator").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/api/v1/auth/register-restaurateur").hasRole(Role.MODERATOR.name())
-                        .requestMatchers("/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers("/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers("/api/v1/auth/logged-user").authenticated()
+                        .requestMatchers(POST, "/api/v1/auth/register-moderator").hasRole(Role.ADMIN.name())
+                        .requestMatchers(POST, "/api/v1/auth/register-restaurateur").hasRole(Role.MODERATOR.name())
+                        .requestMatchers(POST, "/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(POST, "/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(GET, "/api/v1/auth/logged-user").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(GET, "/api/v1/restaurants").hasRole(Role.MODERATOR.name())
+                        .requestMatchers(GET, "/api/v1/restaurants/*").hasRole(Role.MODERATOR.name())
+                        .requestMatchers(DELETE, "/api/v1/restaurants/delete").hasRole(Role.ADMIN.name())
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
+                // exception handling: AuthenticationException, AccessDeniedException
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> handlerExceptionResolver.resolveException(request, response, null, authException))
                         .accessDeniedHandler((request, response, accessDeniedException) -> handlerExceptionResolver.resolveException(request, response, null, accessDeniedException))
