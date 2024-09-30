@@ -1,8 +1,10 @@
-package com.example.foody.mapper;
+package com.example.foody.mapper.impl;
 
 import com.example.foody.dto.request.RestaurantRequestDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
+import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
+import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.User;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,11 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setDescription( restaurant.getDescription() );
         restaurantResponseDTO.setPhoneNumber( restaurant.getPhoneNumber() );
         restaurantResponseDTO.setSeats( restaurant.getSeats() );
+
+        // I add the categories to the restaurantResponseDTO
+        restaurantResponseDTO.setCategories(
+                restaurant.getCategories().stream().map( Category::getId ).toList()
+        );
 
         return restaurantResponseDTO;
     }

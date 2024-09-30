@@ -7,29 +7,37 @@ import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
+import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.User;
+import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.AddressService;
+import com.example.foody.service.CategoryService;
 import com.example.foody.service.RestaurantService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
+    private final CategoryRepository categoryRepository;
     private final RestaurantMapper restaurantMapper;
     private final AddressService addressService;
+    private final CategoryService categoryService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, RestaurantMapper restaurantMapper, AddressService addressService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, AddressService addressService, CategoryService categoryService) {
         this.restaurantRepository = restaurantRepository;
+        this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
         this.addressService = addressService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -38,11 +46,28 @@ public class RestaurantServiceImpl implements RestaurantService {
         Address address = restaurant.getAddress();
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        // I save the associated address
         address.setRestaurant(restaurant);
         address = addressService.save(address);
 
+        List<Category> categories = new ArrayList<>();
+
+        // I add the restaurant to the categories
+        for (long categoryId : restaurantDTO.getCategories()) {
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+
+            if (category != null) {
+                // I add the restaurant to the category
+                category = categoryService.addRestaurant(category.getId(), restaurant);
+
+                // I add the category to the restaurant
+                categories.add(category);
+            }
+        }
+
         restaurant.setAddress(address);
         restaurant.setUser(user);
+        restaurant.setCategories(categories);
 
         try {
             restaurant = restaurantRepository.save(restaurant);
@@ -72,7 +97,14 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
 
         restaurant.setDeletedAt(LocalDateTime.now());
+
         addressService.remove(restaurant.getAddress().getId());
+
+        // I remove the restaurant from the categories
+        restaurant.getCategories().forEach(
+                category -> category.getRestaurants().remove(restaurant)
+        );
+        categoryRepository.saveAll(restaurant.getCategories());
 
         try {
             restaurantRepository.save(restaurant);

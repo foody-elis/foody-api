@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,4 +50,6 @@ public class RestaurantRequestDTO {
     @NotBlank(message = "postalCode cannot be blank")
     @Size(min = 1, max = 5, message = "postalCode cannot be less than 1 character or more than 5 characters long")
     private String postalCode;
+
+    private List<Long> categories = new ArrayList<>();
 }

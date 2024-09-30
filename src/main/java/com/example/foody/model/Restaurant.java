@@ -30,6 +30,14 @@ public class Restaurant extends DefaultEntity {
     @Min(0)
     private int seats;
 
+    @ManyToMany
+    @JoinTable(
+            name = "restaurant_category",
+            joinColumns = @JoinColumn(name = "restaurant_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Dish> dishes = new ArrayList<>();
 

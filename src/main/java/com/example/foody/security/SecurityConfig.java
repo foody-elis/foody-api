@@ -89,9 +89,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers(GET, "/api/v1/restaurants").hasRole(Role.MODERATOR.name())
-                        .requestMatchers(GET, "/api/v1/restaurants/*").hasRole(Role.MODERATOR.name())
                         .requestMatchers(DELETE, "/api/v1/restaurants/delete").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/restaurants/**").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/categories").hasRole(Role.ADMIN.name())
+                        .requestMatchers(DELETE,"/api/v1/categories/delete").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/categories/**").authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
