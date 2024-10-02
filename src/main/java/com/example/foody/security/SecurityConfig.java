@@ -85,10 +85,11 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/v1/auth/register-restaurateur").hasRole(Role.MODERATOR.name())
                         .requestMatchers(POST, "/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers(POST, "/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers(GET, "/api/v1/auth/logged-user").authenticated()
+                        .requestMatchers(GET, "/api/v1/auth/logged-user").authenticated() // todo remove
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(PATCH, "/api/v1/restaurants/approve").hasRole(Role.MODERATOR.name())
                         .requestMatchers(DELETE, "/api/v1/restaurants/delete").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/restaurants/**").authenticated()
 

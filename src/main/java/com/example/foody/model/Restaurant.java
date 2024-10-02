@@ -30,6 +30,9 @@ public class Restaurant extends DefaultEntity {
     @Min(0)
     private int seats;
 
+    @Column(name = "approved", nullable = false)
+    private boolean approved;
+
     @ManyToMany
     @JoinTable(
             name = "restaurant_category",

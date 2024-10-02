@@ -26,13 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final RestaurantRepository restaurantRepository;
     private final CategoryMapper categoryMapper;
-    private final RestaurantMapper restaurantMapper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, RestaurantRepository restaurantRepository, CategoryMapper categoryMapper, RestaurantMapper restaurantMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, RestaurantRepository restaurantRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.restaurantRepository = restaurantRepository;
         this.categoryMapper = categoryMapper;
-        this.restaurantMapper = restaurantMapper;
     }
 
     @Override
@@ -75,13 +73,6 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (Exception e) {
             throw new EntityCreationException("category");
         }
-    }
-
-    @Override
-    public List<RestaurantResponseDTO> getRestaurants(long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
-        return restaurantMapper.restaurantsToRestaurantResponseDTOs(category.getRestaurants());
     }
 
     @Override

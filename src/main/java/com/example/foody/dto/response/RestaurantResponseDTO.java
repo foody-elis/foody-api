@@ -16,6 +16,7 @@ public class RestaurantResponseDTO {
     private String description;
     private String phoneNumber;
     private int seats;
+    private boolean approved;
     private long userId;
     private String city;
     private String province;

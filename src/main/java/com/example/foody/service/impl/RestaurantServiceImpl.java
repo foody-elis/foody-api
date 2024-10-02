@@ -4,6 +4,7 @@ import com.example.foody.dto.request.RestaurantRequestDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
@@ -15,6 +16,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.AddressService;
 import com.example.foody.service.CategoryService;
 import com.example.foody.service.RestaurantService;
+import com.example.foody.utils.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -80,14 +82,69 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantResponseDTO> findAll() {
-        List<Restaurant> restaurants = restaurantRepository.findAllByDeletedAtIsNull();
+        List<Restaurant> restaurants;
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
+            // I return all the restaurants, approved or not
+            restaurants = restaurantRepository.findAllByDeletedAtIsNull();
+        } else {
+            // I return only the approved restaurants
+            restaurants = restaurantRepository.findAllByDeletedAtIsNullAndApproved(true);
+        }
+
         return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
     }
 
     @Override
     public RestaurantResponseDTO findById(long id) {
-        Restaurant restaurant = restaurantRepository.findByIdAndDeletedAtIsNull(id)
+        Restaurant restaurant;
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
+            // I return a restaurant by id, approved or not
+            restaurant = restaurantRepository.findByIdAndDeletedAtIsNull(id)
+                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+        } else {
+            // I return a restaurant by id, only if it is approved
+            restaurant = restaurantRepository.findByIdAndDeletedAtIsNullAndApproved(id, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+        }
+
+        return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
+    }
+
+    @Override
+    public List<RestaurantResponseDTO> findAllByCategory(long categoryId) {
+        List<Restaurant> restaurants;
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
+            // I return all the restaurants, approved or not
+            restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNull(categoryId);
+        } else {
+            // I return only the approved restaurants
+            restaurants = restaurantRepository.findAllByCategoryNameAndDeletedAtIsNullAndApproved(categoryId, true);
+        }
+
+        return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
+    }
+
+    @Override
+    public RestaurantResponseDTO approveById(long id) {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+
+        restaurant.setApproved(true);
+
+        try {
+            restaurant = restaurantRepository.save(restaurant);
+        } catch (Exception e) {
+            throw new EntityEditException("restaurant", "id", id);
+        }
+
+        // todo send email to the restaurateur
+
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
     }
 

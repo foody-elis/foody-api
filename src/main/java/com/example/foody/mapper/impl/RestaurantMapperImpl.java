@@ -34,6 +34,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setDescription( restaurant.getDescription() );
         restaurantResponseDTO.setPhoneNumber( restaurant.getPhoneNumber() );
         restaurantResponseDTO.setSeats( restaurant.getSeats() );
+        restaurantResponseDTO.setApproved( restaurant.isApproved() );
 
         // I add the categories to the restaurantResponseDTO
         restaurantResponseDTO.setCategories(

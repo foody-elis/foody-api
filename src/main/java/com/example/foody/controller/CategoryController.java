@@ -39,11 +39,6 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{id}/restaurants")
-    public ResponseEntity<List<RestaurantResponseDTO>> getCategoryRestaurants(@PathVariable long id) throws EntityNotFoundException {
-        return new ResponseEntity<>(categoryService.getRestaurants(id), HttpStatus.OK);
-    }
-
     @DeleteMapping(path = "/delete")
     public ResponseEntity<Void> removeCategory(@RequestParam long id) throws EntityNotFoundException, EntityDeletionException {
         categoryService.remove(id);

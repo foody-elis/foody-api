@@ -4,6 +4,7 @@ import com.example.foody.dto.request.RestaurantRequestDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -35,6 +36,16 @@ public class RestaurantController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable long id) throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/category")
+    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@RequestParam long id) {
+        return new ResponseEntity<>(restaurantService.findAllByCategory(id), HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/approve")
+    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@RequestParam long id) throws EntityNotFoundException, EntityEditException {
+        return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/delete")

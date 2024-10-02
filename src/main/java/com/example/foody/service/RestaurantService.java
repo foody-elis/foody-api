@@ -9,5 +9,7 @@ public interface RestaurantService {
     RestaurantResponseDTO save(RestaurantRequestDTO restaurantDTO);
     List<RestaurantResponseDTO> findAll();
     RestaurantResponseDTO findById(long id);
+    List<RestaurantResponseDTO> findAllByCategory(long categoryId);
+    RestaurantResponseDTO approveById(long id);
     boolean remove(long id);
 }
