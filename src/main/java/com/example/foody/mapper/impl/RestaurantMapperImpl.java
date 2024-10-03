@@ -1,5 +1,7 @@
 package com.example.foody.mapper.impl;
 
+import com.example.foody.builder.RestaurantBuilder;
+import com.example.foody.builder.AddressBuilder;
 import com.example.foody.dto.request.RestaurantRequestDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.mapper.RestaurantMapper;
@@ -14,6 +16,13 @@ import java.util.List;
 
 @Component
 public class RestaurantMapperImpl implements RestaurantMapper {
+    private final RestaurantBuilder restaurantBuilder;
+    private final AddressBuilder addressBuilder;
+
+    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder) {
+        this.restaurantBuilder = restaurantBuilder;
+        this.addressBuilder = addressBuilder;
+    }
 
     @Override
     public RestaurantResponseDTO restaurantToRestaurantResponseDTO(Restaurant restaurant) {
@@ -50,23 +59,21 @@ public class RestaurantMapperImpl implements RestaurantMapper {
             return null;
         }
 
-        Restaurant restaurant = new Restaurant();
+        Address address = addressBuilder
+                .city( restaurantRequestDTO.getCity() )
+                .province( restaurantRequestDTO.getProvince() )
+                .street( restaurantRequestDTO.getStreet() )
+                .civicNumber( restaurantRequestDTO.getCivicNumber() )
+                .postalCode( restaurantRequestDTO.getPostalCode() )
+                .build();
 
-        restaurant.setName( restaurantRequestDTO.getName() );
-        restaurant.setDescription( restaurantRequestDTO.getDescription() );
-        restaurant.setPhoneNumber( restaurantRequestDTO.getPhoneNumber() );
-        restaurant.setSeats( restaurantRequestDTO.getSeats() );
-
-        // I add the address to the restaurant
-        Address address = new Address();
-
-        address.setCity( restaurantRequestDTO.getCity() );
-        address.setProvince( restaurantRequestDTO.getProvince() );
-        address.setStreet( restaurantRequestDTO.getStreet() );
-        address.setCivicNumber( restaurantRequestDTO.getCivicNumber() );
-        address.setPostalCode( restaurantRequestDTO.getPostalCode() );
-
-        restaurant.setAddress( address );
+        Restaurant restaurant = restaurantBuilder
+                .name( restaurantRequestDTO.getName() )
+                .description( restaurantRequestDTO.getDescription() )
+                .phoneNumber( restaurantRequestDTO.getPhoneNumber() )
+                .seats( restaurantRequestDTO.getSeats() )
+                .address( address ) // I set the address
+                .build();
 
         return restaurant;
     }

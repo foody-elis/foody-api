@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "restaurants")
 public class Restaurant extends DefaultEntity {
@@ -60,4 +60,23 @@ public class Restaurant extends DefaultEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    public Restaurant() {
+    }
+
+    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<SittingTime> sittingTimes, List<Order> orders, User user, Address address) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.phoneNumber = phoneNumber;
+        this.seats = seats;
+        this.approved = approved;
+        this.categories = categories;
+        this.dishes = dishes;
+        this.reviews = reviews;
+        this.sittingTimes = sittingTimes;
+        this.orders = orders;
+        this.user = user;
+        this.address = address;
+    }
 }

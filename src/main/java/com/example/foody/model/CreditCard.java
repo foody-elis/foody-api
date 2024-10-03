@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "credit_cards")
 public class CreditCard extends DefaultEntity {

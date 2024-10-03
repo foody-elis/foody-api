@@ -19,4 +19,13 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     private List<Restaurant> restaurants = new ArrayList<>();
+
+    public Category() {
+    }
+
+    public Category(long id, String name, List<Restaurant> restaurants) {
+        this.id = id;
+        this.name = name;
+        this.restaurants = restaurants;
+    }
 }

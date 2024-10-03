@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 public class User extends DefaultEntity implements UserDetails {
@@ -61,6 +61,26 @@ public class User extends DefaultEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Restaurant> restaurants = new ArrayList<>();
+
+    public User() {
+    }
+
+    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard, List<Review> reviews, List<Booking> bookings, List<Restaurant> restaurants) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
+        this.phoneNumber = phoneNumber;
+        this.avatar = avatar;
+        this.role = role;
+        this.active = active;
+        this.creditCard = creditCard;
+        this.reviews = reviews;
+        this.bookings = bookings;
+        this.restaurants = restaurants;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

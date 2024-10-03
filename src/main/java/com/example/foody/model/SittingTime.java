@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 
 import java.time.LocalTime;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "sitting_times")
 public class SittingTime extends DefaultEntity {
