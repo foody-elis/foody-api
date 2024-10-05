@@ -38,9 +38,9 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/category")
-    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@RequestParam long id) {
-        return new ResponseEntity<>(restaurantService.findAllByCategory(id), HttpStatus.OK);
+    @GetMapping(path = "/category/{category-id}")
+    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId) throws EntityNotFoundException {
+        return new ResponseEntity<>(restaurantService.findAllByCategory(categoryId), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/approve")
@@ -48,8 +48,8 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/delete")
-    public ResponseEntity<Void> removeEvent(@RequestParam long id) throws EntityNotFoundException, EntityDeletionException {
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> removeEvent(@PathVariable long id) throws EntityNotFoundException, EntityDeletionException {
         restaurantService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

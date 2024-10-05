@@ -22,7 +22,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findAllByCategoryAndDeletedAtIsNull(long categoryId);
 
     @Query("select r from Restaurant r join r.categories c where c.id = :categoryId and r.deletedAt is null and r.approved = :approved")
-    List<Restaurant> findAllByCategoryNameAndDeletedAtIsNullAndApproved(long categoryId, boolean approved);
+    List<Restaurant> findAllByCategoryAndDeletedAtIsNullAndApproved(long categoryId, boolean approved);
 
     // todo implement custom query to find restaurant by name (ignore case), street, ecc (endpoint: /search)
 }

@@ -39,8 +39,8 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.findById(id), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/delete")
-    public ResponseEntity<Void> removeCategory(@RequestParam long id) throws EntityNotFoundException, EntityDeletionException {
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> removeCategory(@PathVariable long id) throws EntityNotFoundException, EntityDeletionException {
         categoryService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

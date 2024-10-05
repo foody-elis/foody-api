@@ -1,7 +1,6 @@
 package com.example.foody.exceptions.entity;
 
 public class EntityDuplicateException extends RuntimeException {
-
     public EntityDuplicateException(String objectName, String propertyName, String value) {
         super(String.format("There is already a %s with %s = %s.", objectName, propertyName, value));
     }

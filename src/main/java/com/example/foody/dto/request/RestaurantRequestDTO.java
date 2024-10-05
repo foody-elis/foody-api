@@ -27,9 +27,9 @@ public class RestaurantRequestDTO {
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
     private String phoneNumber;
 
-    @Positive(message = "seats cannot be a negative number")
     @NotNull(message = "seats cannot be null")
-    private int seats;
+    @Positive(message = "seats cannot be a negative number")
+    private Integer seats;
 
     @NotBlank(message = "city cannot be blank")
     @Size(min = 1, max = 20, message = "city cannot be less than 1 character or more than 20 characters long")

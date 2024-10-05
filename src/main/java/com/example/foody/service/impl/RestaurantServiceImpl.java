@@ -116,6 +116,9 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantResponseDTO> findAllByCategory(long categoryId) {
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("category", "id", categoryId));
+
         List<Restaurant> restaurants;
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -124,7 +127,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNull(categoryId);
         } else {
             // I return only the approved restaurants
-            restaurants = restaurantRepository.findAllByCategoryNameAndDeletedAtIsNullAndApproved(categoryId, true);
+            restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
         }
 
         return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);

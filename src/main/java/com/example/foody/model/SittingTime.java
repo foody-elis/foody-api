@@ -31,4 +31,15 @@ public class SittingTime extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    public SittingTime() {
+    }
+
+    public SittingTime(long id, int weekDay, LocalTime startTime, LocalTime endTime, Restaurant restaurant) {
+        this.id = id;
+        this.weekDay = weekDay;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.restaurant = restaurant;
+    }
 }

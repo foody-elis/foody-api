@@ -29,7 +29,7 @@ public class UserRequestDTO {
     @Size(min = 1, max = 30, message = "surname cannot be less than 1 character or more than 30 characters long")
     private String surname;
 
-    @NotNull(message = "birthDate cannot be null")
+    @NotBlank(message = "birthDate cannot be blank")
     @Past(message = "birthDate cannot be in the future")
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate birthDate;
@@ -38,7 +38,6 @@ public class UserRequestDTO {
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
     private String phoneNumber;
 
-    @NotBlank(message = "avatar cannot be blank")
     @NotBlank(message = "avatar cannot be blank")
     @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
     private String avatar;

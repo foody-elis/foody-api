@@ -90,12 +90,19 @@ public class SecurityConfig {
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers(PATCH, "/api/v1/restaurants/approve").hasRole(Role.MODERATOR.name())
-                        .requestMatchers(DELETE, "/api/v1/restaurants/delete").hasRole(Role.ADMIN.name())
+                        .requestMatchers(DELETE, "/api/v1/restaurants/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/restaurants/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/categories").hasRole(Role.ADMIN.name())
-                        .requestMatchers(DELETE,"/api/v1/categories/delete").hasRole(Role.ADMIN.name())
+                        .requestMatchers(DELETE,"/api/v1/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/categories/**").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/sitting-times").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(DELETE, "/api/v1/sitting-times/**").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(GET, "/api/v1/sitting-times").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/sitting-times/**").authenticated()
+
+                        .anyRequest().permitAll() // todo remove?
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

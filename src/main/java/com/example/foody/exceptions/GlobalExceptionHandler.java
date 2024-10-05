@@ -4,6 +4,8 @@ import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
+import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.utils.CustomHttpStatus;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,6 +39,15 @@ public class GlobalExceptionHandler {
 
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
 
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            InvalidWeekDayException.class,
+            SittingTimeOverlappingException.class
+    })
+    public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
+        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
