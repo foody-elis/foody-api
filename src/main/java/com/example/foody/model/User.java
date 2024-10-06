@@ -44,6 +44,7 @@ public class User extends DefaultEntity implements UserDetails {
     private String avatar;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @Column(name = "active", nullable = false)

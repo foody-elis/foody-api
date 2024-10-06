@@ -1,6 +1,7 @@
 package com.example.foody.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class SittingTimeRequestDTO {
     private Long restaurantId;
 
     @AssertTrue(message = "endTime must be after startTime")
+    @JsonIgnore
     public boolean isEndTimeAfterStartTime() {
         return endTime.isAfter(startTime);
     }

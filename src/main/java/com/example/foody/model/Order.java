@@ -1,5 +1,8 @@
 package com.example.foody.model;
 
+import com.example.foody.state.order.OrderState;
+import com.example.foody.state.order.OrderStatus;
+import com.example.foody.state.order.PreparingState;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,4 +37,38 @@ public class Order extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OrderStatus status;
+
+    @Transient
+    private OrderState state;
+
+    public Order() {
+        this.status = OrderStatus.PREPARING;
+        this.state = new PreparingState(this);
+    }
+
+    public Order(long id, String tableNumber, List<Dish> dishes, User user, Restaurant restaurant) {
+        this.id = id;
+        this.tableNumber = tableNumber;
+        this.dishes = dishes;
+        this.user = user;
+        this.restaurant = restaurant;
+        this.status = OrderStatus.PREPARING;
+        this.state = new PreparingState(this);
+    }
+
+    public void prepare() {
+        state.prepare();
+    }
+
+    public void awaitPayment() {
+        state.awaitPayment();
+    }
+
+    public void complete() {
+        state.complete();
+    }
 }
