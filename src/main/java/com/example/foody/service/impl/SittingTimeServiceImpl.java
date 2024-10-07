@@ -35,7 +35,8 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     @Override
     public SittingTimeResponseDTO save(SittingTimeRequestDTO sittingTimeDTO) {
         SittingTime sittingTime = sittingTimeMapper.sittingTimeRequestDTOToSittingTime(sittingTimeDTO);
-        Restaurant restaurant = restaurantRepository.findById(sittingTimeDTO.getRestaurantId())
+        Restaurant restaurant = restaurantRepository
+                .findById(sittingTimeDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", sittingTimeDTO.getRestaurantId()));
 
         sittingTime.setRestaurant(restaurant);
@@ -69,9 +70,12 @@ public class SittingTimeServiceImpl implements SittingTimeService {
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
-        restaurantRepository.findById(restaurantId)
+        restaurantRepository
+                .findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-        List<SittingTime> sittingTimeResponseDTOS = sittingTimeRepository.findAllByDeletedAtIsNullAndRestaurant(restaurantId);
+
+        List<SittingTime> sittingTimeResponseDTOS = sittingTimeRepository
+                .findAllByDeletedAtIsNullAndRestaurantOrderByStartTime(restaurantId);
 
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimeResponseDTOS);
     }
@@ -83,7 +87,8 @@ public class SittingTimeServiceImpl implements SittingTimeService {
 
         if (weeDay < 1 || weeDay > 7) throw new InvalidWeekDayException(weeDay);
 
-        List<SittingTime> sittingTimes = sittingTimeRepository.findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNow(restaurantId, weeDay);
+        List<SittingTime> sittingTimes = sittingTimeRepository
+                .findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTime(restaurantId, weeDay);
 
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }

@@ -39,7 +39,10 @@ public class SittingTimeController {
 
     @GetMapping(path = "/restaurant/{restaurant-id}/week-day/{week-day}")
     public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurantAndWeekDayAndStartTimeAfterNow(@PathVariable("restaurant-id") long restaurantId, @PathVariable("week-day") int weekDay) throws EntityNotFoundException, InvalidWeekDayException {
-        return new ResponseEntity<>(sittingTimeService.findAllByRestaurantAndWeekDayAndStartTimeAfterNow(restaurantId, weekDay), HttpStatus.OK);
+        return new ResponseEntity<>(
+                sittingTimeService.findAllByRestaurantAndWeekDayAndStartTimeAfterNow(restaurantId, weekDay),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping(path = "/{id}")

@@ -10,11 +10,15 @@ import java.util.List;
 public interface SittingTimeRepository extends JpaRepository<SittingTime, Long> {
     List<SittingTime> findAllByDeletedAtIsNull();
 
-    @Query("select s from SittingTime s where s.deletedAt is null and s.restaurant.id = :restaurantId")
-    List<SittingTime> findAllByDeletedAtIsNullAndRestaurant(long restaurantId);
+    @Query("select s from SittingTime s " +
+            "where s.deletedAt is null and s.restaurant.id = :restaurantId " +
+            "order by s.startTime")
+    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantOrderByStartTime(long restaurantId);
 
-    @Query("select s from SittingTime s where s.deletedAt is null and s.restaurant.id = :restaurantId and s.weekDay = :weekday and s.startTime > current_time")
-    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNow(long restaurantId, int weekday);
+    @Query("select s from SittingTime s " +
+            "where s.deletedAt is null and s.restaurant.id = :restaurantId and s.weekDay = :weekday and s.startTime > current_time " +
+            "order by s.startTime")
+    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTime(long restaurantId, int weekday);
 
     @Query("select s from SittingTime s " +
             "where s.deletedAt is null and s.restaurant.id = :restaurantId and s.weekDay = :weekDay and " +
