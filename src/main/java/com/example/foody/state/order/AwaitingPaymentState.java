@@ -4,7 +4,7 @@ import com.example.foody.model.Order;
 
 public class AwaitingPaymentState extends OrderState {
     public AwaitingPaymentState(Order order) {
-        super(order);
+        super(order, OrderStatus.AWAITING_PAYMENT.name());
     }
 
     @Override
@@ -19,7 +19,6 @@ public class AwaitingPaymentState extends OrderState {
 
     @Override
     public void complete() {
-        getOrder().setStatus(OrderStatus.COMPLETED);
         getOrder().setState(new CompletedState(getOrder()));
     }
 }

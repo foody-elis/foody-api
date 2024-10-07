@@ -4,7 +4,7 @@ import com.example.foody.model.Order;
 
 public class CompletedState extends OrderState {
     public CompletedState(Order order) {
-        super(order);
+        super(order, OrderStatus.COMPLETED.name());
     }
 
     @Override

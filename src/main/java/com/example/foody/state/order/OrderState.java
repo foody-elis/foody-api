@@ -8,9 +8,11 @@ import lombok.Setter;
 @Setter
 public abstract class OrderState {
     private Order order;
+    private String name;
 
-    public OrderState(Order order) {
+    public OrderState(Order order, String name) {
         this.order = order;
+        this.name = name;
     }
 
     public abstract void prepare();

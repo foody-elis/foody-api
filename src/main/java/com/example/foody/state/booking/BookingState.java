@@ -8,9 +8,11 @@ import lombok.Setter;
 @Setter
 public abstract class BookingState {
     private Booking booking;
+    private String name;
 
-    public BookingState(Booking booking) {
+    public BookingState(Booking booking, String name) {
         this.booking = booking;
+        this.name = name;
     }
 
     public abstract void activate();

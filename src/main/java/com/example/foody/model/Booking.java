@@ -3,6 +3,7 @@ package com.example.foody.model;
 import com.example.foody.state.booking.ActiveState;
 import com.example.foody.state.booking.BookingState;
 import com.example.foody.state.booking.BookingStatus;
+import com.example.foody.state.booking.DeletedState;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,26 +34,35 @@ public class Booking extends DefaultEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    @Transient
+    private BookingState state = new ActiveState(this);
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BookingStatus status;
-
-    @Transient
-    private BookingState state;
+    private BookingStatus status = BookingStatus.ACTIVE;
 
     public Booking() {
-        this.status = BookingStatus.ACTIVE;
-        this.state = new ActiveState(this);
     }
 
-    public Booking(long id, LocalDate date, SittingTime sittingTime, User user, Restaurant restaurant) {
+    public Booking(long id, LocalDate date, SittingTime sittingTime, User user, Restaurant restaurant, BookingState state) {
         this.id = id;
         this.date = date;
         this.sittingTime = sittingTime;
         this.user = user;
         this.restaurant = restaurant;
-        this.status = BookingStatus.ACTIVE;
-        this.state = new ActiveState(this);
+        this.state = state;
+        setStatus(state);
+    }
+
+    public void setState(BookingState state) {
+        this.state = state;
+        setStatus(state);
+    }
+
+    public void setStatus(BookingState state) {
+        if (state != null) {
+            this.status = BookingStatus.valueOf(state.getName());
+        }
     }
 
     public void activate() {

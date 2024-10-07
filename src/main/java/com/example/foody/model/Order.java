@@ -38,26 +38,35 @@ public class Order extends DefaultEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    @Transient
+    private OrderState state;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
-    @Transient
-    private OrderState state;
-
     public Order() {
-        this.status = OrderStatus.PREPARING;
-        this.state = new PreparingState(this);
     }
 
-    public Order(long id, String tableNumber, List<Dish> dishes, User user, Restaurant restaurant) {
+    public Order(long id, String tableNumber, List<Dish> dishes, User user, Restaurant restaurant, OrderState state) {
         this.id = id;
         this.tableNumber = tableNumber;
         this.dishes = dishes;
         this.user = user;
         this.restaurant = restaurant;
-        this.status = OrderStatus.PREPARING;
-        this.state = new PreparingState(this);
+        this.state = state;
+        setStatus(state);
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
+        setStatus(state);
+    }
+
+    public void setStatus(OrderState state) {
+        if (state != null) {
+            this.status = OrderStatus.valueOf(state.getName());
+        }
     }
 
     public void prepare() {

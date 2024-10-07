@@ -4,12 +4,11 @@ import com.example.foody.model.Booking;
 
 public class DeletedState extends BookingState {
     public DeletedState(Booking booking) {
-        super(booking);
+        super(booking, BookingStatus.DELETED.name());
     }
 
     @Override
     public void activate() {
-        getBooking().setStatus(BookingStatus.ACTIVE);
         getBooking().setState(new ActiveState(getBooking()));
     }
 
