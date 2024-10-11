@@ -1,6 +1,6 @@
 package com.example.foody;
 
-import com.example.foody.auth.AuthenticationService;
+import com.example.foody.auth.impl.AuthenticationServiceImpl;
 import com.example.foody.dto.request.UserRequestDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ public class FoodyApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner(AuthenticationService authenticationService) {
+	public CommandLineRunner commandLineRunner(AuthenticationServiceImpl authenticationServiceImpl) {
 		return args -> {
 			final Logger logger = LogManager.getLogger(FoodyApplication.class.getName());
 
@@ -39,7 +39,7 @@ public class FoodyApplication {
 			if (!file.exists()) {
 				UserRequestDTO adminDTO = new UserRequestDTO(adminEmail, adminPassword, "Admin", "Admin", LocalDate.of(1999, 1, 1), "0123456789", "avatar.png", null);
 
-				authenticationService.registerAdmin(adminDTO);
+				authenticationServiceImpl.registerAdmin(adminDTO);
 
 				try (FileWriter writer = new FileWriter(path)) {
 					writer.write("Admin account" + "\n");
