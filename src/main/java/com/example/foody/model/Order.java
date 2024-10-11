@@ -1,8 +1,6 @@
 package com.example.foody.model;
 
-import com.example.foody.state.order.OrderState;
-import com.example.foody.state.order.OrderStatus;
-import com.example.foody.state.order.PreparingState;
+import com.example.foody.state.order.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -56,6 +54,17 @@ public class Order extends DefaultEntity {
         this.restaurant = restaurant;
         this.state = state;
         setStatus(state);
+    }
+
+    public OrderState getState() {
+        if (state == null && status != null) {
+            switch (status) {
+                case OrderStatus.PREPARING -> state = new PreparingState(this);
+                case OrderStatus.AWAITING_PAYMENT -> state = new AwaitingPaymentState(this);
+                case OrderStatus.COMPLETED -> state = new CompletedState(this);
+            }
+        }
+        return state;
     }
 
     public void setState(OrderState state) {

@@ -43,8 +43,8 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.findAllByCategory(categoryId), HttpStatus.OK);
     }
 
-    @PatchMapping(path = "/approve")
-    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@RequestParam long id) throws EntityNotFoundException, EntityEditException {
+    @PatchMapping(path = "/approve/{id}")
+    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@PathVariable long id) throws EntityNotFoundException, EntityEditException {
         return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
     }
 

@@ -31,12 +31,8 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
         sittingTimeResponseDTO.setRestaurantId( sittingTimeRestaurantId( sittingTime ) );
         sittingTimeResponseDTO.setId( sittingTime.getId() );
         sittingTimeResponseDTO.setWeekDay( sittingTime.getWeekDay() );
-        if ( sittingTime.getStartTime() != null ) {
-            sittingTimeResponseDTO.setStartTime( DateTimeFormatter.ISO_LOCAL_TIME.format( sittingTime.getStartTime() ) );
-        }
-        if ( sittingTime.getEndTime() != null ) {
-            sittingTimeResponseDTO.setEndTime( DateTimeFormatter.ISO_LOCAL_TIME.format( sittingTime.getEndTime() ) );
-        }
+        sittingTimeResponseDTO.setStartTime( sittingTime.getStartTime() );
+        sittingTimeResponseDTO.setEndTime( sittingTime.getEndTime() );
 
         return sittingTimeResponseDTO;
     }

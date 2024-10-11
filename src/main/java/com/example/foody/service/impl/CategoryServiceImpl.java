@@ -2,13 +2,11 @@ package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.CategoryRequestDTO;
 import com.example.foody.dto.response.CategoryResponseDTO;
-import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.mapper.CategoryMapper;
-import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
 import com.example.foody.repository.CategoryRepository;
@@ -56,14 +54,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO findById(long id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
         return categoryMapper.categoryToCategoryResponseDTO(category);
     }
 
     @Override
     public Category addRestaurant(long id, Restaurant restaurant) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
 
         category.getRestaurants().add(restaurant);
@@ -77,7 +77,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean remove(long id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
 
         // I remove the category from the restaurants

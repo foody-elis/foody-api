@@ -19,6 +19,6 @@ public class CompletedState extends OrderState {
 
     @Override
     public void complete() {
-        throw new IllegalStateException("Order is already completed");
+        throw new IllegalStateException("Order is already completed.");
     }
 }

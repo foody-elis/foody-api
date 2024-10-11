@@ -35,8 +35,9 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     @Override
     public SittingTimeResponseDTO save(SittingTimeRequestDTO sittingTimeDTO) {
         SittingTime sittingTime = sittingTimeMapper.sittingTimeRequestDTOToSittingTime(sittingTimeDTO);
+
         Restaurant restaurant = restaurantRepository
-                .findById(sittingTimeDTO.getRestaurantId())
+                .findByIdAndDeletedAtIsNullAndApproved(sittingTimeDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", sittingTimeDTO.getRestaurantId()));
 
         sittingTime.setRestaurant(restaurant);
@@ -71,31 +72,33 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
         restaurantRepository
-                .findById(restaurantId)
+                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        List<SittingTime> sittingTimeResponseDTOS = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantOrderByStartTime(restaurantId);
+        List<SittingTime> sittingTimes = sittingTimeRepository
+                .findAllByDeletedAtIsNullAndRestaurantOrderByStartTimeAsc(restaurantId);
 
-        return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimeResponseDTOS);
+        return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartTimeAfterNow(long restaurantId, int weeDay) {
-        restaurantRepository.findById(restaurantId)
+        restaurantRepository
+                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
         if (weeDay < 1 || weeDay > 7) throw new InvalidWeekDayException(weeDay);
 
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTime(restaurantId, weeDay);
+                .findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTimeAsc(restaurantId, weeDay);
 
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public boolean remove(long id) {
-        SittingTime sittingTime = sittingTimeRepository.findById(id)
+        SittingTime sittingTime = sittingTimeRepository
+                .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", id));
 
         sittingTime.setDeletedAt(LocalDateTime.now());

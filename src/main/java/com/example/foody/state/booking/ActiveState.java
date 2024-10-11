@@ -9,11 +9,11 @@ public class ActiveState extends BookingState {
 
     @Override
     public void activate() {
-        throw new IllegalStateException("Booking is already active");
+        throw new IllegalStateException("Booking is already active.");
     }
 
     @Override
-    public void delete() {
-        getBooking().setState(new DeletedState(getBooking()));
+    public void cancel() {
+        getBooking().setState(new CancelledState(getBooking()));
     }
 }

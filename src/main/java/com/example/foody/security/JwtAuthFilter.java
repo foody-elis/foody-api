@@ -48,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String username = jwtService.extractUsername(token);
 
             // Check if the user is active
-            User user = userRepository.findByEmail(username)
+            User user = userRepository.findByEmailAndDeletedAtIsNull(username)
                     .orElseThrow(() -> new EntityNotFoundException("user", "email", username));
 
             if (!user.isActive()) {

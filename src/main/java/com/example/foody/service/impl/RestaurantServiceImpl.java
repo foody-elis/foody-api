@@ -46,7 +46,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponseDTO save(RestaurantRequestDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
         Address address = restaurant.getAddress();
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // I save the associated address
         address.setRestaurant(restaurant);
@@ -68,7 +68,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         restaurant.setAddress(address);
-        restaurant.setUser(user);
+        restaurant.setUser(principal);
         restaurant.setCategories(categories);
 
         try {
@@ -103,12 +103,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
             // I return a restaurant by id, approved or not
-            restaurant = restaurantRepository.findByIdAndDeletedAtIsNull(id)
+            restaurant = restaurantRepository
+                    .findByIdAndDeletedAtIsNull(id)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         } else {
             // I return a restaurant by id, only if it is approved
-            restaurant = restaurantRepository.findByIdAndDeletedAtIsNullAndApproved(id, true)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+            restaurant = restaurantRepository
+                    .findByIdAndDeletedAtIsNullAndApproved(id, true)
+                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         }
 
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
@@ -135,7 +137,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantResponseDTO approveById(long id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
 
         restaurant.setApproved(true);
@@ -153,7 +156,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public boolean remove(long id) {
-        Restaurant restaurant = restaurantRepository.findById(id)
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
 
         restaurant.setDeletedAt(LocalDateTime.now());

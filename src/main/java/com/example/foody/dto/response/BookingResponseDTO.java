@@ -4,15 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SittingTimeResponseDTO {
+public class BookingResponseDTO {
     private long id;
-    private int weekDay;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private LocalDate date;
+    private int seats;
+    private long sittingTimeId;
+    private long userId;
     private long restaurantId;
+    private String status;
 }

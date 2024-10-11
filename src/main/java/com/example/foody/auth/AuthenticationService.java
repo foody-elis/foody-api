@@ -98,7 +98,7 @@ public class AuthenticationService {
             throw new InvalidCredentialsException();
         }
 
-        User user = userRepository.findByEmail(userLoginDTO.getEmail())
+        User user = userRepository.findByEmailAndDeletedAtIsNull(userLoginDTO.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", userLoginDTO.getEmail()));
 
         if (!user.isActive()) {

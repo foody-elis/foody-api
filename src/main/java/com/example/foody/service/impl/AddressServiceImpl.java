@@ -51,7 +51,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public boolean remove(long id) {
-        Address address = addressRepository.findById(id)
+        Address address = addressRepository
+                .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("address", "id", id));
 
         address.setDeletedAt(LocalDateTime.now());

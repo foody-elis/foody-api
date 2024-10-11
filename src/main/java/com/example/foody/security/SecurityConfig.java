@@ -89,7 +89,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers(PATCH, "/api/v1/restaurants/approve").hasRole(Role.MODERATOR.name())
+                        .requestMatchers(PATCH, "/api/v1/restaurants/approve/*").hasRole(Role.MODERATOR.name())
                         .requestMatchers(DELETE, "/api/v1/restaurants/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/restaurants/**").authenticated()
 
@@ -101,6 +101,16 @@ public class SecurityConfig {
                         .requestMatchers(DELETE, "/api/v1/sitting-times/**").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers(GET, "/api/v1/sitting-times").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/sitting-times/**").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/bookings").hasRole(Role.CUSTOMER.name())
+                        .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.ADMIN.name())
+                        .requestMatchers(GET, "/api/v1/bookings/restaurant/*").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/bookings").authenticated()
+                        .requestMatchers(DELETE, "/api/v1/bookings/*").hasRole(Role.ADMIN.name())
+                        .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.ADMIN.name())
+                        .requestMatchers(GET, "/api/v1/bookings/restaurant/*").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers("/api/v1/bookings/**").authenticated()
 
                         .anyRequest().permitAll() // todo remove?
                 )

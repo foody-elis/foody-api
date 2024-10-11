@@ -14,7 +14,7 @@ public class AwaitingPaymentState extends OrderState {
 
     @Override
     public void awaitPayment() {
-        throw new IllegalStateException("Order is already awaiting payment");
+        throw new IllegalStateException("Order is already awaiting payment.");
     }
 
     @Override

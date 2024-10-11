@@ -1,9 +1,11 @@
 package com.example.foody.exceptions;
 
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
+import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
@@ -44,7 +46,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             InvalidWeekDayException.class,
-            SittingTimeOverlappingException.class
+            SittingTimeOverlappingException.class,
+            BookingNotAllowedException.class,
+            InvalidBookingWeekDayException.class,
+            InvalidBookingRestaurantException.class,
+            InvalidBookingStateException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
@@ -60,7 +66,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AccessDeniedException.class,
             AuthenticationException.class,
-            UserNotActiveException.class
+            UserNotActiveException.class,
+            ForbiddenBookingAccessException.class,
+            ForbiddenRestaurantAccessException.class
     })
     public ResponseEntity<ErrorDTO> handleForbiddenException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.FORBIDDEN, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
