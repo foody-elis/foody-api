@@ -85,7 +85,6 @@ public class CategoryServiceImpl implements CategoryService {
         category.getRestaurants().forEach(
                 restaurant -> restaurant.getCategories().remove(category)
         );
-
         restaurantRepository.saveAll(category.getRestaurants());
 
         try {

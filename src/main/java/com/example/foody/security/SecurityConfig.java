@@ -102,15 +102,15 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/sitting-times").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/v1/sitting-times/**").authenticated()
 
-                        .requestMatchers(POST, "/api/v1/bookings").hasRole(Role.CUSTOMER.name())
-                        .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.ADMIN.name())
-                        .requestMatchers(GET, "/api/v1/bookings/restaurant/*").authenticated()
-
-                        .requestMatchers(POST, "/api/v1/bookings").authenticated()
                         .requestMatchers(DELETE, "/api/v1/bookings/*").hasRole(Role.ADMIN.name())
                         .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.ADMIN.name())
                         .requestMatchers(GET, "/api/v1/bookings/restaurant/*").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers("/api/v1/bookings/**").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/dishes").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(DELETE, "/api/v1/dishes/*").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(GET, "/api/v1/dishes").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/dishes/**").authenticated()
 
                         .anyRequest().permitAll() // todo remove?
                 )

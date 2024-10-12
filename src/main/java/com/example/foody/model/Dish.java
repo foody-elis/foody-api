@@ -23,6 +23,7 @@ public class Dish extends DefaultEntity {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    // max 999.999,99 = 1 mln
     @Column(name = "price", precision = 8, scale = 2, nullable = false)
     private BigDecimal price;
 
@@ -38,4 +39,18 @@ public class Dish extends DefaultEntity {
 
     @ManyToMany(mappedBy = "dishes")
     private List<Order> orders = new ArrayList<>();
+
+    public Dish() {
+    }
+
+    public Dish(long id, String name, String description, BigDecimal price, String photo, Restaurant restaurant, List<Review> reviews, List<Order> orders) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.photo = photo;
+        this.restaurant = restaurant;
+        this.reviews = reviews;
+        this.orders = orders;
+    }
 }

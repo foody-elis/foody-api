@@ -25,7 +25,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> saveCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<CategoryResponseDTO> saveCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(categoryService.save(categoryRequestDTO), HttpStatus.CREATED);
     }
 
@@ -35,12 +36,14 @@ public class CategoryController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable long id) throws EntityNotFoundException {
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable long id)
+            throws EntityNotFoundException {
         return new ResponseEntity<>(categoryService.findById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> removeCategory(@PathVariable long id) throws EntityNotFoundException, EntityDeletionException {
+    public ResponseEntity<Void> removeCategory(@PathVariable long id)
+            throws EntityNotFoundException, EntityDeletionException {
         categoryService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

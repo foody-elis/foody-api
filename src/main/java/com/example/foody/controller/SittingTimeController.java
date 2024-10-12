@@ -23,7 +23,8 @@ public class SittingTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<SittingTimeResponseDTO> saveSittingTime(@Valid @RequestBody SittingTimeRequestDTO sittingTimeRequestDTO) throws EntityNotFoundException, EntityCreationException {
+    public ResponseEntity<SittingTimeResponseDTO> saveSittingTime(@Valid @RequestBody SittingTimeRequestDTO sittingTimeRequestDTO)
+            throws EntityNotFoundException, EntityCreationException {
         return new ResponseEntity<>(sittingTimeService.save(sittingTimeRequestDTO), HttpStatus.CREATED);
     }
 
@@ -33,12 +34,14 @@ public class SittingTimeController {
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")
-    public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurant(@PathVariable("restaurant-id") long restaurantId) throws EntityNotFoundException {
+    public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurant(@PathVariable("restaurant-id") long restaurantId)
+            throws EntityNotFoundException {
         return new ResponseEntity<>(sittingTimeService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}/week-day/{week-day}")
-    public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurantAndWeekDayAndStartTimeAfterNow(@PathVariable("restaurant-id") long restaurantId, @PathVariable("week-day") int weekDay) throws EntityNotFoundException, InvalidWeekDayException {
+    public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurantAndWeekDay(@PathVariable("restaurant-id") long restaurantId, @PathVariable("week-day") int weekDay)
+            throws EntityNotFoundException, InvalidWeekDayException {
         return new ResponseEntity<>(
                 sittingTimeService.findAllByRestaurantAndWeekDayAndStartTimeAfterNow(restaurantId, weekDay),
                 HttpStatus.OK
@@ -46,7 +49,8 @@ public class SittingTimeController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> removeSittingTime(@PathVariable long id) throws EntityNotFoundException {
+    public ResponseEntity<Void> removeSittingTime(@PathVariable long id)
+            throws EntityNotFoundException {
         sittingTimeService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

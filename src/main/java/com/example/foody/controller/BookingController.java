@@ -29,7 +29,8 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<BookingResponseDTO> saveBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) throws EntityNotFoundException, BookingNotAllowedException, EntityCreationException {
+    public ResponseEntity<BookingResponseDTO> saveBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO)
+            throws EntityNotFoundException, BookingNotAllowedException, EntityCreationException {
         return new ResponseEntity<>(bookingService.save(bookingRequestDTO), HttpStatus.CREATED);
     }
 
@@ -39,27 +40,32 @@ public class BookingController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BookingResponseDTO> getBookingById(@PathVariable long id) throws EntityNotFoundException, ForbiddenBookingAccessException {
+    public ResponseEntity<BookingResponseDTO> getBookingById(@PathVariable long id)
+            throws EntityNotFoundException, ForbiddenBookingAccessException {
         return new ResponseEntity<>(bookingService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "/user")
-    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@AuthenticationPrincipal User user) throws EntityNotFoundException {
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@AuthenticationPrincipal User user)
+            throws EntityNotFoundException {
         return new ResponseEntity<>(bookingService.findAllByUser(user.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")
-    public ResponseEntity<List<BookingResponseDTO>> getBookingsByRestaurant(@PathVariable("restaurant-id") long restaurantId) throws EntityNotFoundException, ForbiddenRestaurantAccessException {
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByRestaurant(@PathVariable("restaurant-id") long restaurantId)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException {
         return new ResponseEntity<>(bookingService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/cancel/{id}")
-    public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable long id) throws EntityNotFoundException, ForbiddenBookingAccessException, IllegalStateException, EntityEditException {
+    public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable long id)
+            throws EntityNotFoundException, ForbiddenBookingAccessException, IllegalStateException, EntityEditException {
         return new ResponseEntity<>(bookingService.cancelById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> removeBooking(@PathVariable long id) throws EntityNotFoundException, EntityDeletionException {
+    public ResponseEntity<Void> removeBooking(@PathVariable long id)
+            throws EntityNotFoundException, EntityDeletionException {
         bookingService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

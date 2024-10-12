@@ -24,7 +24,8 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public ResponseEntity<RestaurantResponseDTO> saveRestaurant(@Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO) throws EntityCreationException {
+    public ResponseEntity<RestaurantResponseDTO> saveRestaurant(@Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
+            throws EntityCreationException {
         return new ResponseEntity<>(restaurantService.save(restaurantRequestDTO), HttpStatus.CREATED);
     }
 
@@ -34,22 +35,26 @@ public class RestaurantController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable long id) throws EntityNotFoundException {
+    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable long id)
+            throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "/category/{category-id}")
-    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId) throws EntityNotFoundException {
+    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId)
+            throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findAllByCategory(categoryId), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/approve/{id}")
-    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@PathVariable long id) throws EntityNotFoundException, EntityEditException {
+    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@PathVariable long id)
+            throws EntityNotFoundException, EntityEditException {
         return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> removeEvent(@PathVariable long id) throws EntityNotFoundException, EntityDeletionException {
+    public ResponseEntity<Void> removeEvent(@PathVariable long id)
+            throws EntityNotFoundException, EntityDeletionException {
         restaurantService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
