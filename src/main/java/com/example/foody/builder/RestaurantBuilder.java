@@ -14,7 +14,7 @@ public interface RestaurantBuilder {
     RestaurantBuilder categories(List<Category> categories);
     RestaurantBuilder dishes(List<Dish> dishes);
     RestaurantBuilder reviews(List<Review> reviews);
-    RestaurantBuilder sittingTimes(List<SittingTime> sittingTimes);
+    RestaurantBuilder weekDayInfos(List<WeekDayInfo> weekDayInfos);
     RestaurantBuilder orders(List<Order> orders);
     RestaurantBuilder user(User user);
     RestaurantBuilder address(Address address);

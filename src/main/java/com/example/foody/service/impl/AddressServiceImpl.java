@@ -1,6 +1,5 @@
 package com.example.foody.service.impl;
 
-import com.example.foody.dto.request.AddressRequestDTO;
 import com.example.foody.dto.response.AddressResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -23,19 +22,6 @@ public class AddressServiceImpl implements AddressService {
     public AddressServiceImpl(AddressRepository addressRepository, AddressMapper addressMapper) {
         this.addressRepository = addressRepository;
         this.addressMapper = addressMapper;
-    }
-
-    @Override
-    public AddressResponseDTO save(AddressRequestDTO addressDTO) {
-        Address address = addressMapper.addressRequestDTOToAddress(addressDTO);
-
-        try {
-            address = addressRepository.save(address);
-        } catch (Exception e) {
-            throw new EntityCreationException("address");
-        }
-
-        return addressMapper.addressToAddressResponseDTO(address);
     }
 
     @Override

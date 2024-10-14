@@ -18,7 +18,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     private List<Category> categories = new ArrayList<>();
     private List<Dish> dishes = new ArrayList<>();
     private List<Review> reviews = new ArrayList<>();
-    private List<SittingTime> sittingTimes = new ArrayList<>();
+    private List<WeekDayInfo> weekDayInfos = new ArrayList<>();
     private List<Order> orders = new ArrayList<>();
     private User user;
     private Address address;
@@ -78,8 +78,8 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     }
 
     @Override
-    public RestaurantBuilder sittingTimes(List<SittingTime> sittingTimes) {
-        this.sittingTimes = sittingTimes;
+    public RestaurantBuilder weekDayInfos(List<WeekDayInfo> weekDayInfos) {
+        this.weekDayInfos = weekDayInfos;
         return this;
     }
 
@@ -113,7 +113,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 categories,
                 dishes,
                 reviews,
-                sittingTimes,
+                weekDayInfos,
                 orders,
                 user,
                 address

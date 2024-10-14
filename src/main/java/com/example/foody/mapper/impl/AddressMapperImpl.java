@@ -1,7 +1,6 @@
 package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.AddressBuilder;
-import com.example.foody.dto.request.AddressRequestDTO;
 import com.example.foody.dto.response.AddressResponseDTO;
 import com.example.foody.mapper.AddressMapper;
 import com.example.foody.model.Address;
@@ -36,23 +35,6 @@ public class AddressMapperImpl implements AddressMapper {
         addressResponseDTO.setPostalCode( address.getPostalCode() );
 
         return addressResponseDTO;
-    }
-
-    @Override
-    public Address addressRequestDTOToAddress(AddressRequestDTO addressRequestDTO) {
-        if ( addressRequestDTO == null ) {
-            return null;
-        }
-
-        Address address = addressBuilder
-                .city( addressRequestDTO.getCity() )
-                .province( addressRequestDTO.getProvince() )
-                .street( addressRequestDTO.getStreet() )
-                .civicNumber( addressRequestDTO.getCivicNumber() )
-                .postalCode( addressRequestDTO.getPostalCode() )
-                .build();
-
-        return address;
     }
 
     @Override
