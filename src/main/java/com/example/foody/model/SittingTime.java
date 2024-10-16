@@ -1,8 +1,6 @@
 package com.example.foody.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,29 +15,23 @@ public class SittingTime extends DefaultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "week_day", nullable = false)
-    @Min(1)
-    @Max(7)
-    private int weekDay;
+    @Column(name = "start", nullable = false)
+    private LocalTime start;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
+    @Column(name = "end", nullable = false)
+    private LocalTime end;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    @JoinColumn(name = "week_day_info_id")
+    private WeekDayInfo weekDayInfo;
 
     public SittingTime() {
     }
 
-    public SittingTime(long id, int weekDay, LocalTime startTime, LocalTime endTime, Restaurant restaurant) {
+    public SittingTime(long id, LocalTime start, LocalTime end, WeekDayInfo weekDayInfo) {
         this.id = id;
-        this.weekDay = weekDay;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.restaurant = restaurant;
+        this.start = start;
+        this.end = end;
+        this.weekDayInfo = weekDayInfo;
     }
 }

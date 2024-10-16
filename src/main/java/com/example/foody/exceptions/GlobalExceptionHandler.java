@@ -9,6 +9,7 @@ import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessExceptio
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
+import com.example.foody.exceptions.week_day_info.DuplicateWeekDayInfoException;
 import com.example.foody.utils.CustomHttpStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -50,7 +51,8 @@ public class GlobalExceptionHandler {
             BookingNotAllowedException.class,
             InvalidBookingWeekDayException.class,
             InvalidBookingRestaurantException.class,
-            InvalidBookingStateException.class
+            InvalidBookingStateException.class,
+            DuplicateWeekDayInfoException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());

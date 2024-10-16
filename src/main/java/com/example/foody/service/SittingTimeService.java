@@ -1,14 +1,15 @@
 package com.example.foody.service;
 
-import com.example.foody.dto.request.SittingTimeRequestDTO;
 import com.example.foody.dto.response.SittingTimeResponseDTO;
+import com.example.foody.model.SittingTime;
+import com.example.foody.model.WeekDayInfo;
 
 import java.util.List;
 
 public interface SittingTimeService {
-    SittingTimeResponseDTO save(SittingTimeRequestDTO sittingTimeDTO);
+    List<SittingTime> createForWeekDayInfo(WeekDayInfo weekDayInfo);
     List<SittingTimeResponseDTO> findAll();
-    List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId);
-    List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartTimeAfterNow(long restaurantId, int weekday);
+    List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay);
+    List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartAfterNow(long restaurantId, int weekDay);
     boolean remove(long id);
 }

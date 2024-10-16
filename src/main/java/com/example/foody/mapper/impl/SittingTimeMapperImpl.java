@@ -1,24 +1,16 @@
 package com.example.foody.mapper.impl;
 
-import com.example.foody.builder.SittingTimeBuilder;
-import com.example.foody.dto.request.SittingTimeRequestDTO;
 import com.example.foody.dto.response.SittingTimeResponseDTO;
 import com.example.foody.mapper.SittingTimeMapper;
-import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
+import com.example.foody.model.WeekDayInfo;
 import org.springframework.stereotype.Component;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class SittingTimeMapperImpl implements SittingTimeMapper {
-    private final SittingTimeBuilder sittingTimeBuilder;
-
-    public SittingTimeMapperImpl(SittingTimeBuilder sittingTimeBuilder) {
-        this.sittingTimeBuilder = sittingTimeBuilder;
-    }
 
     @Override
     public SittingTimeResponseDTO sittingTimeToSittingTimeResponseDTO(SittingTime sittingTime) {
@@ -28,28 +20,12 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
 
         SittingTimeResponseDTO sittingTimeResponseDTO = new SittingTimeResponseDTO();
 
-        sittingTimeResponseDTO.setRestaurantId( sittingTimeRestaurantId( sittingTime ) );
+        sittingTimeResponseDTO.setWeekDayInfoId( sittingTimeWeekDayInfoId( sittingTime ) );
         sittingTimeResponseDTO.setId( sittingTime.getId() );
-        sittingTimeResponseDTO.setWeekDay( sittingTime.getWeekDay() );
-        sittingTimeResponseDTO.setStartTime( sittingTime.getStartTime() );
-        sittingTimeResponseDTO.setEndTime( sittingTime.getEndTime() );
+        sittingTimeResponseDTO.setStart( sittingTime.getStart() );
+        sittingTimeResponseDTO.setEnd( sittingTime.getEnd() );
 
         return sittingTimeResponseDTO;
-    }
-
-    @Override
-    public SittingTime sittingTimeRequestDTOToSittingTime(SittingTimeRequestDTO sittingTimeRequestDTO) {
-        if ( sittingTimeRequestDTO == null ) {
-            return null;
-        }
-
-        SittingTime sittingTime = sittingTimeBuilder
-                .weekDay( sittingTimeRequestDTO.getWeekDay() )
-                .startTime( sittingTimeRequestDTO.getStartTime() )
-                .endTime( sittingTimeRequestDTO.getEndTime() )
-                .build();
-
-        return sittingTime;
     }
 
     @Override
@@ -66,15 +42,15 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
         return list;
     }
 
-    private long sittingTimeRestaurantId(SittingTime sittingTime) {
+    private long sittingTimeWeekDayInfoId(SittingTime sittingTime) {
         if ( sittingTime == null ) {
             return 0L;
         }
-        Restaurant restaurant = sittingTime.getRestaurant();
-        if ( restaurant == null ) {
+        WeekDayInfo weekDayInfo = sittingTime.getWeekDayInfo();
+        if ( weekDayInfo == null ) {
             return 0L;
         }
-        long id = restaurant.getId();
+        long id = weekDayInfo.getId();
         return id;
     }
 }

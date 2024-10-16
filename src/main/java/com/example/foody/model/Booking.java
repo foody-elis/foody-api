@@ -75,6 +75,7 @@ public class Booking extends DefaultEntity {
         setStatus(state);
     }
 
+    // todo make private?
     public void setStatus(BookingState state) {
         if (state != null) {
             this.status = BookingStatus.valueOf(state.getName());

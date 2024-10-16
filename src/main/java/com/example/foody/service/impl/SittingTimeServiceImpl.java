@@ -1,15 +1,14 @@
 package com.example.foody.service.impl;
 
-import com.example.foody.dto.request.SittingTimeRequestDTO;
+import com.example.foody.builder.SittingTimeBuilder;
 import com.example.foody.dto.response.SittingTimeResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
-import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.mapper.SittingTimeMapper;
-import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
+import com.example.foody.model.WeekDayInfo;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.service.SittingTimeService;
@@ -17,6 +16,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,42 +26,58 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     private final SittingTimeRepository sittingTimeRepository;
     private final RestaurantRepository restaurantRepository;
     private final SittingTimeMapper sittingTimeMapper;
+    private final SittingTimeBuilder sittingTimeBuilder;
 
-    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, SittingTimeMapper sittingTimeMapper) {
+    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, SittingTimeMapper sittingTimeMapper, SittingTimeBuilder sittingTimeBuilder) {
         this.sittingTimeRepository = sittingTimeRepository;
         this.restaurantRepository = restaurantRepository;
         this.sittingTimeMapper = sittingTimeMapper;
+        this.sittingTimeBuilder = sittingTimeBuilder;
     }
 
     @Override
-    public SittingTimeResponseDTO save(SittingTimeRequestDTO sittingTimeDTO) {
-        SittingTime sittingTime = sittingTimeMapper.sittingTimeRequestDTOToSittingTime(sittingTimeDTO);
+    public List<SittingTime> createForWeekDayInfo(WeekDayInfo weekDayInfo) {
+        List<SittingTime> sittingTimes = new ArrayList<>();
 
-        Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(sittingTimeDTO.getRestaurantId(), true)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", sittingTimeDTO.getRestaurantId()));
+        int minutes = weekDayInfo.getSittingTimeStep().getMinutes();
+        sittingTimes.addAll(generate(weekDayInfo, weekDayInfo.getStartLaunch(), weekDayInfo.getEndLaunch(), minutes));
+        sittingTimes.addAll(generate(weekDayInfo, weekDayInfo.getStartDinner(), weekDayInfo.getEndDinner(), minutes));
 
-        sittingTime.setRestaurant(restaurant);
+        return sittingTimes;
+    }
 
-        // Check if there are any overlapping sitting times
-        List<SittingTime> overlappingSittingTimes = sittingTimeRepository.findAllWithOverlappingTime(
-                sittingTime.getRestaurant().getId(),
-                sittingTime.getWeekDay(),
-                sittingTime.getStartTime(),
-                sittingTime.getEndTime()
-        );
+    private List<SittingTime> generate(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
+        List<SittingTime> sittingTimes = new ArrayList<>();
+        LocalTime currentStart = start;
+        LocalTime currentEnd;
 
-        if (!overlappingSittingTimes.isEmpty()) {
-            throw new SittingTimeOverlappingException(sittingTimeDTO.getStartTime(), sittingTimeDTO.getEndTime());
+        // Check if currentStart + minutes <= end
+        while (currentStart.plusMinutes(minutes).isBefore(end) || currentStart.plusMinutes(minutes).equals(end)) {
+            currentEnd = currentStart.plusMinutes(minutes);
+
+            SittingTime sittingTime = sittingTimeBuilder
+                    .start(currentStart)
+                    .end(currentEnd)
+                    .weekDayInfo(weekDayInfo)
+                    .build();
+
+            // Save the sitting time
+            sittingTimes.add(save(sittingTime));
+
+            currentStart = currentEnd;
         }
 
+        return sittingTimes;
+    }
+
+    private SittingTime save(SittingTime sittingTime) {
         try {
             sittingTime = sittingTimeRepository.save(sittingTime);
         } catch (Exception e) {
             throw new EntityCreationException("sitting time");
         }
 
-        return sittingTimeMapper.sittingTimeToSittingTimeResponseDTO(sittingTime);
+        return sittingTime;
     }
 
     @Override
@@ -70,27 +87,29 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     }
 
     @Override
-    public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
+    public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay) {
         restaurantRepository
                 .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
+        if (weekDay < 1 || weekDay > 7) throw new InvalidWeekDayException(weekDay);
+
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantOrderByStartTimeAsc(restaurantId);
+                .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayOrderByStart(restaurantId, weekDay);
 
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
-    public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartTimeAfterNow(long restaurantId, int weeDay) {
+    public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartAfterNow(long restaurantId, int weekDay) {
         restaurantRepository
                 .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        if (weeDay < 1 || weeDay > 7) throw new InvalidWeekDayException(weeDay);
+        if (weekDay < 1 || weekDay > 7) throw new InvalidWeekDayException(weekDay);
 
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTimeAsc(restaurantId, weeDay);
+                .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayAndStartAfterNowOrderByStart(restaurantId, weekDay);
 
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }

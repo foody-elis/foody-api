@@ -11,8 +11,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class SittingTimeResponseDTO {
     private long id;
-    private int weekDay;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private long restaurantId;
+    private LocalTime start;
+    private LocalTime end;
+    private long weekDayInfoId;
 }

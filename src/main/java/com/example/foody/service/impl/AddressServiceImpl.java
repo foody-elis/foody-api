@@ -1,10 +1,8 @@
 package com.example.foody.service.impl;
 
-import com.example.foody.dto.response.AddressResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
-import com.example.foody.mapper.AddressMapper;
 import com.example.foody.model.Address;
 import com.example.foody.repository.AddressRepository;
 import com.example.foody.service.AddressService;
@@ -17,11 +15,9 @@ import java.time.LocalDateTime;
 @Transactional(rollbackOn = Exception.class)
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
-    private final AddressMapper addressMapper;
 
-    public AddressServiceImpl(AddressRepository addressRepository, AddressMapper addressMapper) {
+    public AddressServiceImpl(AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
-        this.addressMapper = addressMapper;
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.example.foody.model.SittingTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,19 +13,12 @@ public interface SittingTimeRepository extends JpaRepository<SittingTime, Long> 
     Optional<SittingTime> findByIdAndDeletedAtIsNull(long id);
 
     @Query("select s from SittingTime s " +
-            "where s.deletedAt is null and s.restaurant.id = :restaurantId " +
-            "order by s.startTime")
-    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantOrderByStartTimeAsc(long restaurantId);
+            "where s.deletedAt is null and s.weekDayInfo.restaurant.id = :restaurantId and s.weekDayInfo.weekDay = :weekDay " +
+            "order by s.start")
+    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayOrderByStart(long restaurantId, int weekDay);
 
     @Query("select s from SittingTime s " +
-            "where s.deletedAt is null and s.restaurant.id = :restaurantId and s.weekDay = :weekday and s.startTime > current_time " +
-            "order by s.startTime")
-    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantAndWeekDayAndStartTimeAfterNowOrderByStartTimeAsc(long restaurantId, int weekday);
-
-    @Query("select s from SittingTime s " +
-            "where s.deletedAt is null and s.restaurant.id = :restaurantId and s.weekDay = :weekDay and " +
-            "((s.startTime = :startTime and s.endTime = :startTime) or " +
-            "(s.startTime = :endTime and s.endTime = :endTime) or " +
-            "(s.startTime = :startTime and s.endTime = :endTime))")
-    List<SittingTime> findAllWithOverlappingTime(long restaurantId, int weekDay, LocalTime startTime, LocalTime endTime);
+            "where s.deletedAt is null and s.weekDayInfo.restaurant.id = :restaurantId and s.weekDayInfo.weekDay = :weekDay and s.start > current_timestamp " +
+            "order by s.start")
+    List<SittingTime> findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayAndStartAfterNowOrderByStart(long restaurantId, int weekDay);
 }

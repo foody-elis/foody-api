@@ -16,6 +16,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.AddressService;
 import com.example.foody.service.CategoryService;
 import com.example.foody.service.RestaurantService;
+import com.example.foody.service.WeekDayInfoService;
 import com.example.foody.utils.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,15 +32,17 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
     private final RestaurantMapper restaurantMapper;
-    private final AddressService addressService;
     private final CategoryService categoryService;
+    private final WeekDayInfoService weekDayInfoService;
+    private final AddressService addressService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, AddressService addressService, CategoryService categoryService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, AddressService addressService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
-        this.addressService = addressService;
         this.categoryService = categoryService;
+        this.weekDayInfoService = weekDayInfoService;
+        this.addressService = addressService;
     }
 
     @Override
@@ -48,21 +51,21 @@ public class RestaurantServiceImpl implements RestaurantService {
         Address address = restaurant.getAddress();
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // I save the associated address
+        // Save the associated address
         address.setRestaurant(restaurant);
         address = addressService.save(address);
 
         List<Category> categories = new ArrayList<>();
 
-        // I add the restaurant to the categories
+        // Add the restaurant to the categories
         for (long categoryId : restaurantDTO.getCategories()) {
             Category category = categoryRepository.findById(categoryId).orElse(null);
 
             if (category != null) {
-                // I add the restaurant to the category
+                // Add the restaurant to the category
                 category = categoryService.addRestaurant(category.getId(), restaurant);
 
-                // I add the category to the restaurant
+                // Add the category to the restaurant
                 categories.add(category);
             }
         }
@@ -86,10 +89,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // I return all the restaurants, approved or not
+            // Return all the restaurants, approved or not
             restaurants = restaurantRepository.findAllByDeletedAtIsNull();
         } else {
-            // I return only the approved restaurants
+            // Return only the approved restaurants
             restaurants = restaurantRepository.findAllByDeletedAtIsNullAndApproved(true);
         }
 
@@ -102,12 +105,12 @@ public class RestaurantServiceImpl implements RestaurantService {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // I return a restaurant by id, approved or not
+            // Return a restaurant by id, approved or not
             restaurant = restaurantRepository
                     .findByIdAndDeletedAtIsNull(id)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         } else {
-            // I return a restaurant by id, only if it is approved
+            // Return a restaurant by id, only if it is approved
             restaurant = restaurantRepository
                     .findByIdAndDeletedAtIsNullAndApproved(id, true)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
@@ -118,17 +121,18 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantResponseDTO> findAllByCategory(long categoryId) {
-        categoryRepository.findById(categoryId)
+        categoryRepository
+                .findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", categoryId));
 
         List<Restaurant> restaurants;
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // I return all the restaurants, approved or not
+            // Return all the restaurants, approved or not
             restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNull(categoryId);
         } else {
-            // I return only the approved restaurants
+            // Return only the approved restaurants
             restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
         }
 
@@ -162,13 +166,19 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         restaurant.setDeletedAt(LocalDateTime.now());
 
-        addressService.remove(restaurant.getAddress().getId());
-
-        // I remove the restaurant from the categories
+        // Remove the restaurant from the categories
         restaurant.getCategories().forEach(
                 category -> category.getRestaurants().remove(restaurant)
         );
         categoryRepository.saveAll(restaurant.getCategories());
+
+        // Remove the associated week day infos
+        restaurant.getWeekDayInfos().forEach(
+                weekDayInfo -> weekDayInfoService.remove(weekDayInfo.getId())
+        );
+
+        // Remove the associated address
+        addressService.remove(restaurant.getAddress().getId());
 
         try {
             restaurantRepository.save(restaurant);
