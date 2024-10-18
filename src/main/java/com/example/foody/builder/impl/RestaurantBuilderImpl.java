@@ -20,6 +20,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     private List<Review> reviews = new ArrayList<>();
     private List<WeekDayInfo> weekDayInfos = new ArrayList<>();
     private List<Order> orders = new ArrayList<>();
+    private List<Booking> bookings = new ArrayList<>();
     private User user;
     private Address address;
 
@@ -90,6 +91,12 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     }
 
     @Override
+    public RestaurantBuilder bookings(List<Booking> bookings) {
+        this.bookings = bookings;
+        return this;
+    }
+
+    @Override
     public RestaurantBuilder user(User user) {
         this.user = user;
         return this;
@@ -115,6 +122,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 reviews,
                 weekDayInfos,
                 orders,
+                bookings,
                 user,
                 address
         );

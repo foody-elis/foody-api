@@ -13,10 +13,7 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.service.AddressService;
-import com.example.foody.service.CategoryService;
-import com.example.foody.service.RestaurantService;
-import com.example.foody.service.WeekDayInfoService;
+import com.example.foody.service.*;
 import com.example.foody.utils.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,15 +31,19 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final CategoryService categoryService;
     private final WeekDayInfoService weekDayInfoService;
+    private final BookingService bookingService;
     private final AddressService addressService;
+    private final DishService dishService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, AddressService addressService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
         this.categoryService = categoryService;
         this.weekDayInfoService = weekDayInfoService;
+        this.bookingService = bookingService;
         this.addressService = addressService;
+        this.dishService = dishService;
     }
 
     @Override
@@ -177,8 +178,20 @@ public class RestaurantServiceImpl implements RestaurantService {
                 weekDayInfo -> weekDayInfoService.remove(weekDayInfo.getId())
         );
 
+        // Remove the associated bookings
+        restaurant.getBookings().forEach(
+                booking -> bookingService.remove(booking.getId())
+        );
+
+        // Remove the associated dishes
+        restaurant.getDishes().forEach(
+                dish -> dishService.remove(dish.getId())
+        );
+
         // Remove the associated address
         addressService.remove(restaurant.getAddress().getId());
+
+        // todo remove the associated orders and reviews
 
         try {
             restaurantRepository.save(restaurant);

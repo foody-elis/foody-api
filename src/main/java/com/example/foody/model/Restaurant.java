@@ -54,6 +54,9 @@ public class Restaurant extends DefaultEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Booking> bookings = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -65,7 +68,7 @@ public class Restaurant extends DefaultEntity {
     public Restaurant() {
     }
 
-    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, User user, Address address) {
+    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, User user, Address address) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -77,6 +80,7 @@ public class Restaurant extends DefaultEntity {
         this.reviews = reviews;
         this.weekDayInfos = weekDayInfos;
         this.orders = orders;
+        this.bookings = bookings;
         this.user = user;
         this.address = address;
     }

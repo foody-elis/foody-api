@@ -112,6 +112,8 @@ public class DishServiceImpl implements DishService {
         );
         orderRepository.saveAll(dish.getOrders());
 
+        // todo remove the associated reviews
+
         try {
             dishRepository.save(dish);
         } catch (Exception e) {
