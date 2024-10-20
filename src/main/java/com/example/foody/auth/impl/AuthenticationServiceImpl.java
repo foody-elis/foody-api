@@ -11,7 +11,7 @@ import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.mapper.UserMapper;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.utils.Role;
@@ -20,7 +20,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserResponseDTO register(UserRequestDTO userRequestDTO) {
         User user = userMapper.userRequestDTOToUser(userRequestDTO);
 
-        // encode the password
+        // Encode the password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         try {
@@ -111,11 +110,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String accessToken = jwtService.generateToken(user.getEmail());
 
         return new TokenDTO(accessToken);
-    }
-
-    public UserResponseDTO getLoggedUser() {
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userMapper.userToUserResponseDTO(principal);
     }
 
     // todo implement the refresh token mechanism

@@ -1,6 +1,9 @@
 package com.example.foody.builder;
 
 import com.example.foody.model.*;
+import com.example.foody.model.user.CookUser;
+import com.example.foody.model.user.RestaurateurUser;
+import com.example.foody.model.user.WaiterUser;
 
 import java.util.List;
 
@@ -17,7 +20,9 @@ public interface RestaurantBuilder {
     RestaurantBuilder weekDayInfos(List<WeekDayInfo> weekDayInfos);
     RestaurantBuilder orders(List<Order> orders);
     RestaurantBuilder bookings(List<Booking> bookings);
-    RestaurantBuilder user(User user);
     RestaurantBuilder address(Address address);
+    RestaurantBuilder restaurateur(RestaurateurUser restaurateur);
+    RestaurantBuilder cooks(List<CookUser> cooks);
+    RestaurantBuilder waiters(List<WaiterUser> waiters);
     Restaurant build();
 }

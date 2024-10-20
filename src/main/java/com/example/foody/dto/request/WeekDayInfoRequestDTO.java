@@ -44,7 +44,7 @@ public class WeekDayInfoRequestDTO {
     @Positive(message = "restaurantId cannot be a negative number")
     private Long restaurantId;
 
-    // logical properties for validation
+    // Logical properties for validation
 
     @AssertTrue(message = "endLaunch must be after startLaunch")
     @JsonIgnore

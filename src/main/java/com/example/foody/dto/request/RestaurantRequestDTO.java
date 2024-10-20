@@ -31,6 +31,8 @@ public class RestaurantRequestDTO {
     @Positive(message = "seats cannot be a negative number")
     private Integer seats;
 
+    private List<Long> categories = new ArrayList<>();
+
     @NotBlank(message = "city cannot be blank")
     @Size(min = 1, max = 20, message = "city cannot be less than 1 character or more than 20 characters long")
     private String city;
@@ -50,6 +52,4 @@ public class RestaurantRequestDTO {
     @NotBlank(message = "postalCode cannot be blank")
     @Size(min = 1, max = 5, message = "postalCode cannot be less than 1 character or more than 5 characters long")
     private String postalCode;
-
-    private List<Long> categories = new ArrayList<>();
 }

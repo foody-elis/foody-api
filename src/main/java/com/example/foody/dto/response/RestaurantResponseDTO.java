@@ -17,11 +17,11 @@ public class RestaurantResponseDTO {
     private String phoneNumber;
     private int seats;
     private boolean approved;
-    private long userId;
+    private List<Long> categories = new ArrayList<>();
     private String city;
     private String province;
     private String street;
     private String civicNumber;
     private String postalCode;
-    private List<Long> categories = new ArrayList<>();
+    private long restaurateurId;
 }

@@ -1,6 +1,6 @@
 package com.example.foody.repository;
 
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

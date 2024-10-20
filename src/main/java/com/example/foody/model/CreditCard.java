@@ -1,5 +1,6 @@
 package com.example.foody.model;
 
+import com.example.foody.model.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

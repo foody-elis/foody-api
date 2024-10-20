@@ -2,6 +2,7 @@ package com.example.foody.builder.impl;
 
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.model.*;
+import com.example.foody.model.user.User;
 import com.example.foody.utils.Role;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +23,6 @@ public class UserBuilderImpl implements UserBuilder {
     private Role role;
     private boolean active = true;
     private CreditCard creditCard;
-    private List<Review> reviews = new ArrayList<>();
-    private List<Booking> bookings = new ArrayList<>();
-    private List<Restaurant> restaurants = new ArrayList<>();
 
     @Override
     public UserBuilder id(long id) {
@@ -93,24 +91,6 @@ public class UserBuilderImpl implements UserBuilder {
     }
 
     @Override
-    public UserBuilder reviews(List<Review> reviews) {
-        this.reviews = reviews;
-        return this;
-    }
-
-    @Override
-    public UserBuilder bookings(List<Booking> bookings) {
-        this.bookings = bookings;
-        return this;
-    }
-
-    @Override
-    public UserBuilder restaurants(List<Restaurant> restaurants) {
-        this.restaurants = restaurants;
-        return this;
-    }
-
-    @Override
     public User build() {
         return new User(
                 id,
@@ -123,10 +103,7 @@ public class UserBuilderImpl implements UserBuilder {
                 avatar,
                 role,
                 active,
-                creditCard,
-                reviews,
-                bookings,
-                restaurants
+                creditCard
         );
     }
 }

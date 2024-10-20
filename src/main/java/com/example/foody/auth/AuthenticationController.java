@@ -23,37 +23,38 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register-moderator")
-    public ResponseEntity<UserResponseDTO> registerModerator(@Valid @RequestBody UserRequestDTO userRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<UserResponseDTO> registerModerator(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(authenticationServiceImpl.registerModerator(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/register-restaurateur")
-    public ResponseEntity<UserResponseDTO> registerRestaurateur(@Valid @RequestBody UserRequestDTO userRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<UserResponseDTO> registerRestaurateur(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(authenticationServiceImpl.registerRestaurateur(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/register-cook")
-    public ResponseEntity<UserResponseDTO> registerCook(@Valid @RequestBody UserRequestDTO userRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<UserResponseDTO> registerCook(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(authenticationServiceImpl.registerCook(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/register-waiter")
-    public ResponseEntity<UserResponseDTO> registerWaiter(@Valid @RequestBody UserRequestDTO userRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<UserResponseDTO> registerWaiter(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(authenticationServiceImpl.registerWaiter(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/register-customer")
-    public ResponseEntity<UserResponseDTO> registerCustomer(@Valid @RequestBody UserRequestDTO userRequestDTO) throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<UserResponseDTO> registerCustomer(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException {
         return new ResponseEntity<>(authenticationServiceImpl.registerCustomer(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> authenticateUser(@Valid @RequestBody UserLoginDTO userLoginDTO) throws EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
+    public ResponseEntity<TokenDTO> authenticateUser(@Valid @RequestBody UserLoginDTO userLoginDTO)
+            throws EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
         return new ResponseEntity<>(authenticationServiceImpl.authenticate(userLoginDTO), HttpStatus.OK);
-    }
-
-    @GetMapping("/logged-user")
-    public ResponseEntity<UserResponseDTO> getLoggedUser() {
-        return new ResponseEntity<>(authenticationServiceImpl.getLoggedUser(), HttpStatus.OK);
     }
 }

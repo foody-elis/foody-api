@@ -42,8 +42,8 @@ public class WeekDayInfo extends DefaultEntity {
     @Column(name = "end_dinner", nullable = false)
     private LocalTime endDinner;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "sitting_time_step", nullable = false)
+    @Enumerated(EnumType.STRING)
     private SittingTimeStep sittingTimeStep;
 
     @ManyToOne

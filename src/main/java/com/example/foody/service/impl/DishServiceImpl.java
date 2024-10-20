@@ -9,7 +9,7 @@ import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessExceptio
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.DishRepository;
 import com.example.foody.repository.OrderRepository;
 import com.example.foody.repository.RestaurantRepository;
@@ -49,7 +49,7 @@ public class DishServiceImpl implements DishService {
         // Check if the user is the owner of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (restaurant.getUser().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
+        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenRestaurantAccessException();
         }
 
@@ -100,7 +100,7 @@ public class DishServiceImpl implements DishService {
         // Check if the user is the owner of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (dish.getRestaurant().getUser().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
+        if (dish.getRestaurant().getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenRestaurantAccessException();
         }
 

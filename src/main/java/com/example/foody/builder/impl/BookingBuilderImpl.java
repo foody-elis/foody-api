@@ -4,7 +4,7 @@ import com.example.foody.builder.BookingBuilder;
 import com.example.foody.model.Booking;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
-import com.example.foody.model.User;
+import com.example.foody.model.user.CustomerUser;
 import com.example.foody.state.booking.BookingState;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class BookingBuilderImpl implements BookingBuilder {
     private LocalDate date;
     private int seats;
     private SittingTime sittingTime;
-    private User user;
+    private CustomerUser customer;
     private Restaurant restaurant;
     private BookingState state;
 
@@ -45,8 +45,8 @@ public class BookingBuilderImpl implements BookingBuilder {
     }
 
     @Override
-    public BookingBuilder user(User user) {
-        this.user = user;
+    public BookingBuilder customer(CustomerUser customer) {
+        this.customer = customer;
         return this;
     }
 
@@ -64,6 +64,6 @@ public class BookingBuilderImpl implements BookingBuilder {
 
     @Override
     public Booking build() {
-        return new Booking(id, date, seats, sittingTime, user, restaurant, state);
+        return new Booking(id, date, seats, sittingTime, customer, restaurant, state);
     }
 }

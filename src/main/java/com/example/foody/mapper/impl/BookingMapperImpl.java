@@ -7,7 +7,7 @@ import com.example.foody.mapper.BookingMapper;
 import com.example.foody.model.Booking;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class BookingMapperImpl implements BookingMapper {
         BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
 
         bookingResponseDTO.setSittingTimeId( bookingSittingTimeId( booking ) );
-        bookingResponseDTO.setUserId( bookingUserId( booking ) );
+        bookingResponseDTO.setCustomerId( bookingCustomerId( booking ) );
         bookingResponseDTO.setRestaurantId( bookingRestaurantId( booking ) );
         bookingResponseDTO.setId( booking.getId() );
         bookingResponseDTO.setDate( booking.getDate() );
@@ -82,11 +82,11 @@ public class BookingMapperImpl implements BookingMapper {
         return id;
     }
 
-    private long bookingUserId(Booking booking) {
+    private long bookingCustomerId(Booking booking) {
         if ( booking == null ) {
             return 0L;
         }
-        User user = booking.getUser();
+        User user = booking.getCustomer();
         if ( user == null ) {
             return 0L;
         }

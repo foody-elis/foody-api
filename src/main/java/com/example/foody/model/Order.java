@@ -1,5 +1,6 @@
 package com.example.foody.model;
 
+import com.example.foody.model.user.User;
 import com.example.foody.state.order.*;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -39,8 +40,8 @@ public class Order extends DefaultEntity {
     @Transient
     private OrderState state;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     public Order() {
@@ -72,7 +73,8 @@ public class Order extends DefaultEntity {
         setStatus(state);
     }
 
-    public void setStatus(OrderState state) {
+    // todo make private?
+    private void setStatus(OrderState state) {
         if (state != null) {
             this.status = OrderStatus.valueOf(state.getName());
         }

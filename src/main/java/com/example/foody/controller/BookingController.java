@@ -9,7 +9,7 @@ import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import com.example.foody.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

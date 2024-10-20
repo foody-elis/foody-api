@@ -10,7 +10,8 @@ import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
 import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.User;
+import com.example.foody.model.user.RestaurateurUser;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.*;
@@ -50,7 +51,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponseDTO save(RestaurantRequestDTO restaurantDTO) {
         Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
         Address address = restaurant.getAddress();
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // Save the associated address
         address.setRestaurant(restaurant);
@@ -72,8 +73,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         restaurant.setAddress(address);
-        restaurant.setUser(principal);
         restaurant.setCategories(categories);
+        restaurant.setRestaurateur(principal);
 
         try {
             restaurant = restaurantRepository.save(restaurant);
@@ -191,7 +192,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         // Remove the associated address
         addressService.remove(restaurant.getAddress().getId());
 
-        // todo remove the associated orders and reviews
+        // todo remove the associated orders, reviews, owner, employees
 
         try {
             restaurantRepository.save(restaurant);

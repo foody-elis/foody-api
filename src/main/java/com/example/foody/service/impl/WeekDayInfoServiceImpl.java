@@ -8,7 +8,7 @@ import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessExceptio
 import com.example.foody.exceptions.week_day_info.DuplicateWeekDayInfoException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import com.example.foody.model.WeekDayInfo;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.WeekDayInfoRepository;
@@ -48,7 +48,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         // Check if the principal is the owner of the week day info's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (restaurant.getUser().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
+        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenRestaurantAccessException();
         }
 

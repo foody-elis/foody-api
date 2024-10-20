@@ -14,7 +14,7 @@ public class BookingResponseDTO {
     private LocalDate date;
     private int seats;
     private long sittingTimeId;
-    private long userId;
+    private long customerId;
     private long restaurantId;
     private String status;
 }

@@ -1,5 +1,8 @@
 package com.example.foody.model;
 
+import com.example.foody.model.user.CookUser;
+import com.example.foody.model.user.RestaurateurUser;
+import com.example.foody.model.user.WaiterUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
@@ -15,23 +18,23 @@ import java.util.List;
 public class Restaurant extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    protected long id;
 
     @Column(name = "name", length = 100, nullable = false)
-    private String name;
+    protected String name;
 
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
-    private String description;
+    protected String description;
 
     @Column(name = "phone_number", length = 16, nullable = false)
-    private String phoneNumber;
+    protected String phoneNumber;
 
     @Column(name = "seats", nullable = false)
     @Min(0)
-    private int seats;
+    protected int seats;
 
     @Column(name = "approved", nullable = false)
-    private boolean approved;
+    protected boolean approved;
 
     @ManyToMany
     @JoinTable(
@@ -39,36 +42,42 @@ public class Restaurant extends DefaultEntity {
             joinColumns = @JoinColumn(name = "restaurant_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    private List<Category> categories = new ArrayList<>();
+    protected List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Dish> dishes = new ArrayList<>();
+    protected List<Dish> dishes = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    protected List<Review> reviews = new ArrayList<>();
 
     // This is a OneToSeven relationship, a record for each day of the week
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<WeekDayInfo> weekDayInfos = new ArrayList<>();
+    protected List<WeekDayInfo> weekDayInfos = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Order> orders = new ArrayList<>();
+    protected List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Booking> bookings = new ArrayList<>();
+    protected List<Booking> bookings = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "address_id")
-    private Address address;
+    protected Address address;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "restaurateur_id")
+    protected RestaurateurUser restaurateur;
+
+    @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    protected List<CookUser> cooks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    protected List<WaiterUser> waiters = new ArrayList<>();
 
     public Restaurant() {
     }
 
-    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, User user, Address address) {
+    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<CookUser> cooks, List<WaiterUser> waiters) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -81,7 +90,9 @@ public class Restaurant extends DefaultEntity {
         this.weekDayInfos = weekDayInfos;
         this.orders = orders;
         this.bookings = bookings;
-        this.user = user;
         this.address = address;
+        this.restaurateur = restaurateur;
+        this.cooks = cooks;
+        this.waiters = waiters;
     }
 }

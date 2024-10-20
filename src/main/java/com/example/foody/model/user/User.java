@@ -1,5 +1,6 @@
-package com.example.foody.model;
+package com.example.foody.model.user;
 
+import com.example.foody.model.*;
 import com.example.foody.utils.Role;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,13 +10,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
+@Inheritance
+@DiscriminatorColumn(name = "role")
 @Table(name = "users")
 public class User extends DefaultEntity implements UserDetails {
     @Id
@@ -43,30 +45,21 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "avatar")
     private String avatar;
 
+    @Column(name = "role", nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
     private Role role;
 
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "credit_card_id")
     private CreditCard creditCard;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Booking> bookings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Restaurant> restaurants = new ArrayList<>();
 
     public User() {
     }
 
-    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard, List<Review> reviews, List<Booking> bookings, List<Restaurant> restaurants) {
+    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -78,14 +71,11 @@ public class User extends DefaultEntity implements UserDetails {
         this.role = role;
         this.active = active;
         this.creditCard = creditCard;
-        this.reviews = reviews;
-        this.bookings = bookings;
-        this.restaurants = restaurants;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority(this.role.getRole()));
     }
 
     @Override

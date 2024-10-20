@@ -11,5 +11,4 @@ public interface AuthenticationService {
     UserResponseDTO registerWaiter(UserRequestDTO userRequestDTO);
     UserResponseDTO registerCustomer(UserRequestDTO userRequestDTO);
     TokenDTO authenticate(UserLoginDTO userLoginDTO);
-    UserResponseDTO getLoggedUser(); // todo remove
 }

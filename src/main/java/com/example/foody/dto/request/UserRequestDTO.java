@@ -42,7 +42,7 @@ public class UserRequestDTO {
     @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
     private String avatar;
 
-    // the role is set by the AuthenticationService during the registration process
+    // The role is set by the AuthenticationService during the registration process
     @Null(message = "role cannot be specified")
     private String role;
 }

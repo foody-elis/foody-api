@@ -1,5 +1,6 @@
 package com.example.foody.model;
 
+import com.example.foody.model.user.CustomerUser;
 import com.example.foody.state.booking.ActiveState;
 import com.example.foody.state.booking.BookingState;
 import com.example.foody.state.booking.BookingStatus;
@@ -32,8 +33,8 @@ public class Booking extends DefaultEntity {
     private SittingTime sittingTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private CustomerUser customer;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
@@ -42,19 +43,19 @@ public class Booking extends DefaultEntity {
     @Transient
     private BookingState state;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     public Booking() {
     }
 
-    public Booking(long id, LocalDate date, int seats, SittingTime sittingTime, User user, Restaurant restaurant, BookingState state) {
+    public Booking(long id, LocalDate date, int seats, SittingTime sittingTime, CustomerUser customer, Restaurant restaurant, BookingState state) {
         this.id = id;
         this.date = date;
         this.seats = seats;
         this.sittingTime = sittingTime;
-        this.user = user;
+        this.customer = customer;
         this.restaurant = restaurant;
         this.state = state;
         setStatus(state);

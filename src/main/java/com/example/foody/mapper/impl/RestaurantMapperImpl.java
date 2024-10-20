@@ -8,7 +8,7 @@ import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
 import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
 
         RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO();
 
-        restaurantResponseDTO.setUserId( restaurantUserId( restaurant ) );
+        restaurantResponseDTO.setRestaurateurId( restaurantRestaurateurId( restaurant ) );
         restaurantResponseDTO.setCity( restaurantAddressCity( restaurant ) );
         restaurantResponseDTO.setProvince( restaurantAddressProvince( restaurant ) );
         restaurantResponseDTO.setStreet( restaurantAddressStreet( restaurant ) );
@@ -92,15 +92,15 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return list;
     }
 
-    private long restaurantUserId(Restaurant restaurant) {
+    private long restaurantRestaurateurId(Restaurant restaurant) {
         if ( restaurant == null ) {
             return 0L;
         }
-        User user = restaurant.getUser();
-        if ( user == null ) {
+        User owner = restaurant.getRestaurateur();
+        if ( owner == null ) {
             return 0L;
         }
-        long id = user.getId();
+        long id = owner.getId();
         return id;
     }
 

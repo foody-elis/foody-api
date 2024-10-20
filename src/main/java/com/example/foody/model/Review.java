@@ -1,5 +1,7 @@
 package com.example.foody.model;
 
+import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -27,8 +29,8 @@ public class Review extends DefaultEntity {
     private int rating;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private CustomerUser customer;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")

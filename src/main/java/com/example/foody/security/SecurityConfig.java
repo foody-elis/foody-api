@@ -81,11 +81,11 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
+                        // todo change "Role.ADMIN.name()" and use Role.Constants.ADMIN ?
                         .requestMatchers(POST, "/api/v1/auth/register-moderator").hasRole(Role.ADMIN.name())
                         .requestMatchers(POST, "/api/v1/auth/register-restaurateur").hasRole(Role.MODERATOR.name())
                         .requestMatchers(POST, "/api/v1/auth/register-cook").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers(POST, "/api/v1/auth/register-waiter").hasRole(Role.RESTAURATEUR.name())
-                        .requestMatchers(GET, "/api/v1/auth/logged-user").authenticated() // todo remove
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())

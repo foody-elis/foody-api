@@ -2,7 +2,7 @@ package com.example.foody.security;
 
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.user.UserNotActiveException;
-import com.example.foody.model.User;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

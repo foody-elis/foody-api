@@ -5,7 +5,8 @@ import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.CreditCard;
-import com.example.foody.model.User;
+import com.example.foody.model.Restaurant;
+import com.example.foody.model.user.User;
 import com.example.foody.utils.Role;
 import org.springframework.stereotype.Component;
 
