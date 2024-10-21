@@ -9,7 +9,7 @@ public interface BookingService {
     BookingResponseDTO save(BookingRequestDTO bookingDTO);
     List<BookingResponseDTO> findAll();
     BookingResponseDTO findById(long id);
-    List<BookingResponseDTO> findAllByUser(long userId);
+    List<BookingResponseDTO> findAllByCustomer(long customerId);
     List<BookingResponseDTO> findAllByRestaurant(long restaurantId);
     BookingResponseDTO cancelById(long id);
     boolean remove(long id);

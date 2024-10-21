@@ -9,7 +9,7 @@ import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
-import com.example.foody.model.user.User;
+import com.example.foody.model.user.CustomerUser;
 import com.example.foody.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,10 +45,10 @@ public class BookingController {
         return new ResponseEntity<>(bookingService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/user")
-    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUser(@AuthenticationPrincipal User user)
+    @GetMapping(path = "/customer")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByCustomer(@AuthenticationPrincipal CustomerUser customer)
             throws EntityNotFoundException {
-        return new ResponseEntity<>(bookingService.findAllByUser(user.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(bookingService.findAllByCustomer(customer.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")

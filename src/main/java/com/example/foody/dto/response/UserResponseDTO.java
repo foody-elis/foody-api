@@ -20,5 +20,4 @@ public class UserResponseDTO {
     private String avatar;
     private String role;
     private boolean active;
-    private Long creditCardId; // may be null
 }

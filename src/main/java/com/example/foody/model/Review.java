@@ -1,7 +1,6 @@
 package com.example.foody.model;
 
 import com.example.foody.model.user.CustomerUser;
-import com.example.foody.model.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

@@ -2,6 +2,7 @@ package com.example.foody.builder;
 
 import com.example.foody.model.*;
 import com.example.foody.model.user.CookUser;
+import com.example.foody.model.user.EmployeeUser;
 import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.model.user.WaiterUser;
 
@@ -22,7 +23,6 @@ public interface RestaurantBuilder {
     RestaurantBuilder bookings(List<Booking> bookings);
     RestaurantBuilder address(Address address);
     RestaurantBuilder restaurateur(RestaurateurUser restaurateur);
-    RestaurantBuilder cooks(List<CookUser> cooks);
-    RestaurantBuilder waiters(List<WaiterUser> waiters);
+    RestaurantBuilder employees(List<EmployeeUser> employees);
     Restaurant build();
 }

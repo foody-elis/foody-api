@@ -1,6 +1,5 @@
 package com.example.foody.builder;
 
-import com.example.foody.model.*;
 import com.example.foody.model.user.User;
 import com.example.foody.utils.Role;
 
@@ -17,6 +16,5 @@ public interface UserBuilder {
     UserBuilder avatar(String avatar);
     UserBuilder role(Role role);
     UserBuilder active(boolean active);
-    UserBuilder creditCard(CreditCard creditCard);
     User build();
 }

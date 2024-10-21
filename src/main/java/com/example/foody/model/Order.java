@@ -1,6 +1,6 @@
 package com.example.foody.model;
 
-import com.example.foody.model.user.User;
+import com.example.foody.model.user.CustomerUser;
 import com.example.foody.state.order.*;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -30,8 +30,8 @@ public class Order extends DefaultEntity {
     private List<Dish> dishes = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private CustomerUser customer;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
@@ -47,11 +47,11 @@ public class Order extends DefaultEntity {
     public Order() {
     }
 
-    public Order(long id, String tableNumber, List<Dish> dishes, User user, Restaurant restaurant, OrderState state) {
+    public Order(long id, String tableNumber, List<Dish> dishes, CustomerUser customer, Restaurant restaurant, OrderState state) {
         this.id = id;
         this.tableNumber = tableNumber;
         this.dishes = dishes;
-        this.user = user;
+        this.customer = customer;
         this.restaurant = restaurant;
         this.state = state;
         setStatus(state);

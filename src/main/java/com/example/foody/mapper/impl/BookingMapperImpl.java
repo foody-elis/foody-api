@@ -7,6 +7,7 @@ import com.example.foody.mapper.BookingMapper;
 import com.example.foody.model.Booking;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
+import com.example.foody.model.user.CustomerUser;
 import com.example.foody.model.user.User;
 import org.springframework.stereotype.Component;
 
@@ -86,11 +87,11 @@ public class BookingMapperImpl implements BookingMapper {
         if ( booking == null ) {
             return 0L;
         }
-        User user = booking.getCustomer();
-        if ( user == null ) {
+        CustomerUser customer = booking.getCustomer();
+        if ( customer == null ) {
             return 0L;
         }
-        long id = user.getId();
+        long id = customer.getId();
         return id;
     }
 

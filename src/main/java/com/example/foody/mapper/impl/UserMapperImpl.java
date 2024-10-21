@@ -29,7 +29,6 @@ public class UserMapperImpl implements UserMapper {
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
 
-        userResponseDTO.setCreditCardId( userCreditCardId( user ) );
         userResponseDTO.setId( user.getId() );
         userResponseDTO.setEmail( user.getEmail() );
         userResponseDTO.setPassword( user.getPassword() );
@@ -82,17 +81,5 @@ public class UserMapperImpl implements UserMapper {
         }
 
         return list;
-    }
-
-    private Long userCreditCardId(User user) {
-        if ( user == null ) {
-            return null;
-        }
-        CreditCard creditCard = user.getCreditCard();
-        if ( creditCard == null ) {
-            return null;
-        }
-        long id = creditCard.getId();
-        return id;
     }
 }

@@ -2,9 +2,8 @@ package com.example.foody.builder.impl;
 
 import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.model.*;
-import com.example.foody.model.user.CookUser;
+import com.example.foody.model.user.EmployeeUser;
 import com.example.foody.model.user.RestaurateurUser;
-import com.example.foody.model.user.WaiterUser;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -26,8 +25,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     private List<Booking> bookings = new ArrayList<>();
     private Address address;
     private RestaurateurUser restaurateur;
-    private List<CookUser> cooks = new ArrayList<>();
-    private List<WaiterUser> waiters = new ArrayList<>();
+    private List<EmployeeUser> employees = new ArrayList<>();
 
     @Override
     public RestaurantBuilder id(long id) {
@@ -114,14 +112,8 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     }
 
     @Override
-    public RestaurantBuilder cooks(List<CookUser> cooks) {
-        this.cooks = cooks;
-        return this;
-    }
-
-    @Override
-    public RestaurantBuilder waiters(List<WaiterUser> waiters) {
-        this.waiters = waiters;
+    public RestaurantBuilder employees(List<EmployeeUser> employees) {
+        this.employees = employees;
         return this;
     }
 
@@ -142,8 +134,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 bookings,
                 address,
                 restaurateur,
-                cooks,
-                waiters
+                employees
         );
     }
 }

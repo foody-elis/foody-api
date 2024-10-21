@@ -52,14 +52,10 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "active", nullable = false)
     private boolean active = true;
 
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "credit_card_id")
-    private CreditCard creditCard;
-
     public User() {
     }
 
-    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard) {
+    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -70,7 +66,6 @@ public class User extends DefaultEntity implements UserDetails {
         this.avatar = avatar;
         this.role = role;
         this.active = active;
-        this.creditCard = creditCard;
     }
 
     @Override

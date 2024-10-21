@@ -4,7 +4,6 @@ import com.example.foody.model.Booking;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.user.CustomerUser;
-import com.example.foody.model.user.User;
 import com.example.foody.state.booking.BookingState;
 
 import java.time.LocalDate;

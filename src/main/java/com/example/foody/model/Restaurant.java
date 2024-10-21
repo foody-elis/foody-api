@@ -1,8 +1,7 @@
 package com.example.foody.model;
 
-import com.example.foody.model.user.CookUser;
+import com.example.foody.model.user.EmployeeUser;
 import com.example.foody.model.user.RestaurateurUser;
-import com.example.foody.model.user.WaiterUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
@@ -69,15 +68,12 @@ public class Restaurant extends DefaultEntity {
     protected RestaurateurUser restaurateur;
 
     @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    protected List<CookUser> cooks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    protected List<WaiterUser> waiters = new ArrayList<>();
+    protected List<EmployeeUser> employees = new ArrayList<>();
 
     public Restaurant() {
     }
 
-    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<CookUser> cooks, List<WaiterUser> waiters) {
+    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<EmployeeUser> employees) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -92,7 +88,6 @@ public class Restaurant extends DefaultEntity {
         this.bookings = bookings;
         this.address = address;
         this.restaurateur = restaurateur;
-        this.cooks = cooks;
-        this.waiters = waiters;
+        this.employees = employees;
     }
 }

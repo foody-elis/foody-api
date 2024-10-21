@@ -7,16 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long>, CustomizedBookingRepository {
     List<Booking> findAllByDeletedAtIsNull();
 
-    @Query("select b from Booking b where b.deletedAt is null and b.user.id = :userId order by b.date desc")
-    List<Booking> findAllByDeletedAtIsNullAndUserOrderByDateDesc(long userId);
+    List<Booking> findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(long customerId);
 
-    @Query("select b from Booking b where b.deletedAt is null and b.restaurant.id = :restaurantId order by b.date desc")
-    List<Booking> findAllByDeletedAtIsNullAndRestaurantOrderByDateDesc(long restaurantId);
+    List<Booking> findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(long restaurantId);
 
     // colaesce() returns the first non-null argument (case: empty table so sum() returns null)
     @Query("select coalesce(sum(b.seats), 0) from Booking b " +

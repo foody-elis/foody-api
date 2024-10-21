@@ -1,6 +1,6 @@
 package com.example.foody.model;
 
-import com.example.foody.model.user.User;
+import com.example.foody.model.user.CustomerUser;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,5 +29,5 @@ public class CreditCard extends DefaultEntity {
     private LocalDate expirationDate;
 
     @OneToOne(mappedBy = "creditCard")
-    private User user;
+    private CustomerUser customer;
 }

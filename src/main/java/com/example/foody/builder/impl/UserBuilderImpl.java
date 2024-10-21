@@ -1,14 +1,11 @@
 package com.example.foody.builder.impl;
 
 import com.example.foody.builder.UserBuilder;
-import com.example.foody.model.*;
 import com.example.foody.model.user.User;
 import com.example.foody.utils.Role;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class UserBuilderImpl implements UserBuilder {
@@ -22,7 +19,6 @@ public class UserBuilderImpl implements UserBuilder {
     private String avatar;
     private Role role;
     private boolean active = true;
-    private CreditCard creditCard;
 
     @Override
     public UserBuilder id(long id) {
@@ -85,12 +81,6 @@ public class UserBuilderImpl implements UserBuilder {
     }
 
     @Override
-    public UserBuilder creditCard(CreditCard creditCard) {
-        this.creditCard = creditCard;
-        return this;
-    }
-
-    @Override
     public User build() {
         return new User(
                 id,
@@ -102,8 +92,7 @@ public class UserBuilderImpl implements UserBuilder {
                 phoneNumber,
                 avatar,
                 role,
-                active,
-                creditCard
+                active
         );
     }
 }
