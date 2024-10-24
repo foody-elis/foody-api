@@ -5,16 +5,16 @@ import com.example.foody.utils.Role;
 
 import java.time.LocalDate;
 
-public interface UserBuilder {
-    UserBuilder id(long id);
-    UserBuilder email(String email);
-    UserBuilder password(String password);
-    UserBuilder name(String name);
-    UserBuilder surname(String surname);
-    UserBuilder birthDate(LocalDate birthDate);
-    UserBuilder phoneNumber(String phoneNumber);
-    UserBuilder avatar(String avatar);
-    UserBuilder role(Role role);
-    UserBuilder active(boolean active);
-    User build();
+public interface UserBuilder<U extends User> {
+    UserBuilder<U> id(long id);
+    UserBuilder<U> email(String email);
+    UserBuilder<U> password(String password);
+    UserBuilder<U> name(String name);
+    UserBuilder<U> surname(String surname);
+    UserBuilder<U> birthDate(LocalDate birthDate);
+    UserBuilder<U> phoneNumber(String phoneNumber);
+    UserBuilder<U> avatar(String avatar);
+    UserBuilder<U> role(Role role);
+    UserBuilder<U> active(boolean active);
+    U build();
 }

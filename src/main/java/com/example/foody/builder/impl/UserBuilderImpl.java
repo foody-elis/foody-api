@@ -3,96 +3,81 @@ package com.example.foody.builder.impl;
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.model.user.User;
 import com.example.foody.utils.Role;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
-@Component
-public class UserBuilderImpl implements UserBuilder {
-    private long id;
-    private String email;
-    private String password;
-    private String name;
-    private String surname;
-    private LocalDate birthDate;
-    private String phoneNumber;
-    private String avatar;
-    private Role role;
-    private boolean active = true;
+public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> {
+    protected long id;
+    protected String email;
+    protected String password;
+    protected String name;
+    protected String surname;
+    protected LocalDate birthDate;
+    protected String phoneNumber;
+    protected String avatar;
+    protected Role role;
+    protected boolean active = true;
 
     @Override
-    public UserBuilder id(long id) {
+    public UserBuilder<U> id(long id) {
         this.id = id;
         return this;
     }
 
     @Override
-    public UserBuilder email(String email) {
+    public UserBuilder<U> email(String email) {
         this.email = email;
         return this;
     }
 
     @Override
-    public UserBuilder password(String password) {
+    public UserBuilder<U> password(String password) {
         this.password = password;
         return this;
     }
 
     @Override
-    public UserBuilder name(String name) {
+    public UserBuilder<U> name(String name) {
         this.name = name;
         return this;
     }
 
     @Override
-    public UserBuilder surname(String surname) {
+    public UserBuilder<U> surname(String surname) {
         this.surname = surname;
         return this;
     }
 
     @Override
-    public UserBuilder birthDate(LocalDate birthDate) {
+    public UserBuilder<U> birthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
         return this;
     }
 
     @Override
-    public UserBuilder phoneNumber(String phoneNumber) {
+    public UserBuilder<U> phoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
 
     @Override
-    public UserBuilder avatar(String avatar) {
+    public UserBuilder<U> avatar(String avatar) {
         this.avatar = avatar;
         return this;
     }
 
     @Override
-    public UserBuilder role(Role role) {
+    public UserBuilder<U> role(Role role) {
         this.role = role;
         return this;
     }
 
     @Override
-    public UserBuilder active(boolean active) {
+    public UserBuilder<U> active(boolean active) {
         this.active = active;
         return this;
     }
 
     @Override
-    public User build() {
-        return new User(
-                id,
-                email,
-                password,
-                name,
-                surname,
-                birthDate,
-                phoneNumber,
-                avatar,
-                role,
-                active
-        );
-    }
+    public abstract U build();
 }
