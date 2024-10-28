@@ -20,4 +20,6 @@ public interface AuthenticationService {
 
     TokenResponseDTO authenticate(UserLoginRequestDTO userLoginRequestDTO);
     TokenResponseDTO authenticate(String email, String password);
+
+    UserResponseDTO getAuthenticatedUser();
 }

@@ -1,6 +1,9 @@
 package com.example.foody.controller;
 
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.mapper.UserMapper;
+import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.User;
 import com.example.foody.service.AuthenticationService;
 import com.example.foody.dto.response.TokenResponseDTO;
 import com.example.foody.dto.request.UserLoginRequestDTO;
@@ -15,6 +18,8 @@ import com.example.foody.exceptions.user.UserNotActiveException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -66,5 +71,10 @@ public class AuthenticationController {
     public ResponseEntity<TokenResponseDTO> authenticateUser(@Valid @RequestBody UserLoginRequestDTO userLoginRequestDTO)
             throws EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
         return new ResponseEntity<>(authenticationService.authenticate(userLoginRequestDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserResponseDTO> getAuthenticatedUser() {
+        return new ResponseEntity<>(authenticationService.getAuthenticatedUser(), HttpStatus.OK);
     }
 }

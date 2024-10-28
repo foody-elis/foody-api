@@ -86,6 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/v1/auth/moderators").hasRole(Role.ADMIN.name())
                         .requestMatchers(POST, "/api/v1/auth/restaurant/*/cooks").hasRole(Role.RESTAURATEUR.name())
                         .requestMatchers(POST, "/api/v1/auth/restaurant/*/waiters").hasRole(Role.RESTAURATEUR.name())
+                        .requestMatchers(GET, "/api/v1/auth/user").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").hasRole(Role.RESTAURATEUR.name())

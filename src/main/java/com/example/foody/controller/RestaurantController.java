@@ -6,6 +6,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.service.RestaurantService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class RestaurantController {
 
     @PostMapping
     public ResponseEntity<RestaurantResponseDTO> saveRestaurant(@Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
-            throws EntityCreationException {
+            throws RestaurateurAlreadyHasRestaurantException, EntityCreationException {
         return new ResponseEntity<>(restaurantService.save(restaurantRequestDTO), HttpStatus.CREATED);
     }
 
