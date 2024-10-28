@@ -6,8 +6,8 @@ import com.example.foody.model.user.User;
 
 import java.util.List;
 
-public interface UserMapper {
-    UserResponseDTO userToUserResponseDTO(User user);
-    User userRequestDTOToUser(UserRequestDTO userRequestDTO);
-    List<UserResponseDTO> usersToUserResponseDTOs(List<User> users);
+public interface UserMapper<U extends User> {
+    UserResponseDTO userToUserResponseDTO(U user);
+    U userRequestDTOToUser(UserRequestDTO userRequestDTO);
+    List<UserResponseDTO> usersToUserResponseDTOs(List<U> users);
 }

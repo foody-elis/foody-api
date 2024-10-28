@@ -2,6 +2,7 @@ package com.example.foody.repository;
 
 import com.example.foody.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 

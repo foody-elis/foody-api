@@ -1,5 +1,6 @@
 package com.example.foody.dto.response;
 
+import com.example.foody.utils.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +13,11 @@ import java.time.LocalDate;
 public class UserResponseDTO {
     private long id;
     private String email;
-    private String password;
     private String name;
     private String surname;
     private LocalDate birthDate;
     private String phoneNumber;
     private String avatar;
-    private String role;
+    private Role role;
     private boolean active;
 }

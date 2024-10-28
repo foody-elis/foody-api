@@ -22,35 +22,35 @@ import java.util.List;
 public class User extends DefaultEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    protected long id;
 
     @Column(name = "email", length = 320, nullable = false, unique = true)
-    private String email;
+    protected String email;
 
     @Column(name = "password", length = 100, nullable = false)
-    private String password;
+    protected String password;
 
     @Column(name = "name", length = 30, nullable = false)
-    private String name;
+    protected String name;
 
     @Column(name = "surname", length = 30, nullable = false)
-    private String surname;
+    protected String surname;
 
     @Column(name = "birth_date", nullable = false)
-    private LocalDate birthDate;
+    protected LocalDate birthDate;
 
     @Column(name = "phone_number", length = 16)
-    private String phoneNumber;
+    protected String phoneNumber;
 
     @Column(name = "avatar")
-    private String avatar;
+    protected String avatar;
 
     @Column(name = "role", nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    protected Role role;
 
     @Column(name = "active", nullable = false)
-    private boolean active = true;
+    protected boolean active = true;
 
     public User() {
     }
