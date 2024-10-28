@@ -1,8 +1,10 @@
-package com.example.foody.auth.impl;
+package com.example.foody.service.impl;
 
-import com.example.foody.auth.AuthenticationService;
-import com.example.foody.auth.TokenDTO;
-import com.example.foody.auth.UserLoginDTO;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.model.Restaurant;
+import com.example.foody.service.AuthenticationService;
+import com.example.foody.dto.response.TokenResponseDTO;
+import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
@@ -11,12 +13,8 @@ import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
-import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.user.UserNotActiveException;
-import com.example.foody.mapper.CustomerUserMapper;
-import com.example.foody.mapper.EmployeeUserMapper;
 import com.example.foody.mapper.UserMapper;
-import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.*;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
@@ -35,68 +33,94 @@ import org.springframework.stereotype.Service;
 @Transactional(rollbackOn = Exception.class)
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
+    private final UserMapper<AdminUser> adminUserMapper;
+    private final UserMapper<ModeratorUser> moderatorUserMapper;
+    private final UserMapper<RestaurateurUser> restaurateurUserMapper;
+    private final UserMapper<CookUser> cookUserMapper;
+    private final UserMapper<WaiterUser> waiterUserMapper;
+    private final UserMapper<CustomerUser> customerUserMapper;
     private final RestaurantRepository restaurantRepository;
-    private final UserMapper userMapper;
-    private final EmployeeUserMapper employeeUserMapper;
-    private final CustomerUserMapper customerUserMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper userMapper, EmployeeUserMapper employeeUserMapper, CustomerUserMapper customerUserMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthenticationServiceImpl(UserRepository userRepository, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userRepository = userRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.userMapper = userMapper;
-        this.employeeUserMapper = employeeUserMapper;
+        this.adminUserMapper = adminUserMapper;
+        this.moderatorUserMapper = moderatorUserMapper;
+        this.restaurateurUserMapper = restaurateurUserMapper;
+        this.cookUserMapper = cookUserMapper;
+        this.waiterUserMapper = waiterUserMapper;
         this.customerUserMapper = customerUserMapper;
+        this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
 
     @Override
-    public TokenDTO registerAndAuthenticateRestaurateur(UserRequestDTO userRequestDTO) {
-        UserResponseDTO restaurateurDTO = registerRestaurateur(userRequestDTO);
+    public TokenResponseDTO registerAndAuthenticateRestaurateur(UserRequestDTO userRequestDTO) {
+        registerRestaurateur(userRequestDTO);
         return authenticate(userRequestDTO.getEmail(), userRequestDTO.getPassword());
     }
 
     @Override
-    public TokenDTO registerAndAuthenticateCustomer(UserRequestDTO userRequestDTO) {
-        UserResponseDTO customerDTO = registerCustomer(userRequestDTO);
+    public TokenResponseDTO registerAndAuthenticateCustomer(UserRequestDTO userRequestDTO) {
+        registerCustomer(userRequestDTO);
         return authenticate(userRequestDTO.getEmail(), userRequestDTO.getPassword());
     }
 
+    @Override
     public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.ADMIN.name());
 
-        AdminUser admin = (AdminUser) userMapper.userRequestDTOToUser(userRequestDTO);
+        AdminUser admin = adminUserMapper.userRequestDTOToUser(userRequestDTO);
         admin = (AdminUser) register(admin);
 
-        return userMapper.userToUserResponseDTO(admin);
+        return adminUserMapper.userToUserResponseDTO(admin);
     }
 
+    @Override
     public UserResponseDTO registerModerator(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.MODERATOR.name());
 
-        ModeratorUser moderator = (ModeratorUser) userMapper.userRequestDTOToUser(userRequestDTO);
+        ModeratorUser moderator = moderatorUserMapper.userRequestDTOToUser(userRequestDTO);
         moderator = (ModeratorUser) register(moderator);
 
-        return userMapper.userToUserResponseDTO(moderator);
+        return moderatorUserMapper.userToUserResponseDTO(moderator);
     }
 
+    @Override
     public UserResponseDTO registerRestaurateur(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.RESTAURATEUR.name());
 
-        RestaurateurUser restaurateur = (RestaurateurUser) userMapper.userRequestDTOToUser(userRequestDTO);
+        RestaurateurUser restaurateur = restaurateurUserMapper.userRequestDTOToUser(userRequestDTO);
         restaurateur = (RestaurateurUser) register(restaurateur);
 
-        return userMapper.userToUserResponseDTO(restaurateur);
+        return restaurateurUserMapper.userToUserResponseDTO(restaurateur);
     }
 
-    public EmployeeUserResponseDTO registerEmployee(long restaurantId, UserRequestDTO userRequestDTO) {
+    @Override
+    public EmployeeUserResponseDTO registerCook(long restaurantId, UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.COOK.name());
-        EmployeeUser employee = (EmployeeUser) userMapper.userRequestDTOToUser(userRequestDTO);
 
+        CookUser cookUser = cookUserMapper.userRequestDTOToUser(userRequestDTO);
+        cookUser = (CookUser) registerEmployee(restaurantId, cookUser);
+
+        return (EmployeeUserResponseDTO) cookUserMapper.userToUserResponseDTO(cookUser);
+    }
+
+    @Override
+    public EmployeeUserResponseDTO registerWaiter(long restaurantId, UserRequestDTO userRequestDTO) {
+        userRequestDTO.setRole(Role.WAITER.name());
+
+        WaiterUser waiterUser = waiterUserMapper.userRequestDTOToUser(userRequestDTO);
+        waiterUser = (WaiterUser) registerEmployee(restaurantId, waiterUser);
+
+        return (EmployeeUserResponseDTO) waiterUserMapper.userToUserResponseDTO(waiterUser);
+    }
+
+    private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser) {
         // Check if the principal is the owner of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -109,23 +133,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new ForbiddenRestaurantAccessException();
         }
 
-        employee.setEmployerRestaurant(restaurant);
-        employee = (EmployeeUser) register(employee);
+        employeeUser.setEmployerRestaurant(restaurant);
+        employeeUser = (E) register(employeeUser);
 
-        return employeeUserMapper.employeeUserToEmployeeUserResponseDTO(employee);
+        return employeeUser;
     }
 
     public CustomerUserResponseDTO registerCustomer(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.CUSTOMER.name());
 
-        CustomerUser customer = (CustomerUser) userMapper.userRequestDTOToUser(userRequestDTO);
+        CustomerUser customer = customerUserMapper.userRequestDTOToUser(userRequestDTO);
         customer = (CustomerUser) register(customer);
 
-        return customerUserMapper.customerUserToCustomerUserResponseDTO(customer);
+        return (CustomerUserResponseDTO) customerUserMapper.userToUserResponseDTO(customer);
     }
 
     private <T extends User> User register(T user) {
-        // Encode the password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         try {
@@ -141,11 +164,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 
-    public TokenDTO authenticate(UserLoginDTO userLoginDTO) {
-        return authenticate(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+    public TokenResponseDTO authenticate(UserLoginRequestDTO userLoginRequestDTO) {
+        return authenticate(userLoginRequestDTO.getEmail(), userLoginRequestDTO.getPassword());
     }
 
-    public TokenDTO authenticate(String email, String password) {
+    public TokenResponseDTO authenticate(String email, String password) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
@@ -163,7 +186,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String accessToken = jwtService.generateToken(user.getEmail());
 
-        return new TokenDTO(accessToken);
+        return new TokenResponseDTO(accessToken);
     }
 
     // todo implement the refresh token mechanism

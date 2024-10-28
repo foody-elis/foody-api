@@ -1,6 +1,6 @@
 package com.example.foody;
 
-import com.example.foody.auth.impl.AuthenticationServiceImpl;
+import com.example.foody.service.impl.AuthenticationServiceImpl;
 import com.example.foody.dto.request.UserRequestDTO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

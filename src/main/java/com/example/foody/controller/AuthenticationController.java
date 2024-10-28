@@ -1,6 +1,9 @@
-package com.example.foody.auth;
+package com.example.foody.controller;
 
-import com.example.foody.auth.impl.AuthenticationServiceImpl;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.service.AuthenticationService;
+import com.example.foody.dto.response.TokenResponseDTO;
+import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
 import com.example.foody.dto.response.UserResponseDTO;
@@ -23,9 +26,6 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    // todo manage exceptions
-    // todo manage in security config
-
     @PostMapping("/admins")
     public ResponseEntity<UserResponseDTO> registerAdmin(@Valid @RequestBody UserRequestDTO userRequestDTO)
             throws EntityDuplicateException, EntityCreationException {
@@ -39,26 +39,32 @@ public class AuthenticationController {
     }
 
     @PostMapping("/restaurateurs")
-    public ResponseEntity<TokenDTO> registerRestaurateur(@Valid @RequestBody UserRequestDTO userRequestDTO)
-            throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<TokenResponseDTO> registerAndAuthenticateRestaurateur(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException, EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
         return new ResponseEntity<>(authenticationService.registerAndAuthenticateRestaurateur(userRequestDTO), HttpStatus.CREATED);
     }
 
-    @PostMapping("/restaurant/{restaurant-id}/employees")
-    public ResponseEntity<EmployeeUserResponseDTO> registerEmployee(@PathVariable("restaurant-id") long restaurantId, @Valid @RequestBody UserRequestDTO userRequestDTO)
-            throws EntityDuplicateException, EntityCreationException {
-        return new ResponseEntity<>(authenticationService.registerEmployee(restaurantId, userRequestDTO), HttpStatus.CREATED);
+    @PostMapping("/restaurant/{restaurant-id}/cooks")
+    public ResponseEntity<EmployeeUserResponseDTO> registerCook(@PathVariable("restaurant-id") long restaurantId, @Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException, EntityNotFoundException, ForbiddenRestaurantAccessException {
+        return new ResponseEntity<>(authenticationService.registerCook(restaurantId, userRequestDTO), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/restaurant/{restaurant-id}/waiters")
+    public ResponseEntity<EmployeeUserResponseDTO> registerWaiter(@PathVariable("restaurant-id") long restaurantId, @Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException, EntityNotFoundException, ForbiddenRestaurantAccessException {
+        return new ResponseEntity<>(authenticationService.registerWaiter(restaurantId, userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<TokenDTO> registerCustomer(@Valid @RequestBody UserRequestDTO userRequestDTO)
-            throws EntityDuplicateException, EntityCreationException {
+    public ResponseEntity<TokenResponseDTO> registerAndAuthenticateCustomer(@Valid @RequestBody UserRequestDTO userRequestDTO)
+            throws EntityDuplicateException, EntityCreationException, EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
         return new ResponseEntity<>(authenticationService.registerAndAuthenticateCustomer(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> authenticateUser(@Valid @RequestBody UserLoginDTO userLoginDTO)
+    public ResponseEntity<TokenResponseDTO> authenticateUser(@Valid @RequestBody UserLoginRequestDTO userLoginRequestDTO)
             throws EntityNotFoundException, UserNotActiveException, InvalidCredentialsException {
-        return new ResponseEntity<>(authenticationService.authenticate(userLoginDTO), HttpStatus.OK);
+        return new ResponseEntity<>(authenticationService.authenticate(userLoginRequestDTO), HttpStatus.OK);
     }
 }

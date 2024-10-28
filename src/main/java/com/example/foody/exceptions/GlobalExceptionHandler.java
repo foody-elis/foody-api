@@ -6,6 +6,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
@@ -52,7 +53,8 @@ public class GlobalExceptionHandler {
             InvalidBookingWeekDayException.class,
             InvalidBookingRestaurantException.class,
             InvalidBookingStateException.class,
-            DuplicateWeekDayInfoException.class
+            DuplicateWeekDayInfoException.class,
+            RestaurateurAlreadyHasRestaurantException.class,
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());

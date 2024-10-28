@@ -14,43 +14,42 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
 
     @Override
     public SittingTimeResponseDTO sittingTimeToSittingTimeResponseDTO(SittingTime sittingTime) {
-        if ( sittingTime == null ) {
+        if (sittingTime == null) {
             return null;
         }
 
         SittingTimeResponseDTO sittingTimeResponseDTO = new SittingTimeResponseDTO();
 
-        sittingTimeResponseDTO.setWeekDayInfoId( sittingTimeWeekDayInfoId( sittingTime ) );
-        sittingTimeResponseDTO.setId( sittingTime.getId() );
-        sittingTimeResponseDTO.setStart( sittingTime.getStart() );
-        sittingTimeResponseDTO.setEnd( sittingTime.getEnd() );
+        sittingTimeResponseDTO.setWeekDayInfoId(sittingTimeWeekDayInfoId(sittingTime));
+        sittingTimeResponseDTO.setId(sittingTime.getId());
+        sittingTimeResponseDTO.setStart(sittingTime.getStart());
+        sittingTimeResponseDTO.setEnd(sittingTime.getEnd());
 
         return sittingTimeResponseDTO;
     }
 
     @Override
     public List<SittingTimeResponseDTO> sittingTimesToSittingTimeResponseDTOs(List<SittingTime> sittingTimes) {
-        if ( sittingTimes == null ) {
+        if (sittingTimes == null) {
             return null;
         }
 
-        List<SittingTimeResponseDTO> list = new ArrayList<SittingTimeResponseDTO>( sittingTimes.size() );
-        for ( SittingTime sittingTime : sittingTimes ) {
-            list.add( sittingTimeToSittingTimeResponseDTO( sittingTime ) );
+        List<SittingTimeResponseDTO> list = new ArrayList<SittingTimeResponseDTO>(sittingTimes.size());
+        for (SittingTime sittingTime : sittingTimes) {
+            list.add(sittingTimeToSittingTimeResponseDTO(sittingTime));
         }
 
         return list;
     }
 
     private long sittingTimeWeekDayInfoId(SittingTime sittingTime) {
-        if ( sittingTime == null ) {
+        if (sittingTime == null) {
             return 0L;
         }
         WeekDayInfo weekDayInfo = sittingTime.getWeekDayInfo();
-        if ( weekDayInfo == null ) {
+        if (weekDayInfo == null) {
             return 0L;
         }
-        long id = weekDayInfo.getId();
-        return id;
+        return weekDayInfo.getId();
     }
 }

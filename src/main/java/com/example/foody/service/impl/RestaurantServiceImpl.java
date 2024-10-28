@@ -6,6 +6,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
 import com.example.foody.model.Category;
@@ -52,6 +53,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
         Address address = restaurant.getAddress();
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Check if the restaurateur already has a restaurant
+        if (restaurantRepository.existsByDeletedAtIsNullAndRestaurateur_Id(principal.getId())) {
+            throw new RestaurateurAlreadyHasRestaurantException(principal.getId());
+        }
 
         // Save the associated address
         address.setRestaurant(restaurant);

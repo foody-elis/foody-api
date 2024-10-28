@@ -1,4 +1,4 @@
-package com.example.foody.auth;
+package com.example.foody.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginDTO {
+public class UserLoginRequestDTO {
     @Email(message = "email is not a well-formed email address")
     @NotBlank(message = "email cannot be blank")
     private String email;

@@ -59,11 +59,11 @@ public class Restaurant extends DefaultEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     protected List<Booking> bookings = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     protected Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "restaurateur_id")
     protected RestaurateurUser restaurateur;
 

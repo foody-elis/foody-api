@@ -1,18 +1,23 @@
-package com.example.foody.auth;
+package com.example.foody.service;
 
+import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
+import com.example.foody.dto.response.TokenResponseDTO;
 import com.example.foody.dto.response.UserResponseDTO;
 
 public interface AuthenticationService {
-    TokenDTO registerAndAuthenticateRestaurateur(UserRequestDTO userRequestDTO);
-    TokenDTO registerAndAuthenticateCustomer(UserRequestDTO userRequestDTO);
+    TokenResponseDTO registerAndAuthenticateRestaurateur(UserRequestDTO userRequestDTO);
+    TokenResponseDTO registerAndAuthenticateCustomer(UserRequestDTO userRequestDTO);
+
     UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO);
     UserResponseDTO registerModerator(UserRequestDTO userRequestDTO);
     UserResponseDTO registerRestaurateur(UserRequestDTO userRequestDTO);
-    EmployeeUserResponseDTO registerEmployee(long restaurantId, UserRequestDTO userRequestDTO);
+    EmployeeUserResponseDTO registerCook(long restaurantId, UserRequestDTO userRequestDTO);
+    EmployeeUserResponseDTO registerWaiter(long restaurantId, UserRequestDTO userRequestDTO);
     CustomerUserResponseDTO registerCustomer(UserRequestDTO userRequestDTO);
-    TokenDTO authenticate(UserLoginDTO userLoginDTO);
-    TokenDTO authenticate(String email, String password);
+
+    TokenResponseDTO authenticate(UserLoginRequestDTO userLoginRequestDTO);
+    TokenResponseDTO authenticate(String email, String password);
 }
