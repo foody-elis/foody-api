@@ -43,18 +43,4 @@ public class Address extends DefaultEntity {
         this.postalCode = postalCode;
         this.restaurant = restaurant;
     }
-
-    // todo remove
-    @Override
-    public String toString() {
-        return "Address{" +
-                "id=" + id +
-                ", city='" + city + '\'' +
-                ", province='" + province + '\'' +
-                ", street='" + street + '\'' +
-                ", civicNumber='" + civicNumber + '\'' +
-                ", postalCode='" + postalCode + '\'' +
-                ", restaurantId=" + restaurant.getId() +
-                '}';
-    }
 }

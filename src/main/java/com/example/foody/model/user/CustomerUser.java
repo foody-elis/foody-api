@@ -4,7 +4,7 @@ import com.example.foody.model.Booking;
 import com.example.foody.model.CreditCard;
 import com.example.foody.model.Order;
 import com.example.foody.model.Review;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

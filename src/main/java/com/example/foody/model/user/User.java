@@ -1,7 +1,7 @@
 package com.example.foody.model.user;
 
 import com.example.foody.model.*;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

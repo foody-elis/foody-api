@@ -26,28 +26,28 @@ public class RestaurantMapperImpl implements RestaurantMapper {
 
     @Override
     public RestaurantResponseDTO restaurantToRestaurantResponseDTO(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
 
         RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO();
 
-        restaurantResponseDTO.setRestaurateurId( restaurantRestaurateurId( restaurant ) );
-        restaurantResponseDTO.setCity( restaurantAddressCity( restaurant ) );
-        restaurantResponseDTO.setProvince( restaurantAddressProvince( restaurant ) );
-        restaurantResponseDTO.setStreet( restaurantAddressStreet( restaurant ) );
-        restaurantResponseDTO.setCivicNumber( restaurantAddressCivicNumber( restaurant ) );
-        restaurantResponseDTO.setPostalCode( restaurantAddressPostalCode( restaurant ) );
-        restaurantResponseDTO.setId( restaurant.getId() );
-        restaurantResponseDTO.setName( restaurant.getName() );
-        restaurantResponseDTO.setDescription( restaurant.getDescription() );
-        restaurantResponseDTO.setPhoneNumber( restaurant.getPhoneNumber() );
-        restaurantResponseDTO.setSeats( restaurant.getSeats() );
-        restaurantResponseDTO.setApproved( restaurant.isApproved() );
+        restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
+        restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
+        restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
+        restaurantResponseDTO.setStreet(restaurantAddressStreet(restaurant));
+        restaurantResponseDTO.setCivicNumber(restaurantAddressCivicNumber(restaurant));
+        restaurantResponseDTO.setPostalCode(restaurantAddressPostalCode(restaurant));
+        restaurantResponseDTO.setId(restaurant.getId());
+        restaurantResponseDTO.setName(restaurant.getName());
+        restaurantResponseDTO.setDescription(restaurant.getDescription());
+        restaurantResponseDTO.setPhoneNumber(restaurant.getPhoneNumber());
+        restaurantResponseDTO.setSeats(restaurant.getSeats());
+        restaurantResponseDTO.setApproved(restaurant.isApproved());
 
         // I add the categories to the restaurantResponseDTO
         restaurantResponseDTO.setCategories(
-                restaurant.getCategories().stream().map( Category::getId ).toList()
+                restaurant.getCategories().stream().map(Category::getId).toList()
         );
 
         return restaurantResponseDTO;
@@ -55,127 +55,106 @@ public class RestaurantMapperImpl implements RestaurantMapper {
 
     @Override
     public Restaurant restaurantRequestDTOToRestaurant(RestaurantRequestDTO restaurantRequestDTO) {
-        if ( restaurantRequestDTO == null ) {
+        if (restaurantRequestDTO == null) {
             return null;
         }
 
         Address address = addressBuilder
-                .city( restaurantRequestDTO.getCity() )
-                .province( restaurantRequestDTO.getProvince() )
-                .street( restaurantRequestDTO.getStreet() )
-                .civicNumber( restaurantRequestDTO.getCivicNumber() )
-                .postalCode( restaurantRequestDTO.getPostalCode() )
+                .city(restaurantRequestDTO.getCity())
+                .province(restaurantRequestDTO.getProvince())
+                .street(restaurantRequestDTO.getStreet())
+                .civicNumber(restaurantRequestDTO.getCivicNumber())
+                .postalCode(restaurantRequestDTO.getPostalCode())
                 .build();
 
-        Restaurant restaurant = restaurantBuilder
-                .name( restaurantRequestDTO.getName() )
-                .description( restaurantRequestDTO.getDescription() )
-                .phoneNumber( restaurantRequestDTO.getPhoneNumber() )
-                .seats( restaurantRequestDTO.getSeats() )
-                .address( address ) // I set the address
-                .build();
+        // I set the address
 
-        return restaurant;
+        return restaurantBuilder
+                .name(restaurantRequestDTO.getName())
+                .description(restaurantRequestDTO.getDescription())
+                .phoneNumber(restaurantRequestDTO.getPhoneNumber())
+                .seats(restaurantRequestDTO.getSeats())
+                .address(address) // I set the address
+                .build();
     }
 
     @Override
     public List<RestaurantResponseDTO> restaurantsToRestaurantResponseDTOs(List<Restaurant> restaurants) {
-        if ( restaurants == null ) {
+        if (restaurants == null) {
             return null;
         }
 
-        List<RestaurantResponseDTO> list = new ArrayList<RestaurantResponseDTO>( restaurants.size() );
-        for ( Restaurant restaurant : restaurants ) {
-            list.add( restaurantToRestaurantResponseDTO( restaurant ) );
+        List<RestaurantResponseDTO> list = new ArrayList<>(restaurants.size());
+        for (Restaurant restaurant : restaurants) {
+            list.add(restaurantToRestaurantResponseDTO(restaurant));
         }
 
         return list;
     }
 
     private long restaurantRestaurateurId(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return 0L;
         }
         RestaurateurUser restaurateur = restaurant.getRestaurateur();
-        if ( restaurateur == null ) {
+        if (restaurateur == null) {
             return 0L;
         }
-        long id = restaurateur.getId();
-        return id;
+        return restaurateur.getId();
     }
 
     private String restaurantAddressCity(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
         Address address = restaurant.getAddress();
-        if ( address == null ) {
+        if (address == null) {
             return null;
         }
-        String city = address.getCity();
-        if ( city == null ) {
-            return null;
-        }
-        return city;
+        return address.getCity();
     }
 
     private String restaurantAddressProvince(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
         Address address = restaurant.getAddress();
-        if ( address == null ) {
+        if (address == null) {
             return null;
         }
-        String province = address.getProvince();
-        if ( province == null ) {
-            return null;
-        }
-        return province;
+        return address.getProvince();
     }
 
     private String restaurantAddressStreet(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
         Address address = restaurant.getAddress();
-        if ( address == null ) {
+        if (address == null) {
             return null;
         }
-        String street = address.getStreet();
-        if ( street == null ) {
-            return null;
-        }
-        return street;
+        return address.getStreet();
     }
 
     private String restaurantAddressCivicNumber(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
         Address address = restaurant.getAddress();
-        if ( address == null ) {
+        if (address == null) {
             return null;
         }
-        String civicNumber = address.getCivicNumber();
-        if ( civicNumber == null ) {
-            return null;
-        }
-        return civicNumber;
+        return address.getCivicNumber();
     }
 
     private String restaurantAddressPostalCode(Restaurant restaurant) {
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return null;
         }
         Address address = restaurant.getAddress();
-        if ( address == null ) {
+        if (address == null) {
             return null;
         }
-        String postalCode = address.getPostalCode();
-        if ( postalCode == null ) {
-            return null;
-        }
-        return postalCode;
+        return address.getPostalCode();
     }
 }

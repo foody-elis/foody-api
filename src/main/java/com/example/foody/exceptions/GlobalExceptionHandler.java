@@ -10,8 +10,7 @@ import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantE
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
-import com.example.foody.exceptions.week_day_info.DuplicateWeekDayInfoException;
-import com.example.foody.utils.CustomHttpStatus;
+import com.example.foody.utils.enums.CustomHttpStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -52,9 +51,7 @@ public class GlobalExceptionHandler {
             BookingNotAllowedException.class,
             InvalidBookingWeekDayException.class,
             InvalidBookingRestaurantException.class,
-            InvalidBookingStateException.class,
-            DuplicateWeekDayInfoException.class,
-            RestaurateurAlreadyHasRestaurantException.class,
+            InvalidBookingStateException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
@@ -80,13 +77,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleNotFoundException(EntityNotFoundException exception, WebRequest webRequest) {
+    public ResponseEntity<ErrorDTO> handleNotFoundException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.NOT_FOUND, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EntityDuplicateException.class)
-    public ResponseEntity<ErrorDTO> handleConflictException(EntityDuplicateException exception, WebRequest webRequest) {
+    @ExceptionHandler({
+            EntityDuplicateException.class,
+            RestaurateurAlreadyHasRestaurantException.class,
+    })
+    public ResponseEntity<ErrorDTO> handleConflictException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.CONFLICT, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.CONFLICT);
     }

@@ -43,14 +43,12 @@ public class DishMapperImpl implements DishMapper {
             return null;
         }
 
-        Dish dish = dishBuilder
+        return dishBuilder
                 .name(dishRequestDTO.getName())
                 .description(dishRequestDTO.getDescription())
                 .price(dishRequestDTO.getPrice())
                 .photo(dishRequestDTO.getPhoto())
                 .build();
-
-        return dish;
     }
 
     @Override
@@ -59,7 +57,7 @@ public class DishMapperImpl implements DishMapper {
             return null;
         }
 
-        List<DishResponseDTO> list = new ArrayList<DishResponseDTO>( dishes.size() );
+        List<DishResponseDTO> list = new ArrayList<>( dishes.size() );
         for ( Dish dish : dishes ) {
             list.add( dishToDishResponseDTO( dish ) );
         }
@@ -75,7 +73,6 @@ public class DishMapperImpl implements DishMapper {
         if ( restaurant == null ) {
             return 0L;
         }
-        long id = restaurant.getId();
-        return id;
+        return restaurant.getId();
     }
 }

@@ -3,9 +3,9 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
+import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
-import com.example.foody.exceptions.week_day_info.DuplicateWeekDayInfoException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.User;
@@ -14,7 +14,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.WeekDayInfoRepository;
 import com.example.foody.service.SittingTimeService;
 import com.example.foody.service.WeekDayInfoService;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +54,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
         // Check if a week day info with the same week day and restaurant id already exists
         if (weekDayInfoRepository.existsByDeletedAtIsNullAndWeekDayAndRestaurantId(weekDayInfo.getWeekDay(), restaurant.getId())) {
-            throw new DuplicateWeekDayInfoException(weekDayInfo.getWeekDay(), restaurant.getId());
+            throw new EntityDuplicateException("week day info", "weekDay", weekDayInfo.getWeekDay(), "restaurantId", restaurant.getId());
         }
 
         try {

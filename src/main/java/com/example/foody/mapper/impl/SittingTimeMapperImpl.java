@@ -34,7 +34,7 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
             return null;
         }
 
-        List<SittingTimeResponseDTO> list = new ArrayList<SittingTimeResponseDTO>(sittingTimes.size());
+        List<SittingTimeResponseDTO> list = new ArrayList<>(sittingTimes.size());
         for (SittingTime sittingTime : sittingTimes) {
             list.add(sittingTimeToSittingTimeResponseDTO(sittingTime));
         }

@@ -8,7 +8,6 @@ import com.example.foody.model.Booking;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.user.CustomerUser;
-import com.example.foody.model.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,20 +23,20 @@ public class BookingMapperImpl implements BookingMapper {
 
     @Override
     public BookingResponseDTO bookingToBookingResponseDTO(Booking booking) {
-        if ( booking == null ) {
+        if (booking == null) {
             return null;
         }
 
         BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
 
-        bookingResponseDTO.setSittingTimeId( bookingSittingTimeId( booking ) );
-        bookingResponseDTO.setCustomerId( bookingCustomerId( booking ) );
-        bookingResponseDTO.setRestaurantId( bookingRestaurantId( booking ) );
-        bookingResponseDTO.setId( booking.getId() );
-        bookingResponseDTO.setDate( booking.getDate() );
-        bookingResponseDTO.setSeats( booking.getSeats() );
-        if ( booking.getStatus() != null ) {
-            bookingResponseDTO.setStatus( booking.getStatus().name() );
+        bookingResponseDTO.setSittingTimeId(bookingSittingTimeId(booking));
+        bookingResponseDTO.setCustomerId(bookingCustomerId(booking));
+        bookingResponseDTO.setRestaurantId(bookingRestaurantId(booking));
+        bookingResponseDTO.setId(booking.getId());
+        bookingResponseDTO.setDate(booking.getDate());
+        bookingResponseDTO.setSeats(booking.getSeats());
+        if (booking.getStatus() != null) {
+            bookingResponseDTO.setStatus(booking.getStatus().name());
         }
 
         return bookingResponseDTO;
@@ -45,65 +44,60 @@ public class BookingMapperImpl implements BookingMapper {
 
     @Override
     public Booking bookingRequestDTOToBooking(BookingRequestDTO bookingRequestDTO) {
-        if ( bookingRequestDTO == null ) {
+        if (bookingRequestDTO == null) {
             return null;
         }
 
-        Booking booking = bookingBuilder
-            .date( bookingRequestDTO.getDate() )
-            .seats( bookingRequestDTO.getSeats() )
-            .build();
-
-        return booking;
+        return bookingBuilder
+                .date(bookingRequestDTO.getDate())
+                .seats(bookingRequestDTO.getSeats())
+                .build();
     }
 
     @Override
     public List<BookingResponseDTO> bookingsToBookingResponseDTOs(List<Booking> bookings) {
-        if ( bookings == null ) {
+        if (bookings == null) {
             return null;
         }
 
-        List<BookingResponseDTO> list = new ArrayList<BookingResponseDTO>( bookings.size() );
-        for ( Booking booking : bookings ) {
-            list.add( bookingToBookingResponseDTO( booking ) );
+        List<BookingResponseDTO> list = new ArrayList<>(bookings.size());
+        for (Booking booking : bookings) {
+            list.add(bookingToBookingResponseDTO(booking));
         }
 
         return list;
     }
 
     private long bookingSittingTimeId(Booking booking) {
-        if ( booking == null ) {
+        if (booking == null) {
             return 0L;
         }
         SittingTime sittingTime = booking.getSittingTime();
-        if ( sittingTime == null ) {
+        if (sittingTime == null) {
             return 0L;
         }
-        long id = sittingTime.getId();
-        return id;
+        return sittingTime.getId();
     }
 
     private long bookingCustomerId(Booking booking) {
-        if ( booking == null ) {
+        if (booking == null) {
             return 0L;
         }
         CustomerUser customer = booking.getCustomer();
-        if ( customer == null ) {
+        if (customer == null) {
             return 0L;
         }
-        long id = customer.getId();
-        return id;
+        return customer.getId();
     }
 
     private long bookingRestaurantId(Booking booking) {
-        if ( booking == null ) {
+        if (booking == null) {
             return 0L;
         }
         Restaurant restaurant = booking.getRestaurant();
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return 0L;
         }
-        long id = restaurant.getId();
-        return id;
+        return restaurant.getId();
     }
 }

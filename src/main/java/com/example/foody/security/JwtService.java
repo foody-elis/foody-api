@@ -1,5 +1,7 @@
 package com.example.foody.security;
 
+import com.example.foody.model.user.User;
+import com.example.foody.utils.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -21,17 +23,18 @@ public class JwtService {
     @Value("${security.jwt.expiration}")
     private long JWT_EXPIRATION;
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username, JWT_EXPIRATION);
+        claims.put("role", user.getRole());
+        return createToken(claims, user.getEmail());
     }
 
-    private String createToken(Map<String, Object> claims, String username, long expiration) {
+    private String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
-                .claims(claims)
                 .subject(username)
+                .claims(claims)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
                 .signWith(getSignKey())
                 .compact();
     }

@@ -1,7 +1,7 @@
 package com.example.foody.builder;
 
 import com.example.foody.model.user.User;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 
 import java.time.LocalDate;
 

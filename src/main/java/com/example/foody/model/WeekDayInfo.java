@@ -1,6 +1,6 @@
 package com.example.foody.model;
 
-import com.example.foody.utils.SittingTimeStep;
+import com.example.foody.utils.enums.SittingTimeStep;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

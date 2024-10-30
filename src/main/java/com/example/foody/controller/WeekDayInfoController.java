@@ -5,7 +5,6 @@ import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
-import com.example.foody.exceptions.week_day_info.DuplicateWeekDayInfoException;
 import com.example.foody.service.WeekDayInfoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,7 @@ public class WeekDayInfoController {
 
     @PostMapping
     public ResponseEntity<WeekDayInfoResponseDTO> saveWeekDayInfo(@Valid @RequestBody WeekDayInfoRequestDTO weekDayInfoRequestDTO)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, DuplicateWeekDayInfoException, EntityCreationException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, EntityCreationException {
         return new ResponseEntity<>(weekDayInfoService.save(weekDayInfoRequestDTO), HttpStatus.CREATED);
     }
 

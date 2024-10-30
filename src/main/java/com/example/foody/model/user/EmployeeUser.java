@@ -1,7 +1,7 @@
 package com.example.foody.model.user;
 
 import com.example.foody.model.Restaurant;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

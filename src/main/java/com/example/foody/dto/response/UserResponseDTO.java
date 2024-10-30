@@ -1,6 +1,6 @@
 package com.example.foody.dto.response;
 
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

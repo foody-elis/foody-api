@@ -19,7 +19,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.service.AuthenticationService;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -130,7 +130,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        // todo check if I can use instanceof instead of getRole
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenRestaurantAccessException();
         }
@@ -186,7 +185,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new UserNotActiveException(user.getEmail());
         }
 
-        String accessToken = jwtService.generateToken(user.getEmail());
+        String accessToken = jwtService.generateToken(user);
 
         return new TokenResponseDTO(accessToken);
     }

@@ -3,7 +3,7 @@ package com.example.foody.builder;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.WeekDayInfo;
-import com.example.foody.utils.SittingTimeStep;
+import com.example.foody.utils.enums.SittingTimeStep;
 
 import java.time.LocalTime;
 import java.util.List;

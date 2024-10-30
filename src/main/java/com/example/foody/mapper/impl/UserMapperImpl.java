@@ -9,7 +9,7 @@ import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.CreditCard;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.*;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -118,16 +118,16 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
     private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser) {
         EmployeeUserResponseDTO employeeUserResponseDTO = new EmployeeUserResponseDTO();
 
-        employeeUserResponseDTO.setEmployerRestaurantId( employerRestaurantId( employeeUser ) );
-        employeeUserResponseDTO.setId( employeeUser.getId() );
-        employeeUserResponseDTO.setEmail( employeeUser.getEmail() );
-        employeeUserResponseDTO.setName( employeeUser.getName() );
-        employeeUserResponseDTO.setSurname( employeeUser.getSurname() );
-        employeeUserResponseDTO.setBirthDate( employeeUser.getBirthDate() );
-        employeeUserResponseDTO.setPhoneNumber( employeeUser.getPhoneNumber() );
-        employeeUserResponseDTO.setAvatar( employeeUser.getAvatar() );
-        employeeUserResponseDTO.setRole( employeeUser.getRole() );
-        employeeUserResponseDTO.setActive( employeeUser.isActive() );
+        employeeUserResponseDTO.setEmployerRestaurantId(employerRestaurantId(employeeUser));
+        employeeUserResponseDTO.setId(employeeUser.getId());
+        employeeUserResponseDTO.setEmail(employeeUser.getEmail());
+        employeeUserResponseDTO.setName(employeeUser.getName());
+        employeeUserResponseDTO.setSurname(employeeUser.getSurname());
+        employeeUserResponseDTO.setBirthDate(employeeUser.getBirthDate());
+        employeeUserResponseDTO.setPhoneNumber(employeeUser.getPhoneNumber());
+        employeeUserResponseDTO.setAvatar(employeeUser.getAvatar());
+        employeeUserResponseDTO.setRole(employeeUser.getRole());
+        employeeUserResponseDTO.setActive(employeeUser.isActive());
 
         return employeeUserResponseDTO;
     }
@@ -135,41 +135,39 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
     private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser) {
         CustomerUserResponseDTO customerUserResponseDTO = new CustomerUserResponseDTO();
 
-        customerUserResponseDTO.setCreditCardId( creditCardId( customerUser ) );
-        customerUserResponseDTO.setId( customerUser.getId() );
-        customerUserResponseDTO.setEmail( customerUser.getEmail() );
-        customerUserResponseDTO.setName( customerUser.getName() );
-        customerUserResponseDTO.setSurname( customerUser.getSurname() );
-        customerUserResponseDTO.setBirthDate( customerUser.getBirthDate() );
-        customerUserResponseDTO.setPhoneNumber( customerUser.getPhoneNumber() );
-        customerUserResponseDTO.setAvatar( customerUser.getAvatar() );
-        customerUserResponseDTO.setRole( customerUser.getRole() );
-        customerUserResponseDTO.setActive( customerUser.isActive() );
+        customerUserResponseDTO.setCreditCardId(creditCardId(customerUser));
+        customerUserResponseDTO.setId(customerUser.getId());
+        customerUserResponseDTO.setEmail(customerUser.getEmail());
+        customerUserResponseDTO.setName(customerUser.getName());
+        customerUserResponseDTO.setSurname(customerUser.getSurname());
+        customerUserResponseDTO.setBirthDate(customerUser.getBirthDate());
+        customerUserResponseDTO.setPhoneNumber(customerUser.getPhoneNumber());
+        customerUserResponseDTO.setAvatar(customerUser.getAvatar());
+        customerUserResponseDTO.setRole(customerUser.getRole());
+        customerUserResponseDTO.setActive(customerUser.isActive());
 
         return customerUserResponseDTO;
     }
 
     private long employerRestaurantId(EmployeeUser employee) {
-        if ( employee == null ) {
+        if (employee == null) {
             return 0L;
         }
         Restaurant employerRestaurant = employee.getEmployerRestaurant();
-        if ( employerRestaurant == null ) {
+        if (employerRestaurant == null) {
             return 0L;
         }
-        long id = employerRestaurant.getId();
-        return id;
+        return employerRestaurant.getId();
     }
 
     private long creditCardId(CustomerUser customerUser) {
-        if ( customerUser == null ) {
+        if (customerUser == null) {
             return 0L;
         }
         CreditCard creditCard = customerUser.getCreditCard();
-        if ( creditCard == null ) {
+        if (creditCard == null) {
             return 0L;
         }
-        long id = creditCard.getId();
-        return id;
+        return creditCard.getId();
     }
 }

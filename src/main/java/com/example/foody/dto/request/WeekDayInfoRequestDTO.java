@@ -1,6 +1,6 @@
 package com.example.foody.dto.request;
 
-import com.example.foody.utils.SittingTimeStep;
+import com.example.foody.utils.enums.SittingTimeStep;
 import com.example.foody.utils.validators.ValueOfEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,7 +36,7 @@ public class WeekDayInfoRequestDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endDinner;
 
-    @ValueOfEnum(enumClass = SittingTimeStep.class, message = "invalid sittingTimeStep value") // todo test custom validator (test also null case)
+    @ValueOfEnum(enumClass = SittingTimeStep.class, message = "invalid sittingTimeStep value")
     @NotNull(message = "sittingTimeStep cannot be null")
     private String sittingTimeStep;
 

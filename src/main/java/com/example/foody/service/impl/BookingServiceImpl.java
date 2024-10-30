@@ -20,7 +20,7 @@ import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.service.BookingService;
 import com.example.foody.state.booking.ActiveState;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,6 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNullAndApproved(bookingDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", bookingDTO.getRestaurantId()));
 
-        // todo test
         CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         booking.setSittingTime(sittingTime);
@@ -137,7 +136,6 @@ public class BookingServiceImpl implements BookingService {
         // Check if the principal is the owner of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // todo check if I can use instanceof instead of getRole
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenRestaurantAccessException();
         }
@@ -154,9 +152,8 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // todo test
         // Check if the user is the owner of the booking or an admin
-        CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenBookingAccessException();

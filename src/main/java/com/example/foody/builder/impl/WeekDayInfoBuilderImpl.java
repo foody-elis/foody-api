@@ -4,7 +4,7 @@ import com.example.foody.builder.WeekDayInfoBuilder;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.WeekDayInfo;
-import com.example.foody.utils.SittingTimeStep;
+import com.example.foody.utils.enums.SittingTimeStep;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;

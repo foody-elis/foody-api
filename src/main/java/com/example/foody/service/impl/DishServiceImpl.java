@@ -14,7 +14,7 @@ import com.example.foody.repository.DishRepository;
 import com.example.foody.repository.OrderRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.DishService;
-import com.example.foody.utils.Role;
+import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

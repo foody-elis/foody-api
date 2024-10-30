@@ -20,40 +20,38 @@ public class CategoryMapperImpl implements CategoryMapper {
 
     @Override
     public CategoryResponseDTO categoryToCategoryResponseDTO(Category category) {
-        if ( category == null ) {
+        if (category == null) {
             return null;
         }
 
         CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
 
-        categoryResponseDTO.setId( category.getId() );
-        categoryResponseDTO.setName( category.getName() );
+        categoryResponseDTO.setId(category.getId());
+        categoryResponseDTO.setName(category.getName());
 
         return categoryResponseDTO;
     }
 
     @Override
     public Category categoryRequestDTOToCategory(CategoryRequestDTO categoryRequestDTO) {
-        if ( categoryRequestDTO == null ) {
+        if (categoryRequestDTO == null) {
             return null;
         }
 
-        Category category = categoryBuilder
-                .name( categoryRequestDTO.getName() )
+        return categoryBuilder
+                .name(categoryRequestDTO.getName())
                 .build();
-
-        return category;
     }
 
     @Override
     public List<CategoryResponseDTO> categoriesToCategoryResponseDTOs(List<Category> categories) {
-        if ( categories == null ) {
+        if (categories == null) {
             return null;
         }
 
-        List<CategoryResponseDTO> list = new ArrayList<CategoryResponseDTO>( categories.size() );
-        for ( Category category : categories ) {
-            list.add( categoryToCategoryResponseDTO( category ) );
+        List<CategoryResponseDTO> list = new ArrayList<>(categories.size());
+        for (Category category : categories) {
+            list.add(categoryToCategoryResponseDTO(category));
         }
 
         return list;

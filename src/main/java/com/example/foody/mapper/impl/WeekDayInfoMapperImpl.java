@@ -6,7 +6,7 @@ import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.WeekDayInfo;
-import com.example.foody.utils.SittingTimeStep;
+import com.example.foody.utils.enums.SittingTimeStep;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,21 +22,21 @@ public class WeekDayInfoMapperImpl implements WeekDayInfoMapper {
 
     @Override
     public WeekDayInfoResponseDTO weekDayInfoToWeekDayInfoResponseDTO(WeekDayInfo weekDayInfo) {
-        if ( weekDayInfo == null ) {
+        if (weekDayInfo == null) {
             return null;
         }
 
         WeekDayInfoResponseDTO weekDayInfoResponseDTO = new WeekDayInfoResponseDTO();
 
-        weekDayInfoResponseDTO.setRestaurantId( weekDayInfoRestaurantId( weekDayInfo ) );
-        weekDayInfoResponseDTO.setId( weekDayInfo.getId() );
-        weekDayInfoResponseDTO.setWeekDay( weekDayInfo.getWeekDay() );
-        weekDayInfoResponseDTO.setStartLaunch( weekDayInfo.getStartLaunch() );
-        weekDayInfoResponseDTO.setEndLaunch( weekDayInfo.getEndLaunch() );
-        weekDayInfoResponseDTO.setStartDinner( weekDayInfo.getStartDinner() );
-        weekDayInfoResponseDTO.setEndDinner( weekDayInfo.getEndDinner() );
-        if ( weekDayInfo.getSittingTimeStep() != null ) {
-            weekDayInfoResponseDTO.setSittingTimeStep( weekDayInfo.getSittingTimeStep().name() );
+        weekDayInfoResponseDTO.setRestaurantId(weekDayInfoRestaurantId(weekDayInfo));
+        weekDayInfoResponseDTO.setId(weekDayInfo.getId());
+        weekDayInfoResponseDTO.setWeekDay(weekDayInfo.getWeekDay());
+        weekDayInfoResponseDTO.setStartLaunch(weekDayInfo.getStartLaunch());
+        weekDayInfoResponseDTO.setEndLaunch(weekDayInfo.getEndLaunch());
+        weekDayInfoResponseDTO.setStartDinner(weekDayInfo.getStartDinner());
+        weekDayInfoResponseDTO.setEndDinner(weekDayInfo.getEndDinner());
+        if (weekDayInfo.getSittingTimeStep() != null) {
+            weekDayInfoResponseDTO.setSittingTimeStep(weekDayInfo.getSittingTimeStep().name());
         }
 
         return weekDayInfoResponseDTO;
@@ -44,52 +44,49 @@ public class WeekDayInfoMapperImpl implements WeekDayInfoMapper {
 
     @Override
     public WeekDayInfo weekDayInfoRequestDTOToWeekDayInfo(WeekDayInfoRequestDTO weekDayInfoRequestDTO) {
-        if ( weekDayInfoRequestDTO == null ) {
+        if (weekDayInfoRequestDTO == null) {
             return null;
         }
 
         WeekDayInfoBuilder builder = weekDayInfoBuilder
-                .startLaunch( weekDayInfoRequestDTO.getStartLaunch() )
-                .endLaunch( weekDayInfoRequestDTO.getEndLaunch() )
-                .startDinner( weekDayInfoRequestDTO.getStartDinner() )
-                .endDinner( weekDayInfoRequestDTO.getEndDinner() );
+                .startLaunch(weekDayInfoRequestDTO.getStartLaunch())
+                .endLaunch(weekDayInfoRequestDTO.getEndLaunch())
+                .startDinner(weekDayInfoRequestDTO.getStartDinner())
+                .endDinner(weekDayInfoRequestDTO.getEndDinner());
 
-        if ( weekDayInfoRequestDTO.getWeekDay() != null ) {
-            builder.weekDay( weekDayInfoRequestDTO.getWeekDay() );
+        if (weekDayInfoRequestDTO.getWeekDay() != null) {
+            builder.weekDay(weekDayInfoRequestDTO.getWeekDay());
         }
 
-        if ( weekDayInfoRequestDTO.getSittingTimeStep() != null ) {
-            builder.sittingTimeStep( Enum.valueOf( SittingTimeStep.class, weekDayInfoRequestDTO.getSittingTimeStep() ) );
+        if (weekDayInfoRequestDTO.getSittingTimeStep() != null) {
+            builder.sittingTimeStep(Enum.valueOf(SittingTimeStep.class, weekDayInfoRequestDTO.getSittingTimeStep()));
         }
 
-        WeekDayInfo weekDayInfo = builder.build();
-
-        return weekDayInfo;
+        return builder.build();
     }
 
     @Override
     public List<WeekDayInfoResponseDTO> weekDayInfosToWeekDayInfoResponseDTOs(List<WeekDayInfo> weekDayInfos) {
-        if ( weekDayInfos == null ) {
+        if (weekDayInfos == null) {
             return null;
         }
 
-        List<WeekDayInfoResponseDTO> list = new ArrayList<WeekDayInfoResponseDTO>( weekDayInfos.size() );
-        for ( WeekDayInfo weekDayInfo : weekDayInfos ) {
-            list.add( weekDayInfoToWeekDayInfoResponseDTO( weekDayInfo ) );
+        List<WeekDayInfoResponseDTO> list = new ArrayList<>(weekDayInfos.size());
+        for (WeekDayInfo weekDayInfo : weekDayInfos) {
+            list.add(weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo));
         }
 
         return list;
     }
 
     private long weekDayInfoRestaurantId(WeekDayInfo weekDayInfo) {
-        if ( weekDayInfo == null ) {
+        if (weekDayInfo == null) {
             return 0L;
         }
         Restaurant restaurant = weekDayInfo.getRestaurant();
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return 0L;
         }
-        long id = restaurant.getId();
-        return id;
+        return restaurant.getId();
     }
 }
