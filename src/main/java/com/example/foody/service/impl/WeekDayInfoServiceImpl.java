@@ -5,16 +5,14 @@ import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
-import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.User;
 import com.example.foody.model.WeekDayInfo;
+import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.WeekDayInfoRepository;
 import com.example.foody.service.SittingTimeService;
 import com.example.foody.service.WeekDayInfoService;
-import com.example.foody.utils.enums.Role;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -38,19 +36,17 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     @Override
     public WeekDayInfoResponseDTO save(WeekDayInfoRequestDTO weekDayInfoRequestDTO) {
         WeekDayInfo weekDayInfo = weekDayInfoMapper.weekDayInfoRequestDTOToWeekDayInfo(weekDayInfoRequestDTO);
+        RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.getRestaurant() == null) {
+            throw new EntityNotFoundException("restaurant", "restaurateur_id", principal.getId());
+        }
 
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(weekDayInfoRequestDTO.getRestaurantId())
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", weekDayInfoRequestDTO.getRestaurantId()));
+                .findByIdAndDeletedAtIsNull(principal.getRestaurant().getId())
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", principal.getRestaurant().getId()));
 
         weekDayInfo.setRestaurant(restaurant);
-
-        // Check if the principal is the owner of the week day info's restaurant
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
 
         // Check if a week day info with the same week day and restaurant id already exists
         if (weekDayInfoRepository.existsByDeletedAtIsNullAndWeekDayAndRestaurantId(weekDayInfo.getWeekDay(), restaurant.getId())) {

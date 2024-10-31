@@ -40,10 +40,6 @@ public class WeekDayInfoRequestDTO {
     @NotNull(message = "sittingTimeStep cannot be null")
     private String sittingTimeStep;
 
-    @NotNull(message = "restaurantId cannot be null")
-    @Positive(message = "restaurantId cannot be a negative number")
-    private Long restaurantId;
-
     // Logical properties for validation
 
     @AssertTrue(message = "endLaunch must be after startLaunch")

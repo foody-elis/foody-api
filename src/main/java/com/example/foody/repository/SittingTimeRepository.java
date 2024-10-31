@@ -12,6 +12,8 @@ public interface SittingTimeRepository extends JpaRepository<SittingTime, Long> 
 
     Optional<SittingTime> findByIdAndDeletedAtIsNull(long id);
 
+    List<SittingTime> findAllByDeletedAtIsNullAndWeekDayInfoRestaurantId(long restaurantId);
+
     @Query("select s from SittingTime s " +
             "where s.deletedAt is null and s.weekDayInfo.restaurant.id = :restaurantId and s.weekDayInfo.weekDay = :weekDay " +
             "order by s.start")

@@ -87,6 +87,18 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     }
 
     @Override
+    public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
+        restaurantRepository
+                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
+
+        List<SittingTime> sittingTimes = sittingTimeRepository
+                .findAllByDeletedAtIsNullAndWeekDayInfoRestaurantId(restaurantId);
+
+        return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
+    }
+
+    @Override
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay) {
         restaurantRepository
                 .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)

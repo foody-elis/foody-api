@@ -3,6 +3,7 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.builder.AddressBuilder;
 import com.example.foody.dto.request.RestaurantRequestDTO;
+import com.example.foody.dto.response.CategoryResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
@@ -32,6 +33,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
 
         RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO();
 
+        restaurantResponseDTO.setCategories(categoryListToCategoryResponseDTOList(restaurant.getCategories())); // I set the categories
         restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
         restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
         restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
@@ -44,11 +46,6 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setPhoneNumber(restaurant.getPhoneNumber());
         restaurantResponseDTO.setSeats(restaurant.getSeats());
         restaurantResponseDTO.setApproved(restaurant.isApproved());
-
-        // I add the categories to the restaurantResponseDTO
-        restaurantResponseDTO.setCategories(
-                restaurant.getCategories().stream().map(Category::getId).toList()
-        );
 
         return restaurantResponseDTO;
     }
@@ -66,8 +63,6 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 .civicNumber(restaurantRequestDTO.getCivicNumber())
                 .postalCode(restaurantRequestDTO.getPostalCode())
                 .build();
-
-        // I set the address
 
         return restaurantBuilder
                 .name(restaurantRequestDTO.getName())
@@ -90,6 +85,32 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         }
 
         return list;
+    }
+
+    protected CategoryResponseDTO categoryToCategoryResponseDTO(Category category) {
+        if ( category == null ) {
+            return null;
+        }
+
+        CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
+
+        categoryResponseDTO.setId( category.getId() );
+        categoryResponseDTO.setName( category.getName() );
+
+        return categoryResponseDTO;
+    }
+
+    protected List<CategoryResponseDTO> categoryListToCategoryResponseDTOList(List<Category> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CategoryResponseDTO> list1 = new ArrayList<>( list.size() );
+        for ( Category category : list ) {
+            list1.add( categoryToCategoryResponseDTO( category ) );
+        }
+
+        return list1;
     }
 
     private long restaurantRestaurateurId(Restaurant restaurant) {

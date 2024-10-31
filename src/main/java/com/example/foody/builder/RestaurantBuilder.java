@@ -1,10 +1,8 @@
 package com.example.foody.builder;
 
 import com.example.foody.model.*;
-import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.EmployeeUser;
 import com.example.foody.model.user.RestaurateurUser;
-import com.example.foody.model.user.WaiterUser;
 
 import java.util.List;
 

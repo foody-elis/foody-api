@@ -17,11 +17,12 @@ public class RestaurantResponseDTO {
     private String phoneNumber;
     private int seats;
     private boolean approved;
-    private List<Long> categories = new ArrayList<>();
+    private List<CategoryResponseDTO> categories = new ArrayList<>();
     private String city;
     private String province;
     private String street;
     private String civicNumber;
     private String postalCode;
     private long restaurateurId;
+    // todo /restaurant/{restaurant-id}/week-day/{week-day}/start-after-now
 }
