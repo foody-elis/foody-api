@@ -23,7 +23,6 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
         query.setParameter("id", id);
 
         Optional<Booking> booking = query.getResultList().stream().findFirst();
-
         booking.ifPresent(b -> {
             if (b.getState() == null && b.getStatus() != null) {
                 switch (b.getStatus()) {
@@ -33,6 +32,6 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
             }
         });
 
-        return query.getResultList().stream().findFirst();
+        return booking;
     }
 }

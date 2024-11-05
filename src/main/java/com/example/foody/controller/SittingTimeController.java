@@ -24,8 +24,8 @@ public class SittingTimeController {
         return new ResponseEntity<>(sittingTimeService.findAll(), HttpStatus.OK);
     }
 
-    // todo basta weekDayInfoId? Potrebbe servire il weekDay?
-    // todo in che ordine? Si potrebbe fare "order by weekDay, start"
+    // todo add weekDay to SittingTimeResponseDTO (keep weekDayInfoId)
+    // todo "order by weekDay, start"
     @GetMapping(path = "/restaurant/{restaurant-id}")
     public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurant(@PathVariable("restaurant-id") long restaurantId)
             throws EntityNotFoundException {

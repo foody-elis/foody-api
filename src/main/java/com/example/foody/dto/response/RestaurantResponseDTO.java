@@ -24,5 +24,5 @@ public class RestaurantResponseDTO {
     private String civicNumber;
     private String postalCode;
     private long restaurateurId;
-    // todo /restaurant/{restaurant-id}/week-day/{week-day}/start-after-now
+    // todo add result of endpoint /restaurant/{restaurant-id}/week-day/{week-day}/start-after-now
 }

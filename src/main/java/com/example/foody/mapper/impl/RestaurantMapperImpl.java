@@ -1,13 +1,12 @@
 package com.example.foody.mapper.impl;
 
-import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.builder.AddressBuilder;
+import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.dto.request.RestaurantRequestDTO;
-import com.example.foody.dto.response.CategoryResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
+import com.example.foody.mapper.CategoryMapper;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
-import com.example.foody.model.Category;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.RestaurateurUser;
 import org.springframework.stereotype.Component;
@@ -19,10 +18,12 @@ import java.util.List;
 public class RestaurantMapperImpl implements RestaurantMapper {
     private final RestaurantBuilder restaurantBuilder;
     private final AddressBuilder addressBuilder;
+    private final CategoryMapper categoryMapper;
 
-    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder) {
+    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper) {
         this.restaurantBuilder = restaurantBuilder;
         this.addressBuilder = addressBuilder;
+        this.categoryMapper = categoryMapper;
     }
 
     @Override
@@ -33,7 +34,9 @@ public class RestaurantMapperImpl implements RestaurantMapper {
 
         RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO();
 
-        restaurantResponseDTO.setCategories(categoryListToCategoryResponseDTOList(restaurant.getCategories())); // I set the categories
+        restaurantResponseDTO.setCategories(
+                categoryMapper.categoriesToCategoryResponseDTOs(restaurant.getCategories())
+        );
         restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
         restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
         restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
@@ -85,32 +88,6 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         }
 
         return list;
-    }
-
-    protected CategoryResponseDTO categoryToCategoryResponseDTO(Category category) {
-        if ( category == null ) {
-            return null;
-        }
-
-        CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
-
-        categoryResponseDTO.setId( category.getId() );
-        categoryResponseDTO.setName( category.getName() );
-
-        return categoryResponseDTO;
-    }
-
-    protected List<CategoryResponseDTO> categoryListToCategoryResponseDTOList(List<Category> list) {
-        if ( list == null ) {
-            return null;
-        }
-
-        List<CategoryResponseDTO> list1 = new ArrayList<>( list.size() );
-        for ( Category category : list ) {
-            list1.add( categoryToCategoryResponseDTO( category ) );
-        }
-
-        return list1;
     }
 
     private long restaurantRestaurateurId(Restaurant restaurant) {

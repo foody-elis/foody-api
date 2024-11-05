@@ -21,25 +21,25 @@ public class DishMapperImpl implements DishMapper {
 
     @Override
     public DishResponseDTO dishToDishResponseDTO(Dish dish) {
-        if ( dish == null ) {
+        if (dish == null) {
             return null;
         }
 
         DishResponseDTO dishResponseDTO = new DishResponseDTO();
 
-        dishResponseDTO.setRestaurantId( dishRestaurantId( dish ) );
-        dishResponseDTO.setId( dish.getId() );
-        dishResponseDTO.setName( dish.getName() );
-        dishResponseDTO.setDescription( dish.getDescription() );
-        dishResponseDTO.setPrice( dish.getPrice() );
-        dishResponseDTO.setPhoto( dish.getPhoto() );
+        dishResponseDTO.setRestaurantId(dishRestaurantId(dish));
+        dishResponseDTO.setId(dish.getId());
+        dishResponseDTO.setName(dish.getName());
+        dishResponseDTO.setDescription(dish.getDescription());
+        dishResponseDTO.setPrice(dish.getPrice());
+        dishResponseDTO.setPhoto(dish.getPhoto());
 
         return dishResponseDTO;
     }
 
     @Override
     public Dish dishRequestDTOToDish(DishRequestDTO dishRequestDTO) {
-        if ( dishRequestDTO == null ) {
+        if (dishRequestDTO == null) {
             return null;
         }
 
@@ -53,24 +53,24 @@ public class DishMapperImpl implements DishMapper {
 
     @Override
     public List<DishResponseDTO> dishesToDishResponseDTOs(List<Dish> dishes) {
-        if ( dishes == null ) {
+        if (dishes == null) {
             return null;
         }
 
-        List<DishResponseDTO> list = new ArrayList<>( dishes.size() );
-        for ( Dish dish : dishes ) {
-            list.add( dishToDishResponseDTO( dish ) );
+        List<DishResponseDTO> list = new ArrayList<>(dishes.size());
+        for (Dish dish : dishes) {
+            list.add(dishToDishResponseDTO(dish));
         }
 
         return list;
     }
 
     private long dishRestaurantId(Dish dish) {
-        if ( dish == null ) {
+        if (dish == null) {
             return 0L;
         }
         Restaurant restaurant = dish.getRestaurant();
-        if ( restaurant == null ) {
+        if (restaurant == null) {
             return 0L;
         }
         return restaurant.getId();

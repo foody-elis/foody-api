@@ -7,10 +7,12 @@ import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
+import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.service.RestaurantService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +41,12 @@ public class RestaurantController {
     public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable long id)
             throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/restaurateur")
+    public ResponseEntity<RestaurantResponseDTO> getRestaurantByRestaurateur(@AuthenticationPrincipal RestaurateurUser restaurateur)
+            throws EntityNotFoundException {
+        return new ResponseEntity<>(restaurantService.findByRestaurateur(restaurateur.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/category/{category-id}")

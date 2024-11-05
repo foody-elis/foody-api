@@ -15,6 +15,7 @@ import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
+import com.example.foody.repository.UserRepository;
 import com.example.foody.service.*;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ import java.util.List;
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
     private final RestaurantMapper restaurantMapper;
     private final CategoryService categoryService;
     private final WeekDayInfoService weekDayInfoService;
@@ -37,9 +39,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final AddressService addressService;
     private final DishService dishService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, UserRepository userRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
         this.restaurantMapper = restaurantMapper;
         this.categoryService = categoryService;
         this.weekDayInfoService = weekDayInfoService;
@@ -63,17 +66,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         address.setRestaurant(restaurant);
         address = addressService.save(address);
 
+        // Add the restaurant to the categories
         List<Category> categories = new ArrayList<>();
 
-        // Add the restaurant to the categories
         for (long categoryId : restaurantDTO.getCategories()) {
             Category category = categoryRepository.findById(categoryId).orElse(null);
 
             if (category != null) {
-                // Add the restaurant to the category
                 category = categoryService.addRestaurant(category.getId(), restaurant);
-
-                // Add the category to the restaurant
                 categories.add(category);
             }
         }
@@ -123,6 +123,19 @@ public class RestaurantServiceImpl implements RestaurantService {
                     .findByIdAndDeletedAtIsNullAndApproved(id, true)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         }
+
+        return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
+    }
+
+    @Override
+    public RestaurantResponseDTO findByRestaurateur(long restaurateurId) {
+        userRepository
+                .findByIdAndDeletedAtIsNull(restaurateurId)
+                .orElseThrow(() -> new EntityNotFoundException("user", "id", restaurateurId));
+
+        Restaurant restaurant = restaurantRepository
+                .findAllByRestaurateur_IdAndDeletedAtIsNull(restaurateurId)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
 
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
     }
