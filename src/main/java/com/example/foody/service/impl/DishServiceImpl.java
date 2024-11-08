@@ -8,6 +8,7 @@ import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
+import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.DishRepository;
@@ -89,6 +90,21 @@ public class DishServiceImpl implements DishService {
                 .findAllByDeletedAtIsNullAndRestaurant(restaurantId);
 
         return dishMapper.dishesToDishResponseDTOs(dishes);
+    }
+
+    @Override
+    public Dish addOrder(long id, Order order) {
+        Dish dish = dishRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
+
+        dish.getOrders().add(order);
+
+        try {
+            return dishRepository.save(dish);
+        } catch (Exception e) {
+            throw new EntityCreationException("dish");
+        }
     }
 
     @Override

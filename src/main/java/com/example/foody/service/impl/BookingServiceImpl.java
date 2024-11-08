@@ -117,10 +117,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDTO> findAllByCustomer(long customerId) {
-        userRepository
-                .findByIdAndDeletedAtIsNull(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("user", "id", customerId));
-
         List<Booking> bookings = bookingRepository
                 .findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(customerId);
 

@@ -101,6 +101,15 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/dishes").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers("/api/v1/dishes/**").authenticated()
 
+                        .requestMatchers(POST, "/api/v1/orders").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
+                        .requestMatchers(DELETE, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/orders/await-payment/*").hasRole(Role.Constants.COOK_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/orders/complete/*").hasRole(Role.Constants.WAITER_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders/customer").access(hasSpecificRole(Role.CUSTOMER))
+                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
+                        .requestMatchers("/api/v1/orders/**").authenticated()
+
                         .anyRequest().permitAll() // todo remove?
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

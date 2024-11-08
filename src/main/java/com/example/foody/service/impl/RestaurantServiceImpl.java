@@ -129,10 +129,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantResponseDTO findByRestaurateur(long restaurateurId) {
-        userRepository
-                .findByIdAndDeletedAtIsNull(restaurateurId)
-                .orElseThrow(() -> new EntityNotFoundException("user", "id", restaurateurId));
-
         Restaurant restaurant = restaurantRepository
                 .findAllByRestaurateur_IdAndDeletedAtIsNull(restaurateurId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
