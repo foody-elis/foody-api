@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,10 +15,10 @@ import java.util.List;
 @Entity
 @DiscriminatorValue(Role.Constants.WAITER_VALUE)
 public class WaiterUser extends EmployeeUser {
-//    @OneToMany(mappedBy = "buyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private List<Order> orders = new ArrayList<>();
-
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "buyer_id", insertable = false, updatable = false))
+    })
     private BuyerUser buyer;
 
     public WaiterUser() {
@@ -27,5 +26,14 @@ public class WaiterUser extends EmployeeUser {
 
     public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Restaurant employerRestaurant, List<Order> orders) {
         super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, employerRestaurant);
+        this.buyer = new BuyerUser(id, orders);
+    }
+
+    public List<Order> getOrders() {
+        return buyer.getOrders();
+    }
+
+    public void setOrders(List<Order> orders) {
+        buyer.setOrders(orders);
     }
 }

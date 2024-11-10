@@ -1,7 +1,6 @@
 package com.example.foody.model;
 
 import com.example.foody.model.user.BuyerUser;
-import com.example.foody.model.user.CustomerUser;
 import com.example.foody.state.order.*;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -30,8 +29,10 @@ public class Order extends DefaultEntity {
     )
     private List<Dish> dishes = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "buyer_id")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "buyer_id"))
+    })
     private BuyerUser buyer;
 
     @ManyToOne

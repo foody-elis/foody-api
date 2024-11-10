@@ -28,10 +28,10 @@ public class CustomerUser extends User {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "buyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private List<Order> orders = new ArrayList<>();
-
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "buyer_id", insertable = false, updatable = false))
+    })
     private BuyerUser buyer;
 
     public CustomerUser() {
@@ -42,5 +42,14 @@ public class CustomerUser extends User {
         this.creditCard = creditCard;
         this.reviews = reviews;
         this.bookings = bookings;
+        this.buyer = new BuyerUser(id, orders);
+    }
+
+    public List<Order> getOrders() {
+        return buyer.getOrders();
+    }
+
+    public void setOrders(List<Order> orders) {
+        buyer.setOrders(orders);
     }
 }
