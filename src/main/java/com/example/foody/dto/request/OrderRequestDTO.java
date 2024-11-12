@@ -12,16 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequestDTO {
-    // todo test regex
     @NotBlank(message = "tableNumber cannot be blank")
-    @Pattern(regexp = "^[0-9]*$", message = "tableNumber should be a number")
+    @Pattern(regexp = "^[0-9]*$", message = "tableNumber should be a non-negative number")
     private String tableNumber;
 
-    // todo test @NotEmpty
     @NotEmpty(message = "dishIds cannot be empty")
-    private List<@NotNull(message = "dishId cannot be null") @Positive(message = "dishId cannot be a negative number") Long> dishes = new ArrayList<>();
+    private List<@NotNull(message = "dishId cannot be null") @Positive(message = "dishId cannot be a negative number or zero") Long> dishes = new ArrayList<>();
 
     @NotNull(message = "restaurantId cannot be null")
-    @Positive(message = "restaurantId cannot be a negative number") // todo cannot be negative or zero
+    @Positive(message = "restaurantId cannot be a negative number or zero")
     private Long restaurantId;
 }

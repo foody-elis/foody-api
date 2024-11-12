@@ -7,7 +7,7 @@ import com.example.foody.mapper.DishMapper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.BuyerUser;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class OrderMapperImpl implements OrderMapper {
         orderResponseDTO.setDishes(
                 dishMapper.dishesToDishResponseDTOs(order.getDishes())
         );
-        orderResponseDTO.setCustomerId(orderCustomerId(order));
+        orderResponseDTO.setBuyerId(orderBuyerId(order));
         orderResponseDTO.setRestaurantId(orderRestaurantId(order));
         orderResponseDTO.setId(order.getId());
         orderResponseDTO.setTableNumber(order.getTableNumber());
@@ -70,15 +70,15 @@ public class OrderMapperImpl implements OrderMapper {
         return list;
     }
 
-    private long orderCustomerId(Order order) {
+    private long orderBuyerId(Order order) {
         if (order == null) {
             return 0L;
         }
-        CustomerUser customer = order.getCustomer();
-        if (customer == null) {
+        BuyerUser buyer = order.getBuyer();
+        if (buyer == null) {
             return 0L;
         }
-        return customer.getId();
+        return buyer.getId();
     }
 
     private long orderRestaurantId(Order order) {

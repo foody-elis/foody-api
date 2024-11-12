@@ -28,7 +28,7 @@ public class RestaurantRequestDTO {
     private String phoneNumber;
 
     @NotNull(message = "seats cannot be null")
-    @Positive(message = "seats cannot be a negative number")
+    @Positive(message = "seats cannot be a negative number or zero")
     private Integer seats;
 
     private List<Long> categories = new ArrayList<>();

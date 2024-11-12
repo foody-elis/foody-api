@@ -22,10 +22,10 @@ public class BookingRequestDTO {
     private Integer seats;
 
     @NotNull(message = "sittingTimeId cannot be null")
-    @Positive(message = "sittingTimeId cannot be a negative number")
+    @Positive(message = "sittingTimeId cannot be a negative number or zero")
     private Long sittingTimeId;
 
     @NotNull(message = "restaurantId cannot be null")
-    @Positive(message = "restaurantId cannot be a negative number")
+    @Positive(message = "restaurantId cannot be a negative number or zero")
     private Long restaurantId;
 }

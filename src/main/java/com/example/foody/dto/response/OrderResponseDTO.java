@@ -14,7 +14,7 @@ public class OrderResponseDTO {
     private long id;
     private String tableNumber;
     private List<DishResponseDTO> dishes = new ArrayList<>();
-    private long customerId;
+    private long buyerId;
     private long restaurantId;
     private String status;
 }

@@ -20,7 +20,7 @@ public class DishRequestDTO {
     private String description;
 
     @NotNull(message = "price cannot be null")
-    @Positive(message = "price cannot be a negative number")
+    @Positive(message = "price cannot be a negative number or zero")
     @Digits(integer = 6, fraction = 2, message = "price should have up to 6 integer digits and 2 decimal places")
     private BigDecimal price;
 
@@ -29,6 +29,6 @@ public class DishRequestDTO {
     private String photo;
 
     @NotNull(message = "restaurantId cannot be null")
-    @Positive(message = "restaurantId cannot be a negative number")
+    @Positive(message = "restaurantId cannot be a negative number or zero")
     private Long restaurantId;
 }

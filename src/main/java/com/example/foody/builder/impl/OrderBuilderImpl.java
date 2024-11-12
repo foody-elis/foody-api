@@ -4,7 +4,7 @@ import com.example.foody.builder.OrderBuilder;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.BuyerUser;
 import com.example.foody.state.order.OrderState;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class OrderBuilderImpl implements OrderBuilder {
     private long id;
     private String tableNumber;
     private List<Dish> dishes = new ArrayList<>();
-    private CustomerUser customer;
+    private BuyerUser buyer;
     private Restaurant restaurant;
     private OrderState state;
 
@@ -39,8 +39,8 @@ public class OrderBuilderImpl implements OrderBuilder {
     }
 
     @Override
-    public OrderBuilder customer(CustomerUser customer) {
-        this.customer = customer;
+    public OrderBuilder buyer(BuyerUser buyer) {
+        this.buyer = buyer;
         return this;
     }
 
@@ -58,6 +58,6 @@ public class OrderBuilderImpl implements OrderBuilder {
 
     @Override
     public Order build() {
-        return new Order(id, tableNumber, dishes, customer, restaurant, state);
+        return new Order(id, tableNumber, dishes, buyer, restaurant, state);
     }
 }
