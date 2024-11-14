@@ -8,12 +8,13 @@ import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
 import com.example.foody.exceptions.order.InvalidOrderStateException;
-import com.example.foody.model.user.CustomerUser;
+import com.example.foody.exceptions.order.OrderNotAllowedException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.model.user.User;
 import com.example.foody.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> saveOrder(@Valid @RequestBody OrderRequestDTO orderRequestDTO)
-            throws EntityNotFoundException, EntityCreationException {
+            throws EntityNotFoundException, ForbiddenOrderAccessException, OrderNotAllowedException, EntityCreationException {
         return new ResponseEntity<>(orderService.save(orderRequestDTO), HttpStatus.CREATED);
     }
 
@@ -45,15 +46,15 @@ public class OrderController {
         return new ResponseEntity<>(orderService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/customer")
-    public ResponseEntity<List<OrderResponseDTO>> getOrdersByCustomer(@AuthenticationPrincipal CustomerUser customer)
+    @GetMapping(path = "/buyer")
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersByBuyer(@AuthenticationPrincipal User buyer)
             throws EntityNotFoundException {
-        return new ResponseEntity<>(orderService.findAllByCustomer(customer.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.findAllByBuyer(buyer.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")
     public ResponseEntity<List<OrderResponseDTO>> getOrdersByRestaurant(@PathVariable("restaurant-id") long restaurantId)
-            throws EntityNotFoundException, ForbiddenOrderAccessException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException {
         return new ResponseEntity<>(orderService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, CustomizedOrderRepository {
     List<Order> findAllByDeletedAtIsNull();
-    List<Order> findAllByDeletedAtIsNullAndCustomer_IdOrderByCreatedAtDesc(long customerId);
+    List<Order> findAllByDeletedAtIsNullAndBuyer_IdOrderByCreatedAtDesc(long buyerId);
     List<Order> findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreatedAtDesc(long restaurantId);
 }

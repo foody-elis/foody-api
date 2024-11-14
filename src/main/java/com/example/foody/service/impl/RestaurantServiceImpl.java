@@ -15,7 +15,6 @@ import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.repository.UserRepository;
 import com.example.foody.service.*;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
@@ -31,24 +30,26 @@ import java.util.List;
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
     private final RestaurantMapper restaurantMapper;
     private final CategoryService categoryService;
     private final WeekDayInfoService weekDayInfoService;
     private final BookingService bookingService;
     private final AddressService addressService;
     private final DishService dishService;
+    private final OrderService orderService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, UserRepository userRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService) {
+    // todo is a best practice to inject many services in another service?
+
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
         this.restaurantMapper = restaurantMapper;
         this.categoryService = categoryService;
         this.weekDayInfoService = weekDayInfoService;
         this.bookingService = bookingService;
         this.addressService = addressService;
         this.dishService = dishService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -207,7 +208,12 @@ public class RestaurantServiceImpl implements RestaurantService {
         // Remove the associated address
         addressService.remove(restaurant.getAddress().getId());
 
-        // todo remove the associated orders, reviews, owner, employees
+        // Remove the associated orders
+        restaurant.getOrders().forEach(
+                order -> orderService.remove(order.getId())
+        );
+
+        // todo remove the associated reviews, owner, employees
 
         try {
             restaurantRepository.save(restaurant);

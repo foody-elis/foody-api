@@ -28,6 +28,7 @@ public class DishRequestDTO {
     @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
     private String photo;
 
+    // todo remove? (restaurateur can add dishes to any restaurant and restaurateur can have only one restaurant)
     @NotNull(message = "restaurantId cannot be null")
     @Positive(message = "restaurantId cannot be a negative number or zero")
     private Long restaurantId;

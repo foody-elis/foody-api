@@ -8,23 +8,24 @@ import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
 import com.example.foody.exceptions.order.InvalidOrderStateException;
+import com.example.foody.exceptions.order.OrderNotAllowedException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
-import com.example.foody.repository.DishRepository;
-import com.example.foody.repository.OrderRepository;
-import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.repository.UserRepository;
+import com.example.foody.repository.*;
 import com.example.foody.service.DishService;
 import com.example.foody.service.OrderService;
+import com.example.foody.state.order.PreparingState;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,16 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantRepository restaurantRepository;
+    private final BookingRepository bookingRepository;
     private final DishRepository dishRepository;
     private final UserRepository userRepository;
     private final DishService dishService;
     private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, UserRepository userRepository, DishService dishService, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, UserRepository userRepository, DishService dishService, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
+        this.bookingRepository = bookingRepository;
         this.dishRepository = dishRepository;
         this.userRepository = userRepository;
         this.dishService = dishService;
@@ -51,18 +54,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDTO save(OrderRequestDTO orderDTO) {
         Order order = orderMapper.orderRequestDTOToOrder(orderDTO);
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(orderDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", orderDTO.getRestaurantId()));
-        CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Dish> dishes = addOrderToDishes(order, orderDTO.getDishes());
+        List<Dish> dishes = addOrderToDishesOrThrow(order, orderDTO.getDishes());
 
+        order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
         order.setRestaurant(restaurant);
-        order.setCustomer(principal);
         order.setDishes(dishes);
+        order.setState(new PreparingState(order));
 
-        // todo controllare se c'è una prenotazione attiva per il momento in cui sto creando l'ordine (controllo inutile qualora anche WAITER può creare ordini)
-        // todo controllare se i piatti appartengono al ristorante
+        checkOrderCreationOrThrow(principal, order);
 
         try {
             order = orderRepository.save(order);
@@ -87,17 +90,21 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
+
         checkOrderAccessOrThrow(principal, order);
+
         return orderMapper.orderToOrderResponseDTO(order);
     }
 
     @Override
-    public List<OrderResponseDTO> findAllByCustomer(long customerId) {
+    public List<OrderResponseDTO> findAllByBuyer(long buyerId) {
         userRepository
-                .findByIdAndDeletedAtIsNull(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("user", "id", customerId));
+                .findByIdAndDeletedAtIsNull(buyerId)
+                .orElseThrow(() -> new EntityNotFoundException("user", "id", buyerId));
+
         List<Order> orders = orderRepository
-                .findAllByDeletedAtIsNullAndCustomer_IdOrderByCreatedAtDesc(customerId);
+                .findAllByDeletedAtIsNullAndBuyer_IdOrderByCreatedAtDesc(buyerId);
+
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }
 
@@ -107,9 +114,12 @@ public class OrderServiceImpl implements OrderService {
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         checkRestaurantAccessOrThrow(principal, restaurant);
+
         List<Order> orders = orderRepository
                 .findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreatedAtDesc(restaurantId);
+
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }
 
@@ -119,6 +129,7 @@ public class OrderServiceImpl implements OrderService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         checkAwaitPaymentAccess(principal, order);
 
         try {
@@ -141,6 +152,7 @@ public class OrderServiceImpl implements OrderService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         checkCompleteAccess(principal, order);
 
         try {
@@ -162,7 +174,9 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
+
         order.setDeletedAt(LocalDateTime.now());
+        removeOrderFromDishes(order);
 
         try {
             orderRepository.save(order);
@@ -173,12 +187,12 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    private List<Dish> addOrderToDishes(Order order, List<Long> dishIds) {
+    private List<Dish> addOrderToDishesOrThrow(Order order, List<Long> dishIds) {
         List<Dish> dishes = new ArrayList<>();
-
         for (long dishId : dishIds) {
-            Dish dish = dishRepository.findByIdAndDeletedAtIsNull(dishId).orElse(null);
-
+            Dish dish = dishRepository
+                    .findByIdAndDeletedAtIsNull(dishId)
+                    .orElseThrow(() -> new EntityNotFoundException("dish", "id", dishId));
             if (dish != null) {
                 dish = dishService.addOrder(dish.getId(), order);
                 dishes.add(dish);
@@ -188,12 +202,60 @@ public class OrderServiceImpl implements OrderService {
         return dishes;
     }
 
-    // Check if the user is the owner of the order or a restaurateur/cook/waiter of the restaurant or an admin
+    private void removeOrderFromDishes(Order order) {
+        order.getDishes().forEach(
+                dish -> dish.getOrders().remove(order)
+        );
+        dishRepository.saveAll(order.getDishes());
+    }
+
+    // Check if the order can be created
+    private void checkOrderCreationOrThrow(User user, Order order) {
+        if (user.getRole().equals(Role.WAITER)) {
+            checkIsWaiterOfRestaurant(user, order);
+        }
+        if (user.getRole().equals(Role.CUSTOMER)) {
+            checkActiveReservationOrThrow(order);
+        }
+        checkDishesBelongToRestaurantOrThrow(order);
+    }
+
+    // Check if the user is a waiter of the restaurant
+    private void checkIsWaiterOfRestaurant(User user, Order order) {
+        if (order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> employeeUser.getId() == user.getId())) {
+            throw new ForbiddenOrderAccessException();
+        }
+    }
+
+    /*
+        Check if there is a booking with:
+        - not in the past
+        - status ACTIVE
+        - customer_id equal to that of the order
+        - restaurant_id equal to that of the order
+        - sitting_time with:
+            - week_day equal to that of the order
+            - start <= order time <= end
+     */
+    private void checkActiveReservationOrThrow(Order order) {
+        if (!bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId())) {
+            throw new OrderNotAllowedException(order.getRestaurant().getId(), "there are no active bookings for the buyer");
+        }
+    }
+
+    // Check if all the dishes belong to the restaurant of the order
+    private void checkDishesBelongToRestaurantOrThrow(Order order) {
+        if (order.getDishes().stream().anyMatch(dish -> dish.getRestaurant().getId() != order.getRestaurant().getId())) {
+            throw new OrderNotAllowedException(order.getRestaurant().getId(), "some dishes do not belong to the restaurant");
+        }
+    }
+
+    // Check if the user is the buyer of the order or a restaurateur/cook/waiter of the restaurant or an admin
     private void checkOrderAccessOrThrow(User user, Order order) {
-        if (order.getCustomer().getId() != user.getId()
-                && order.getRestaurant().getRestaurateur().getId() != user.getId()
-                && order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> employeeUser.getId() == user.getId())
-                && !user.getRole().equals(Role.ADMIN)) {
+        if (order.getBuyer().getId() != user.getId() &&
+                order.getRestaurant().getRestaurateur().getId() != user.getId() &&
+                order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> employeeUser.getId() == user.getId()) &&
+                !user.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenOrderAccessException();
         }
     }
@@ -201,22 +263,22 @@ public class OrderServiceImpl implements OrderService {
     // Check if the user is the owner of the restaurant or an admin
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
         if (restaurant.getRestaurateur().getId() != user.getId() && !user.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenOrderAccessException();
+            throw new ForbiddenRestaurantAccessException();
         }
     }
 
     // Check if the user is a cook of the restaurant or an admin
     private void checkAwaitPaymentAccess(User user, Order order) {
-        if (order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> (employeeUser.getId() == user.getId() && user.getRole().equals(Role.COOK)))
-                && !user.getRole().equals(Role.ADMIN)) {
+        if (order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> (employeeUser.getId() == user.getId() && user.getRole().equals(Role.COOK))) &&
+                !user.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenOrderAccessException();
         }
     }
 
     // Check if the user is a waiter of the restaurant or an admin
     private void checkCompleteAccess(User user, Order order) {
-        if (order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> (employeeUser.getId() == user.getId() && user.getRole().equals(Role.WAITER)))
-                && !user.getRole().equals(Role.ADMIN)) {
+        if (order.getRestaurant().getEmployees().stream().noneMatch(employeeUser -> (employeeUser.getId() == user.getId() && user.getRole().equals(Role.WAITER))) &&
+                !user.getRole().equals(Role.ADMIN)) {
             throw new ForbiddenOrderAccessException();
         }
     }

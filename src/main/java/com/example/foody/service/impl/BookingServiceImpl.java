@@ -17,7 +17,6 @@ import com.example.foody.model.user.User;
 import com.example.foody.repository.BookingRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
-import com.example.foody.repository.UserRepository;
 import com.example.foody.service.BookingService;
 import com.example.foody.state.booking.ActiveState;
 import com.example.foody.utils.enums.Role;
@@ -33,14 +32,12 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final SittingTimeRepository sittingTimeRepository;
-    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final BookingMapper bookingMapper;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper) {
+    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.sittingTimeRepository = sittingTimeRepository;
-        this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingMapper = bookingMapper;
     }

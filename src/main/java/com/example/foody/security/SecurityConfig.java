@@ -104,7 +104,7 @@ public class SecurityConfig {
                         .requestMatchers(PATCH, "/api/v1/orders/await-payment/*").hasRole(Role.Constants.COOK_VALUE)
                         .requestMatchers(PATCH, "/api/v1/orders/complete/*").hasRole(Role.Constants.WAITER_VALUE)
                         .requestMatchers(GET, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
-                        .requestMatchers(GET, "/api/v1/orders/customer").access(hasSpecificRole(Role.CUSTOMER))
+                        .requestMatchers(GET, "/api/v1/orders/buyer").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
                         .requestMatchers(GET, "/api/v1/orders/restaurant/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers("/api/v1/orders/**").authenticated()
 

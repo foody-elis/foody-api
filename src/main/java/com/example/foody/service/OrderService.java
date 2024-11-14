@@ -9,7 +9,7 @@ public interface OrderService {
     OrderResponseDTO save(OrderRequestDTO orderDTO);
     List<OrderResponseDTO> findAll();
     OrderResponseDTO findById(long id);
-    List<OrderResponseDTO> findAllByCustomer(long customerId);
+    List<OrderResponseDTO> findAllByBuyer(long buyerId);
     List<OrderResponseDTO> findAllByRestaurant(long restaurantId);
     OrderResponseDTO awaitPaymentById(long id);
     OrderResponseDTO completeById(long id);
