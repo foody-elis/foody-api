@@ -102,7 +102,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the owner of the booking or an admin
+        // Check if the user is the customer of the booking or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -126,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        // Check if the principal is the owner of the restaurant or an admin
+        // Check if the principal is the restaurateur of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -145,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the owner of the booking or an admin
+        // Check if the user is the customer of the booking or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {

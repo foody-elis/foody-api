@@ -213,7 +213,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 order -> orderService.remove(order.getId())
         );
 
-        // todo remove the associated reviews, owner, employees
+        // todo remove the associated reviews, restaurateur, employees
 
         try {
             restaurantRepository.save(restaurant);

@@ -47,7 +47,7 @@ public class DishServiceImpl implements DishService {
                 .findByIdAndDeletedAtIsNull(dishDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", dishDTO.getRestaurantId()));
 
-        // Check if the user is the owner of the dish's restaurant
+        // Check if the user is the restaurateur of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -113,7 +113,7 @@ public class DishServiceImpl implements DishService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
 
-        // Check if the user is the owner of the dish's restaurant
+        // Check if the user is the restaurateur of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (dish.getRestaurant().getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {

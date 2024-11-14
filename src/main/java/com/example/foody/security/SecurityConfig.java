@@ -105,7 +105,7 @@ public class SecurityConfig {
                         .requestMatchers(PATCH, "/api/v1/orders/complete/*").hasRole(Role.Constants.WAITER_VALUE)
                         .requestMatchers(GET, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers(GET, "/api/v1/orders/buyer").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
-                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").access(hasSpecificRole(Role.ADMIN, Role.RESTAURATEUR, Role.COOK, Role.WAITER))
                         .requestMatchers("/api/v1/orders/**").authenticated()
 
                         .anyRequest().permitAll() // todo remove?
