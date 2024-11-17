@@ -8,6 +8,7 @@ import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
+import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.DishRepository;
@@ -46,7 +47,7 @@ public class DishServiceImpl implements DishService {
                 .findByIdAndDeletedAtIsNull(dishDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", dishDTO.getRestaurantId()));
 
-        // Check if the user is the owner of the dish's restaurant
+        // Check if the user is the restaurateur of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -92,12 +93,27 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public Dish addOrder(long id, Order order) {
+        Dish dish = dishRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
+
+        dish.getOrders().add(order);
+
+        try {
+            return dishRepository.save(dish);
+        } catch (Exception e) {
+            throw new EntityCreationException("dish");
+        }
+    }
+
+    @Override
     public boolean remove(long id) {
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
 
-        // Check if the user is the owner of the dish's restaurant
+        // Check if the user is the restaurateur of the dish's restaurant
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (dish.getRestaurant().getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {

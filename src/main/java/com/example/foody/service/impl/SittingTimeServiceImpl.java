@@ -40,20 +40,18 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         List<SittingTime> sittingTimes = new ArrayList<>();
 
         int minutes = weekDayInfo.getSittingTimeStep().getMinutes();
-        sittingTimes.addAll(generate(weekDayInfo, weekDayInfo.getStartLaunch(), weekDayInfo.getEndLaunch(), minutes));
-        sittingTimes.addAll(generate(weekDayInfo, weekDayInfo.getStartDinner(), weekDayInfo.getEndDinner(), minutes));
+        sittingTimes.addAll(generateSittingTimes(weekDayInfo, weekDayInfo.getStartLaunch(), weekDayInfo.getEndLaunch(), minutes));
+        sittingTimes.addAll(generateSittingTimes(weekDayInfo, weekDayInfo.getStartDinner(), weekDayInfo.getEndDinner(), minutes));
 
         return sittingTimes;
     }
 
-    private List<SittingTime> generate(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
+    private List<SittingTime> generateSittingTimes(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
         List<SittingTime> sittingTimes = new ArrayList<>();
         LocalTime currentStart = start;
-        LocalTime currentEnd;
 
-        // Check if currentStart + minutes <= end
-        while (currentStart.plusMinutes(minutes).isBefore(end) || currentStart.plusMinutes(minutes).equals(end)) {
-            currentEnd = currentStart.plusMinutes(minutes);
+        while (!currentStart.isAfter(end.minusMinutes(minutes))) {
+            LocalTime currentEnd = currentStart.plusMinutes(minutes);
 
             SittingTime sittingTime = sittingTimeBuilder
                     .start(currentStart)
@@ -61,8 +59,7 @@ public class SittingTimeServiceImpl implements SittingTimeService {
                     .weekDayInfo(weekDayInfo)
                     .build();
 
-            // Save the sitting time
-            sittingTimes.add(save(sittingTime));
+            sittingTimes.add(saveSittingTime(sittingTime));
 
             currentStart = currentEnd;
         }
@@ -70,14 +67,12 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         return sittingTimes;
     }
 
-    private SittingTime save(SittingTime sittingTime) {
+    private SittingTime saveSittingTime(SittingTime sittingTime) {
         try {
-            sittingTime = sittingTimeRepository.save(sittingTime);
+            return sittingTimeRepository.save(sittingTime);
         } catch (Exception e) {
             throw new EntityCreationException("sitting time");
         }
-
-        return sittingTime;
     }
 
     @Override

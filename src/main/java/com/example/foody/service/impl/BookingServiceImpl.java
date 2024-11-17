@@ -17,7 +17,6 @@ import com.example.foody.model.user.User;
 import com.example.foody.repository.BookingRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
-import com.example.foody.repository.UserRepository;
 import com.example.foody.service.BookingService;
 import com.example.foody.state.booking.ActiveState;
 import com.example.foody.utils.enums.Role;
@@ -33,14 +32,12 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final SittingTimeRepository sittingTimeRepository;
-    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final BookingMapper bookingMapper;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper) {
+    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.sittingTimeRepository = sittingTimeRepository;
-        this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingMapper = bookingMapper;
     }
@@ -105,7 +102,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the owner of the booking or an admin
+        // Check if the user is the customer of the booking or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -117,10 +114,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDTO> findAllByCustomer(long customerId) {
-        userRepository
-                .findByIdAndDeletedAtIsNull(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("user", "id", customerId));
-
         List<Booking> bookings = bookingRepository
                 .findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(customerId);
 
@@ -133,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        // Check if the principal is the owner of the restaurant or an admin
+        // Check if the principal is the restaurateur of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
@@ -152,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the owner of the booking or an admin
+        // Check if the user is the customer of the booking or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {

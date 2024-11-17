@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser) {
-        // Check if the principal is the owner of the restaurant or an admin
+        // Check if the principal is the restaurateur of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Restaurant restaurant = restaurantRepository

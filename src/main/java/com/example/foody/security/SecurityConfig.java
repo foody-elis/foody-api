@@ -19,8 +19,6 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.util.Set;
-
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -100,6 +98,15 @@ public class SecurityConfig {
                         .requestMatchers(DELETE, "/api/v1/dishes/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(GET, "/api/v1/dishes").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers("/api/v1/dishes/**").authenticated()
+
+                        .requestMatchers(POST, "/api/v1/orders").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
+                        .requestMatchers(DELETE, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/orders/await-payment/*").hasRole(Role.Constants.COOK_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/orders/complete/*").hasRole(Role.Constants.WAITER_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders/buyer").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
+                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").access(hasSpecificRole(Role.ADMIN, Role.RESTAURATEUR, Role.COOK, Role.WAITER))
+                        .requestMatchers("/api/v1/orders/**").authenticated()
 
                         .anyRequest().permitAll() // todo remove?
                 )
