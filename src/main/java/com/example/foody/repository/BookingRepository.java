@@ -15,14 +15,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
 
     List<Booking> findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(long restaurantId);
 
-    // todo remove ACTIVE
+    // todo remove 'ACTIVE' string
     // colaesce() returns the first non-null argument (case: empty table so sum() returns null)
     @Query("select coalesce(sum(b.seats), 0) from Booking b " +
             "where b.deletedAt is null and b.status = 'ACTIVE' " +
             "and b.date = :date and b.sittingTime.id = :sittingTimeId and b.restaurant.id = :restaurantId")
     long countBookedSeats(LocalDate date, long sittingTimeId, long restaurantId);
 
-    // todo remove ACTIVE
+    // todo remove 'ACTIVE' string
     // weekday() returns the day of the week (0 = Monday, ..., 6 = Sunday)
     @Query("select count(b) > 0 from Booking b " +
             "where b.deletedAt is null and b.status = 'ACTIVE' " +

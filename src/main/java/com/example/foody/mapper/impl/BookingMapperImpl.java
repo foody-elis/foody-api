@@ -61,9 +61,7 @@ public class BookingMapperImpl implements BookingMapper {
         }
 
         List<BookingResponseDTO> list = new ArrayList<>(bookings.size());
-        for (Booking booking : bookings) {
-            list.add(bookingToBookingResponseDTO(booking));
-        }
+        bookings.forEach(booking -> list.add(bookingToBookingResponseDTO(booking)));
 
         return list;
     }

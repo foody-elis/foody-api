@@ -36,7 +36,6 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("address", "id", id));
-
         address.setDeletedAt(LocalDateTime.now());
 
         try {

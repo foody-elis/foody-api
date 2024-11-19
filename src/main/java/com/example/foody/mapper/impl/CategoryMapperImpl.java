@@ -50,9 +50,7 @@ public class CategoryMapperImpl implements CategoryMapper {
         }
 
         List<CategoryResponseDTO> list = new ArrayList<>(categories.size());
-        for (Category category : categories) {
-            list.add(categoryToCategoryResponseDTO(category));
-        }
+        categories.forEach(category -> list.add(categoryToCategoryResponseDTO(category)));
 
         return list;
     }

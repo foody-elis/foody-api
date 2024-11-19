@@ -35,23 +35,13 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
     @Override
     public WeekDayInfoResponseDTO save(WeekDayInfoRequestDTO weekDayInfoRequestDTO) {
-        WeekDayInfo weekDayInfo = weekDayInfoMapper.weekDayInfoRequestDTOToWeekDayInfo(weekDayInfoRequestDTO);
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal.getRestaurant() == null) {
-            throw new EntityNotFoundException("restaurant", "restaurateur_id", principal.getId());
-        }
-
-        Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(principal.getRestaurant().getId())
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", principal.getRestaurant().getId()));
+        WeekDayInfo weekDayInfo = weekDayInfoMapper.weekDayInfoRequestDTOToWeekDayInfo(weekDayInfoRequestDTO);
+        Restaurant restaurant = getRestaurant(principal);
 
         weekDayInfo.setRestaurant(restaurant);
 
-        // Check if a week day info with the same week day and restaurant id already exists
-        if (weekDayInfoRepository.existsByDeletedAtIsNullAndWeekDayAndRestaurantId(weekDayInfo.getWeekDay(), restaurant.getId())) {
-            throw new EntityDuplicateException("week day info", "weekDay", weekDayInfo.getWeekDay(), "restaurantId", restaurant.getId());
-        }
+        checkWeekDayInfoCreationOrThrow(weekDayInfo, restaurant);
 
         try {
             weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
@@ -59,7 +49,6 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
             throw new EntityCreationException("week day info");
         }
 
-        // Generate and save week day info's sitting times
         sittingTimeService.createForWeekDayInfo(weekDayInfo);
 
         return weekDayInfoMapper.weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo);
@@ -76,13 +65,9 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         WeekDayInfo weekDayInfo = weekDayInfoRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
-
         weekDayInfo.setDeletedAt(LocalDateTime.now());
 
-        // Remove the associated sitting times
-        weekDayInfo.getSittingTimes().forEach(
-                sittingTime -> sittingTimeService.remove(sittingTime.getId())
-        );
+        removeAssociatedEntities(weekDayInfo);
 
         try {
             weekDayInfoRepository.save(weekDayInfo);
@@ -91,5 +76,35 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         }
 
         return true;
+    }
+
+    private Restaurant getRestaurant(RestaurateurUser restaurateur) {
+        if (restaurateur.getRestaurant() == null) {
+            throw new EntityNotFoundException("restaurant", "restaurateur_id", restaurateur.getId());
+        } else {
+            return restaurantRepository
+                    .findByIdAndDeletedAtIsNull(restaurateur.getRestaurant().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurateur.getRestaurant().getId()));
+        }
+    }
+
+    private void checkWeekDayInfoCreationOrThrow(WeekDayInfo weekDayInfo, Restaurant restaurant) {
+        checkWeekDayInfoExists(weekDayInfo, restaurant);
+    }
+
+    private void checkWeekDayInfoExists(WeekDayInfo weekDayInfo, Restaurant restaurant) {
+        if (!weekDayInfoRepository.existsByDeletedAtIsNullAndWeekDayAndRestaurantId(weekDayInfo.getWeekDay(), restaurant.getId())) return;
+
+        throw new EntityDuplicateException("week day info", "weekDay", weekDayInfo.getWeekDay(), "restaurantId", restaurant.getId());
+    }
+
+    private void removeAssociatedEntities(WeekDayInfo weekDayInfo) {
+        removeSittingTimes(weekDayInfo);
+    }
+
+    private void removeSittingTimes(WeekDayInfo weekDayInfo) {
+        weekDayInfo.getSittingTimes().forEach(sittingTime ->
+                sittingTimeService.remove(sittingTime.getId())
+        );
     }
 }

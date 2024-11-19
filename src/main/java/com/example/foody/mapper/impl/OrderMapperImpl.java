@@ -63,9 +63,7 @@ public class OrderMapperImpl implements OrderMapper {
         }
 
         List<OrderResponseDTO> list = new ArrayList<>(orders.size());
-        for (Order order : orders) {
-            list.add(orderToOrderResponseDTO(order));
-        }
+        orders.forEach(order -> list.add(orderToOrderResponseDTO(order)));
 
         return list;
     }

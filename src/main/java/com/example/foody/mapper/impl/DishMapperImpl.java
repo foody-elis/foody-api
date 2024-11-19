@@ -58,9 +58,7 @@ public class DishMapperImpl implements DishMapper {
         }
 
         List<DishResponseDTO> list = new ArrayList<>(dishes.size());
-        for (Dish dish : dishes) {
-            list.add(dishToDishResponseDTO(dish));
-        }
+        dishes.forEach(dish -> list.add(dishToDishResponseDTO(dish)));
 
         return list;
     }

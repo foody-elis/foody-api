@@ -39,8 +39,8 @@ public class GlobalExceptionHandler {
         Map<String, String> errorMap = new HashMap<>();
 
         // getFieldsErrors() returns all fields that have validation errors
-        exception.getBindingResult().getFieldErrors().forEach(
-                error -> errorMap.put(error.getField(), error.getDefaultMessage())
+        exception.getBindingResult().getFieldErrors().forEach(error ->
+                errorMap.put(error.getField(), error.getDefaultMessage())
         );
 
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());

@@ -16,7 +16,7 @@ import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.*;
-import com.example.foody.utils.enums.Role;
+import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -54,34 +54,16 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantResponseDTO save(RestaurantRequestDTO restaurantDTO) {
-        Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
-        Address address = restaurant.getAddress();
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
+        Address address = saveRestaurantAddress(restaurant);
+        List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
 
-        // Check if the restaurateur already has a restaurant
-        if (restaurantRepository.existsByDeletedAtIsNullAndRestaurateur_Id(principal.getId())) {
-            throw new RestaurateurAlreadyHasRestaurantException(principal.getId());
-        }
+        checkRestaurantCreationOrThrow(principal);
 
-        // Save the associated address
-        address.setRestaurant(restaurant);
-        address = addressService.save(address);
-
-        // Add the restaurant to the categories
-        List<Category> categories = new ArrayList<>();
-
-        for (long categoryId : restaurantDTO.getCategories()) {
-            Category category = categoryRepository.findById(categoryId).orElse(null);
-
-            if (category != null) {
-                category = categoryService.addRestaurant(category.getId(), restaurant);
-                categories.add(category);
-            }
-        }
-
+        restaurant.setRestaurateur(principal);
         restaurant.setAddress(address);
         restaurant.setCategories(categories);
-        restaurant.setRestaurateur(principal);
 
         try {
             restaurant = restaurantRepository.save(restaurant);
@@ -94,37 +76,15 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<RestaurantResponseDTO> findAll() {
-        List<Restaurant> restaurants;
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // Return all the restaurants, approved or not
-            restaurants = restaurantRepository.findAllByDeletedAtIsNull();
-        } else {
-            // Return only the approved restaurants
-            restaurants = restaurantRepository.findAllByDeletedAtIsNullAndApproved(true);
-        }
-
+        List<Restaurant> restaurants = getRestaurantsBasedOnUserRole(principal);
         return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
     }
 
     @Override
     public RestaurantResponseDTO findById(long id) {
-        Restaurant restaurant;
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // Return a restaurant by id, approved or not
-            restaurant = restaurantRepository
-                    .findByIdAndDeletedAtIsNull(id)
-                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
-        } else {
-            // Return a restaurant by id, only if it is approved
-            restaurant = restaurantRepository
-                    .findByIdAndDeletedAtIsNullAndApproved(id, true)
-                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
-        }
-
+        Restaurant restaurant = getRestaurantByIdBasedOnUserRole(principal, id);
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
     }
 
@@ -133,27 +93,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository
                 .findAllByRestaurateur_IdAndDeletedAtIsNull(restaurateurId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
-
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
     }
 
     @Override
     public List<RestaurantResponseDTO> findAllByCategory(long categoryId) {
-        categoryRepository
-                .findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("category", "id", categoryId));
-
-        List<Restaurant> restaurants;
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal.getRole().equals(Role.ADMIN) || principal.getRole().equals(Role.MODERATOR)) {
-            // Return all the restaurants, approved or not
-            restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNull(categoryId);
-        } else {
-            // Return only the approved restaurants
-            restaurants = restaurantRepository.findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
-        }
-
+        List<Restaurant> restaurants = getRestaurantByCategoryBasedOnUserRole(principal, categoryId);
         return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
     }
 
@@ -162,7 +108,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
-
         restaurant.setApproved(true);
 
         try {
@@ -181,39 +126,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
-
         restaurant.setDeletedAt(LocalDateTime.now());
 
-        // Remove the restaurant from the categories
-        restaurant.getCategories().forEach(
-                category -> category.getRestaurants().remove(restaurant)
-        );
-        categoryRepository.saveAll(restaurant.getCategories());
-
-        // Remove the associated week day infos
-        restaurant.getWeekDayInfos().forEach(
-                weekDayInfo -> weekDayInfoService.remove(weekDayInfo.getId())
-        );
-
-        // Remove the associated bookings
-        restaurant.getBookings().forEach(
-                booking -> bookingService.remove(booking.getId())
-        );
-
-        // Remove the associated dishes
-        restaurant.getDishes().forEach(
-                dish -> dishService.remove(dish.getId())
-        );
-
-        // Remove the associated address
-        addressService.remove(restaurant.getAddress().getId());
-
-        // Remove the associated orders
-        restaurant.getOrders().forEach(
-                order -> orderService.remove(order.getId())
-        );
-
-        // todo remove the associated reviews, restaurateur, employees
+        removeAssociatedEntities(restaurant);
 
         try {
             restaurantRepository.save(restaurant);
@@ -222,5 +137,110 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         return true;
+    }
+
+    private void checkRestaurantCreationOrThrow(User user) {
+        if (!restaurantRepository.existsByDeletedAtIsNullAndRestaurateur_Id(user.getId())) return;
+
+        throw new RestaurateurAlreadyHasRestaurantException(user.getId());
+    }
+
+    private Address saveRestaurantAddress(Restaurant restaurant) {
+        Address address = restaurant.getAddress();
+        address.setRestaurant(restaurant);
+
+        return addressService.save(address);
+
+    }
+
+    private List<Category> addRestaurantToCategories(Restaurant restaurant, List<Long> categoryIds) {
+        List<Category> categories = new ArrayList<>();
+
+        categoryIds.forEach(categoryId -> {
+            Category category = categoryRepository
+                    .findById(categoryId)
+                    .orElse(null);
+            if (category != null) {
+                category = categoryService.addRestaurant(category.getId(), restaurant);
+                categories.add(category);
+            }
+        });
+
+        return categories;
+    }
+
+    private List<Restaurant> getRestaurantsBasedOnUserRole(User user) {
+        if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
+            return restaurantRepository.findAllByDeletedAtIsNull();
+        } else {
+            return restaurantRepository.findAllByDeletedAtIsNullAndApproved(true);
+        }
+    }
+
+    private Restaurant getRestaurantByIdBasedOnUserRole(User user, long id) {
+        if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
+            return restaurantRepository
+                    .findByIdAndDeletedAtIsNull(id)
+                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+        } else {
+            return restaurantRepository
+                    .findByIdAndDeletedAtIsNullAndApproved(id, true)
+                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+        }
+    }
+
+    private List<Restaurant> getRestaurantByCategoryBasedOnUserRole(User user, long categoryId) {
+        if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
+            return restaurantRepository
+                    .findAllByCategoryAndDeletedAtIsNull(categoryId);
+        } else {
+            return restaurantRepository
+                    .findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
+        }
+    }
+
+    private void removeAssociatedEntities(Restaurant restaurant) {
+        removeRestaurantFromCategories(restaurant);
+        removeWeekDayInfos(restaurant);
+        removeBookings(restaurant);
+        removeDishes(restaurant);
+        removeAddress(restaurant);
+        removeOrders(restaurant);
+        // todo remove the associated reviews, restaurateur, employees
+    }
+
+    private void removeRestaurantFromCategories(Restaurant restaurant) {
+        restaurant.getCategories().forEach(category ->
+                category.getRestaurants().remove(restaurant)
+        );
+        categoryRepository.saveAll(restaurant.getCategories());
+    }
+
+    private void removeWeekDayInfos(Restaurant restaurant) {
+        restaurant.getWeekDayInfos().forEach(weekDayInfo ->
+                weekDayInfoService.remove(weekDayInfo.getId())
+        );
+    }
+
+    private void removeBookings(Restaurant restaurant) {
+        restaurant.getBookings().forEach(booking ->
+                bookingService.remove(booking.getId())
+        );
+    }
+
+    private void removeDishes(Restaurant restaurant) {
+        restaurant.getDishes().forEach(dish ->
+                dishService.remove(dish.getId())
+        );
+    }
+
+    private void removeAddress(Restaurant restaurant) {
+        addressService.remove(restaurant.getAddress().getId());
+    }
+
+    private void removeOrders(Restaurant restaurant) {
+        restaurant.getOrders().forEach(order ->
+                orderService.remove(order.getId())
+        );
     }
 }

@@ -72,9 +72,7 @@ public class WeekDayInfoMapperImpl implements WeekDayInfoMapper {
         }
 
         List<WeekDayInfoResponseDTO> list = new ArrayList<>(weekDayInfos.size());
-        for (WeekDayInfo weekDayInfo : weekDayInfos) {
-            list.add(weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo));
-        }
+        weekDayInfos.forEach(weekDayInfo -> list.add(weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo)));
 
         return list;
     }

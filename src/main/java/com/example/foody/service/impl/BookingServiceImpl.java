@@ -19,7 +19,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.service.BookingService;
 import com.example.foody.state.booking.ActiveState;
-import com.example.foody.utils.enums.Role;
+import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -44,40 +44,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDTO save(BookingRequestDTO bookingDTO) {
+        CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingMapper.bookingRequestDTOToBooking(bookingDTO);
-
         SittingTime sittingTime = sittingTimeRepository
                 .findByIdAndDeletedAtIsNull(bookingDTO.getSittingTimeId())
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", bookingDTO.getSittingTimeId()));
-
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNullAndApproved(bookingDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", bookingDTO.getRestaurantId()));
-
-        CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         booking.setSittingTime(sittingTime);
         booking.setRestaurant(restaurant);
         booking.setCustomer(principal);
         booking.setState(new ActiveState(booking));
 
-        // Check if the booking week day is the same as the sitting time week day
-        if (booking.getDate().getDayOfWeek().getValue() != booking.getSittingTime().getWeekDayInfo().getWeekDay()) {
-            throw new InvalidBookingWeekDayException();
-        }
-
-        // Check if the booking restaurant is the same as the sitting time restaurant
-        if (booking.getRestaurant().getId() != booking.getSittingTime().getWeekDayInfo().getRestaurant().getId()) {
-            throw new InvalidBookingRestaurantException();
-        }
-
-        // Check if the restaurant has enough seats available
-        long bookedSeats = bookingRepository
-                .countBookedSeats(bookingDTO.getDate(), bookingDTO.getSittingTimeId(), restaurant.getId());
-
-        if (bookedSeats + bookingDTO.getSeats() > restaurant.getSeats()) {
-            throw new BookingNotAllowedException(bookingDTO.getRestaurantId(), bookingDTO.getDate(), bookingDTO.getSittingTimeId());
-        }
+        checkBookingCreationOrThrow(booking);
 
         try {
             booking = bookingRepository.save(booking);
@@ -98,16 +79,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDTO findById(long id) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the customer of the booking or an admin
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenBookingAccessException();
-        }
+        checkBookingAccessOrThrow(principal, booking);
 
         return bookingMapper.bookingToBookingResponseDTO(booking);
     }
@@ -116,22 +93,17 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDTO> findAllByCustomer(long customerId) {
         List<Booking> bookings = bookingRepository
                 .findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(customerId);
-
         return bookingMapper.bookingsToBookingResponseDTOs(bookings);
     }
 
     @Override
     public List<BookingResponseDTO> findAllByRestaurant(long restaurantId) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        // Check if the principal is the restaurateur of the restaurant or an admin
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
+        checkRestaurantAccessOrThrow(principal, restaurant);
 
         List<Booking> bookings = bookingRepository
                 .findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(restaurantId);
@@ -141,16 +113,12 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDTO cancelById(long id) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        // Check if the user is the customer of the booking or an admin
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (booking.getCustomer().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenBookingAccessException();
-        }
+        checkBookingAccessOrThrow(principal, booking);
 
         try {
             booking.cancel();
@@ -171,7 +139,6 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
-
         booking.setDeletedAt(LocalDateTime.now());
 
         try {
@@ -181,5 +148,45 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return true;
+    }
+
+    private void checkBookingCreationOrThrow(Booking booking) {
+        checkWeekDayOrThrow(booking);
+        checkRestaurantOrThrow(booking);
+        checkSeatsOrThrow(booking);
+    }
+
+    private void checkWeekDayOrThrow(Booking booking) {
+        if (booking.getDate().getDayOfWeek().getValue() == booking.getSittingTime().getWeekDayInfo().getWeekDay()) return;
+
+        throw new InvalidBookingWeekDayException();
+    }
+
+    private void checkRestaurantOrThrow(Booking booking) {
+        if (booking.getRestaurant().getId() == booking.getSittingTime().getWeekDayInfo().getRestaurant().getId()) return;
+
+        throw new InvalidBookingRestaurantException();
+    }
+
+    private void checkSeatsOrThrow(Booking booking) {
+        long bookedSeats = bookingRepository
+                .countBookedSeats(booking.getDate(), booking.getSittingTime().getId(), booking.getRestaurant().getId());
+        if (bookedSeats + booking.getSeats() <= booking.getRestaurant().getSeats()) return;
+
+        throw new BookingNotAllowedException(booking.getRestaurant().getId(), booking.getDate(), booking.getSittingTime().getId());
+    }
+
+    private void checkBookingAccessOrThrow(User user, Booking booking) {
+        if (booking.getCustomer().getId() == user.getId()) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenBookingAccessException();
+    }
+
+    private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenRestaurantAccessException();
     }
 }

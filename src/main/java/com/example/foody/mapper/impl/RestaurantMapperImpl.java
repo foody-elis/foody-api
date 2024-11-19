@@ -83,9 +83,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         }
 
         List<RestaurantResponseDTO> list = new ArrayList<>(restaurants.size());
-        for (Restaurant restaurant : restaurants) {
-            list.add(restaurantToRestaurantResponseDTO(restaurant));
-        }
+        restaurants.forEach(restaurant -> list.add(restaurantToRestaurantResponseDTO(restaurant)));
 
         return list;
     }

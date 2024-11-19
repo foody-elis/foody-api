@@ -92,9 +92,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         }
 
         List<UserResponseDTO> list = new ArrayList<>(users.size());
-        for (U user : users) {
-            list.add(userToUserResponseDTO(user));
-        }
+        users.forEach(user -> list.add(userToUserResponseDTO(user)));
 
         return list;
     }

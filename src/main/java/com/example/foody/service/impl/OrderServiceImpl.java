@@ -185,24 +185,16 @@ public class OrderServiceImpl implements OrderService {
 
     private List<Dish> addOrderToDishesOrThrow(Order order, List<Long> dishIds) {
         List<Dish> dishes = new ArrayList<>();
-        for (long dishId : dishIds) {
+
+        dishIds.forEach(dishId -> {
             Dish dish = dishRepository
                     .findByIdAndDeletedAtIsNull(dishId)
                     .orElseThrow(() -> new EntityNotFoundException("dish", "id", dishId));
-            if (dish != null) {
-                dish = dishService.addOrder(dish.getId(), order);
-                dishes.add(dish);
-            }
-        }
+            dish = dishService.addOrder(dish.getId(), order);
+            dishes.add(dish);
+        });
 
         return dishes;
-    }
-
-    private void removeOrderFromDishes(Order order) {
-        order.getDishes().forEach(
-                dish -> dish.getOrders().remove(order)
-        );
-        dishRepository.saveAll(order.getDishes());
     }
 
     private void checkOrderCreationOrThrow(User user, Order order) {
@@ -216,11 +208,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkIsWaiterOfRestaurant(User user, Order order) {
-        boolean isEmployeeOfRestaurant = order.getRestaurant().getEmployees().stream()
-                .anyMatch(employeeUser -> employeeUser.getId() == user.getId());
-        if (!isEmployeeOfRestaurant) {
-            throw new ForbiddenOrderAccessException();
-        }
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+
+        throw new ForbiddenOrderAccessException();
     }
 
     /*
@@ -234,53 +224,52 @@ public class OrderServiceImpl implements OrderService {
             - start <= order time <= end
      */
     private void checkActiveReservationOrThrow(Order order) {
-        boolean existsActiveBooking = bookingRepository
-                .existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId());
-        if (!existsActiveBooking) {
-            throw new OrderNotAllowedException(order.getRestaurant().getId(), "there are no active bookings for the buyer");
-        }
+        if (bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId())) return;
+
+        throw new OrderNotAllowedException(order.getRestaurant().getId(), "there are no active bookings for the buyer");
     }
 
     private void checkDishesBelongToRestaurantOrThrow(Order order) {
-        boolean allDishesBelongToRestaurant = order.getDishes().stream()
-                .allMatch(dish -> dish.getRestaurant().getId() == order.getRestaurant().getId());
-        if (!allDishesBelongToRestaurant) {
-            throw new OrderNotAllowedException(order.getRestaurant().getId(), "some dishes do not belong to the restaurant");
-        }
+        if (order.getDishes().stream().allMatch(dish -> dish.getRestaurant().getId() == order.getRestaurant().getId())) return;
+
+        throw new OrderNotAllowedException(order.getRestaurant().getId(), "some dishes do not belong to the restaurant");
     }
 
     private void checkOrderAccessOrThrow(User user, Order order) {
-        boolean isBuyer = order.getBuyer().getId() == user.getId();
-        boolean isRestaurateur = order.getRestaurant().getRestaurateur().getId() == user.getId();
-        boolean isEmployeeOfRestaurant = order.getRestaurant().getEmployees().stream()
-                .anyMatch(employeeUser -> employeeUser.getId() == user.getId());
-        if (!isBuyer && !isRestaurateur && !isEmployeeOfRestaurant && !UserRoleUtils.isAdmin(user)) {
-            throw new ForbiddenOrderAccessException();
-        }
+        if(order.getBuyer().getId() == user.getId()) return;
+        if(order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
+        if(UserRoleUtils.isAdmin(user)) return;
+        if(order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+
+        throw new ForbiddenOrderAccessException();
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
-        boolean isRestaurateur = restaurant.getRestaurateur().getId() == user.getId();
-        boolean isEmployeeOfRestaurant = restaurant.getEmployees().stream()
-                .anyMatch(employeeUser -> employeeUser.getId() == user.getId());
-        if (!isRestaurateur && !isEmployeeOfRestaurant && !UserRoleUtils.isAdmin(user)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
+        if (restaurant.getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenRestaurantAccessException();
     }
 
     private void checkAwaitPaymentAccess(User user, Order order) {
-        boolean isCookOfRestaurant = order.getRestaurant().getEmployees().stream()
-                .anyMatch(employeeUser -> employeeUser.getId() == user.getId() && UserRoleUtils.isCook(user));
-        if (!isCookOfRestaurant && !UserRoleUtils.isAdmin(user)) {
-            throw new ForbiddenOrderAccessException();
-        }
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenOrderAccessException();
     }
 
     private void checkCompleteAccess(User user, Order order) {
-        boolean isWaiterOfRestaurant = order.getRestaurant().getEmployees().stream()
-                .anyMatch(employeeUser -> employeeUser.getId() == user.getId() && UserRoleUtils.isWaiter(user));
-        if (!isWaiterOfRestaurant && !UserRoleUtils.isAdmin(user)) {
-            throw new ForbiddenOrderAccessException();
-        }
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenOrderAccessException();
+    }
+
+    private void removeOrderFromDishes(Order order) {
+        order.getDishes().forEach(dish ->
+                dish.getOrders().remove(order)
+        );
+        dishRepository.saveAll(order.getDishes());
     }
 }

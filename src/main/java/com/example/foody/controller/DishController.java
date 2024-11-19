@@ -41,8 +41,7 @@ public class DishController {
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")
-    public ResponseEntity<List<DishResponseDTO>> getDishesByRestaurant(@PathVariable("restaurant-id") long restaurantId)
-            throws EntityNotFoundException {
+    public ResponseEntity<List<DishResponseDTO>> getDishesByRestaurant(@PathVariable("restaurant-id") long restaurantId) {
         return new ResponseEntity<>(dishService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 

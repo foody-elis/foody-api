@@ -19,6 +19,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.service.AuthenticationService;
+import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -123,16 +124,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser) {
-        // Check if the principal is the restaurateur of the restaurant or an admin
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
-        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
+        checkRestaurantAccessOrThrow(principal, restaurant);
 
         employeeUser.setEmployerRestaurant(restaurant);
         employeeUser = (E) register(employeeUser);
@@ -171,9 +168,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public TokenResponseDTO authenticate(String email, String password) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
+            authenticationManager.authenticate(authentication);
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException();
         }
@@ -194,6 +190,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UserResponseDTO getAuthenticatedUser() {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userMapper.userToUserResponseDTO(principal);
+    }
+
+    private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenRestaurantAccessException();
     }
 
     // todo implement the refresh token mechanism

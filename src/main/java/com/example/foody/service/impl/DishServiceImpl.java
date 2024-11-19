@@ -15,7 +15,7 @@ import com.example.foody.repository.DishRepository;
 import com.example.foody.repository.OrderRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.DishService;
-import com.example.foody.utils.enums.Role;
+import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,19 +40,13 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public DishResponseDTO save(DishRequestDTO dishDTO) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishMapper.dishRequestDTOToDish(dishDTO);
-
-        // Dishes can also be saved if the restaurant is not approved
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(dishDTO.getRestaurantId())
+                .findByIdAndDeletedAtIsNull(dishDTO.getRestaurantId()) // Dishes can also be saved if the restaurant is not approved
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", dishDTO.getRestaurantId()));
 
-        // Check if the user is the restaurateur of the dish's restaurant
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (restaurant.getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
+        checkDishCreationOrThrow(principal, restaurant);
 
         dish.setRestaurant(restaurant);
 
@@ -76,19 +70,13 @@ public class DishServiceImpl implements DishService {
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-
         return dishMapper.dishToDishResponseDTO(dish);
     }
 
     @Override
     public List<DishResponseDTO> findAllByRestaurant(long restaurantId) {
-        Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-
         List<Dish> dishes = dishRepository
                 .findAllByDeletedAtIsNullAndRestaurant(restaurantId);
-
         return dishMapper.dishesToDishResponseDTOs(dishes);
     }
 
@@ -97,7 +85,6 @@ public class DishServiceImpl implements DishService {
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-
         dish.getOrders().add(order);
 
         try {
@@ -109,26 +96,16 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public boolean remove(long id) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
 
-        // Check if the user is the restaurateur of the dish's restaurant
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (dish.getRestaurant().getRestaurateur().getId() != principal.getId() && !principal.getRole().equals(Role.ADMIN)) {
-            throw new ForbiddenRestaurantAccessException();
-        }
+        checkDishAccessOrThrow(principal, dish);
 
         dish.setDeletedAt(LocalDateTime.now());
 
-        // I remove the dish from the orders
-        dish.getOrders().forEach(
-                order -> order.getDishes().remove(dish)
-        );
-        orderRepository.saveAll(dish.getOrders());
-
-        // todo remove the associated reviews
+        removeAssociatedEntities(dish);
 
         try {
             dishRepository.save(dish);
@@ -137,5 +114,31 @@ public class DishServiceImpl implements DishService {
         }
 
         return true;
+    }
+
+    private void checkDishCreationOrThrow(User user, Restaurant restaurant) {
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenRestaurantAccessException();
+    }
+
+    private void checkDishAccessOrThrow(User user, Dish dish) {
+        if (dish.getRestaurant().getRestaurateur().getId() == user.getId()) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+
+        throw new ForbiddenRestaurantAccessException();
+    }
+
+    private void removeAssociatedEntities(Dish dish) {
+        removeDishFromOrders(dish);
+        // todo remove the associated reviews
+    }
+
+    private void removeDishFromOrders(Dish dish) {
+        dish.getOrders().forEach(order ->
+                order.getDishes().remove(dish)
+        );
+        orderRepository.saveAll(dish.getOrders());
     }
 }

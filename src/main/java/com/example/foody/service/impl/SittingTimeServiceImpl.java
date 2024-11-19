@@ -83,41 +83,24 @@ public class SittingTimeServiceImpl implements SittingTimeService {
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
-        restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-
         List<SittingTime> sittingTimes = sittingTimeRepository
                 .findAllByDeletedAtIsNullAndWeekDayInfoRestaurantId(restaurantId);
-
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay) {
-        restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-
-        if (weekDay < 1 || weekDay > 7) throw new InvalidWeekDayException(weekDay);
-
+        checkWeekDay(weekDay);
         List<SittingTime> sittingTimes = sittingTimeRepository
                 .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayOrderByStart(restaurantId, weekDay);
-
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartAfterNow(long restaurantId, int weekDay) {
-        restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-
-        if (weekDay < 1 || weekDay > 7) throw new InvalidWeekDayException(weekDay);
-
+        checkWeekDay(weekDay);
         List<SittingTime> sittingTimes = sittingTimeRepository
                 .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayAndStartAfterNowOrderByStart(restaurantId, weekDay);
-
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
@@ -126,7 +109,6 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         SittingTime sittingTime = sittingTimeRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", id));
-
         sittingTime.setDeletedAt(LocalDateTime.now());
 
         try {
@@ -136,5 +118,11 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         }
 
         return true;
+    }
+
+    private void checkWeekDay(int weekDay) {
+        if (weekDay >= 1 && weekDay <= 7) return;
+
+        throw new InvalidWeekDayException(weekDay);
     }
 }

@@ -65,7 +65,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
-
         category.getRestaurants().add(restaurant);
 
         try {
@@ -81,11 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("category", "id", id));
 
-        // I remove the category from the restaurants
-        category.getRestaurants().forEach(
-                restaurant -> restaurant.getCategories().remove(category)
-        );
-        restaurantRepository.saveAll(category.getRestaurants());
+        removeCategoryFromRestaurants(category);
 
         try {
             categoryRepository.delete(category);
@@ -94,5 +89,12 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return true;
+    }
+
+    private void removeCategoryFromRestaurants(Category category) {
+        category.getRestaurants().forEach(restaurant ->
+                restaurant.getCategories().remove(category)
+        );
+        restaurantRepository.saveAll(category.getRestaurants());
     }
 }
