@@ -8,11 +8,9 @@ import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
-import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.DishRepository;
-import com.example.foody.repository.OrderRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.DishService;
 import com.example.foody.utils.UserRoleUtils;
@@ -29,13 +27,11 @@ public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishMapper dishMapper;
-    private final OrderRepository orderRepository;
 
-    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper, OrderRepository orderRepository) {
+    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper) {
         this.dishRepository = dishRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishMapper = dishMapper;
-        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -81,31 +77,14 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish addOrder(long id, Order order) {
-        Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-        dish.getOrders().add(order);
-
-        try {
-            return dishRepository.save(dish);
-        } catch (Exception e) {
-            throw new EntityCreationException("dish");
-        }
-    }
-
-    @Override
     public boolean remove(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-
-        checkDishAccessOrThrow(principal, dish);
-
         dish.setDeletedAt(LocalDateTime.now());
 
-        removeAssociatedEntities(dish);
+        checkDishAccessOrThrow(principal, dish);
 
         try {
             dishRepository.save(dish);
@@ -128,17 +107,5 @@ public class DishServiceImpl implements DishService {
         if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenRestaurantAccessException();
-    }
-
-    private void removeAssociatedEntities(Dish dish) {
-        removeDishFromOrders(dish);
-        // todo remove the associated reviews
-    }
-
-    private void removeDishFromOrders(Dish dish) {
-        dish.getOrders().forEach(order ->
-                order.getDishes().remove(dish)
-        );
-        orderRepository.saveAll(dish.getOrders());
     }
 }

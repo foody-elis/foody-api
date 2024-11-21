@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderResponseDTO {
     private long id;
     private String tableNumber;
-    private List<DishResponseDTO> dishes = new ArrayList<>();
+    private List<OrderDishResponseDTO> orderDishes = new ArrayList<>();
     private long buyerId;
     private long restaurantId;
     private String status;

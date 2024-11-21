@@ -4,6 +4,7 @@ import com.example.foody.builder.OrderBuilder;
 import com.example.foody.dto.request.OrderRequestDTO;
 import com.example.foody.dto.response.OrderResponseDTO;
 import com.example.foody.mapper.DishMapper;
+import com.example.foody.mapper.OrderDishMapper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
@@ -16,11 +17,11 @@ import java.util.List;
 @Component
 public class OrderMapperImpl implements OrderMapper {
     private final OrderBuilder orderBuilder;
-    private final DishMapper dishMapper;
+    private final OrderDishMapper orderDishMapper;
 
-    public OrderMapperImpl(OrderBuilder orderBuilder, DishMapper dishMapper) {
+    public OrderMapperImpl(OrderBuilder orderBuilder, OrderDishMapper orderDishMapper) {
         this.orderBuilder = orderBuilder;
-        this.dishMapper = dishMapper;
+        this.orderDishMapper = orderDishMapper;
     }
 
     @Override
@@ -31,8 +32,8 @@ public class OrderMapperImpl implements OrderMapper {
 
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
 
-        orderResponseDTO.setDishes(
-                dishMapper.dishesToDishResponseDTOs(order.getDishes())
+        orderResponseDTO.setOrderDishes(
+                orderDishMapper.orderDishesToOrderDishResponseDTOs(order.getOrderDishes())
         );
         orderResponseDTO.setBuyerId(orderBuyerId(order));
         orderResponseDTO.setRestaurantId(orderRestaurantId(order));

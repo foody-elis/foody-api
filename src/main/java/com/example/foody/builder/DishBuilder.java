@@ -1,9 +1,9 @@
 package com.example.foody.builder;
 
 import com.example.foody.model.Dish;
-import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
+import com.example.foody.model.order_dish.OrderDish;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,6 +16,6 @@ public interface DishBuilder {
     DishBuilder photo(String photo);
     DishBuilder restaurant(Restaurant restaurant);
     DishBuilder reviews(List<Review> reviews);
-    DishBuilder orders(List<Order> orders);
+    DishBuilder orderDishes(List<OrderDish> orderDishes);
     Dish build();
 }

@@ -1,9 +1,9 @@
 package com.example.foody.builder.impl;
 
 import com.example.foody.builder.OrderBuilder;
-import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
+import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.state.order.OrderState;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderBuilderImpl implements OrderBuilder {
     private long id;
     private String tableNumber;
-    private List<Dish> dishes = new ArrayList<>();
+    private List<OrderDish> orderDishes = new ArrayList<>();
     private BuyerUser buyer;
     private Restaurant restaurant;
     private OrderState state;
@@ -33,8 +33,8 @@ public class OrderBuilderImpl implements OrderBuilder {
     }
 
     @Override
-    public OrderBuilder dishes(List<Dish> dishes) {
-        this.dishes = dishes;
+    public OrderBuilder orderDishes(List<OrderDish> orderDishes) {
+        this.orderDishes = orderDishes;
         return this;
     }
 
@@ -58,6 +58,6 @@ public class OrderBuilderImpl implements OrderBuilder {
 
     @Override
     public Order build() {
-        return new Order(id, tableNumber, dishes, buyer, restaurant, state);
+        return new Order(id, tableNumber, orderDishes, buyer, restaurant, state);
     }
 }

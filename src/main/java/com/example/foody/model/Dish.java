@@ -1,5 +1,6 @@
 package com.example.foody.model;
 
+import com.example.foody.model.order_dish.OrderDish;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,13 +38,13 @@ public class Dish extends DefaultEntity {
     @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "dishes")
-    private List<Order> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OrderDish> orderDishes = new ArrayList<>();
 
     public Dish() {
     }
 
-    public Dish(long id, String name, String description, BigDecimal price, String photo, Restaurant restaurant, List<Review> reviews, List<Order> orders) {
+    public Dish(long id, String name, String description, BigDecimal price, String photo, Restaurant restaurant, List<Review> reviews, List<OrderDish> orderDishes) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -51,6 +52,6 @@ public class Dish extends DefaultEntity {
         this.photo = photo;
         this.restaurant = restaurant;
         this.reviews = reviews;
-        this.orders = orders;
+        this.orderDishes = orderDishes;
     }
 }

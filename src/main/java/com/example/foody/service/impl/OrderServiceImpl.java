@@ -1,5 +1,6 @@
 package com.example.foody.service.impl;
 
+import com.example.foody.dto.request.OrderDishRequestDTO;
 import com.example.foody.dto.request.OrderRequestDTO;
 import com.example.foody.dto.response.OrderResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
@@ -14,17 +15,13 @@ import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
+import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
-import com.example.foody.repository.BookingRepository;
-import com.example.foody.repository.DishRepository;
-import com.example.foody.repository.OrderRepository;
-import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.service.DishService;
+import com.example.foody.repository.*;
 import com.example.foody.service.OrderService;
 import com.example.foody.state.order.PreparingState;
 import com.example.foody.utils.UserRoleUtils;
-import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,15 +37,15 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantRepository restaurantRepository;
     private final BookingRepository bookingRepository;
     private final DishRepository dishRepository;
-    private final DishService dishService;
+    private final OrderDishRepository orderDishRepository;
     private final OrderMapper orderMapper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, DishService dishService, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
         this.dishRepository = dishRepository;
-        this.dishService = dishService;
+        this.orderDishRepository = orderDishRepository;
         this.orderMapper = orderMapper;
     }
 
@@ -59,11 +56,9 @@ public class OrderServiceImpl implements OrderService {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(orderDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", orderDTO.getRestaurantId()));
-        List<Dish> dishes = addOrderToDishesOrThrow(order, orderDTO.getDishes());
 
         order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
         order.setRestaurant(restaurant);
-        order.setDishes(dishes);
         order.setState(new PreparingState(order));
 
         checkOrderCreationOrThrow(principal, order);
@@ -73,6 +68,8 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             throw new EntityCreationException("order");
         }
+
+        order.setOrderDishes(addDishesToOrder(order, orderDTO.getOrderDishes()));
 
         // todo notify someone ???
 
@@ -172,8 +169,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
         order.setDeletedAt(LocalDateTime.now());
 
-        removeOrderFromDishes(order);
-
         try {
             orderRepository.save(order);
         } catch (Exception e) {
@@ -183,18 +178,23 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    private List<Dish> addOrderToDishesOrThrow(Order order, List<Long> dishIds) {
-        List<Dish> dishes = new ArrayList<>();
+    private List<OrderDish> addDishesToOrder(Order order, List<OrderDishRequestDTO> orderDishDTOs) {
+        return orderDishDTOs.stream()
+                .map(orderDishDTO -> addDishToOrder(order, orderDishDTO))
+                .toList();
+    }
 
-        dishIds.forEach(dishId -> {
-            Dish dish = dishRepository
-                    .findByIdAndDeletedAtIsNull(dishId)
-                    .orElseThrow(() -> new EntityNotFoundException("dish", "id", dishId));
-            dish = dishService.addOrder(dish.getId(), order);
-            dishes.add(dish);
-        });
+    private OrderDish addDishToOrder(Order order, OrderDishRequestDTO orderDishDTO) {
+        Dish dish = dishRepository
+                .findByIdAndDeletedAtIsNull(orderDishDTO.getDishId())
+                .orElseThrow(() -> new EntityNotFoundException("dish", "id", orderDishDTO.getDishId()));
+        OrderDish orderDish = new OrderDish(order, dish, orderDishDTO.getQuantity());
 
-        return dishes;
+        try {
+            return orderDishRepository.save(orderDish);
+        } catch (Exception e) {
+            throw new EntityCreationException("order dish");
+        }
     }
 
     private void checkOrderCreationOrThrow(User user, Order order) {
@@ -202,7 +202,7 @@ public class OrderServiceImpl implements OrderService {
             checkIsWaiterOfRestaurant(user, order);
         }
         if (UserRoleUtils.isCustomer(user)) {
-            checkActiveReservationOrThrow(order);
+            checkActiveBookingOrThrow(order);
         }
         checkDishesBelongToRestaurantOrThrow(order);
     }
@@ -223,14 +223,14 @@ public class OrderServiceImpl implements OrderService {
             - week_day equal to that of the order
             - start <= order time <= end
      */
-    private void checkActiveReservationOrThrow(Order order) {
+    private void checkActiveBookingOrThrow(Order order) {
         if (bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId())) return;
 
         throw new OrderNotAllowedException(order.getRestaurant().getId(), "there are no active bookings for the buyer");
     }
 
     private void checkDishesBelongToRestaurantOrThrow(Order order) {
-        if (order.getDishes().stream().allMatch(dish -> dish.getRestaurant().getId() == order.getRestaurant().getId())) return;
+        if (order.getOrderDishes().stream().allMatch(orderDish -> orderDish.getDish().getRestaurant().getId() == order.getRestaurant().getId())) return;
 
         throw new OrderNotAllowedException(order.getRestaurant().getId(), "some dishes do not belong to the restaurant");
     }
@@ -264,12 +264,5 @@ public class OrderServiceImpl implements OrderService {
         if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenOrderAccessException();
-    }
-
-    private void removeOrderFromDishes(Order order) {
-        order.getDishes().forEach(dish ->
-                dish.getOrders().remove(order)
-        );
-        dishRepository.saveAll(order.getDishes());
     }
 }

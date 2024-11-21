@@ -16,8 +16,8 @@ public class OrderRequestDTO {
     @Pattern(regexp = "^[0-9]*$", message = "tableNumber should be a non-negative number")
     private String tableNumber;
 
-    @NotEmpty(message = "dishIds cannot be empty")
-    private List<@NotNull(message = "dishId cannot be null") @Positive(message = "dishId cannot be a negative number or zero") Long> dishes = new ArrayList<>();
+    @NotEmpty(message = "orderDishes cannot be empty")
+    private List<OrderDishRequestDTO> orderDishes = new ArrayList<>();
 
     @NotNull(message = "restaurantId cannot be null")
     @Positive(message = "restaurantId cannot be a negative number or zero")

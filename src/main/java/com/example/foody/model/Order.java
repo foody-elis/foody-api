@@ -1,5 +1,6 @@
 package com.example.foody.model;
 
+import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.state.order.*;
 import jakarta.persistence.*;
@@ -21,13 +22,8 @@ public class Order extends DefaultEntity {
     @Column(name = "table_number", length = 10, nullable = false)
     private String tableNumber;
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_dish",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "dish_id")
-    )
-    private List<Dish> dishes = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OrderDish> orderDishes = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides({
@@ -49,10 +45,10 @@ public class Order extends DefaultEntity {
     public Order() {
     }
 
-    public Order(long id, String tableNumber, List<Dish> dishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
+    public Order(long id, String tableNumber, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
         this.id = id;
         this.tableNumber = tableNumber;
-        this.dishes = dishes;
+        this.orderDishes = orderDishes;
         this.buyer = buyer;
         this.restaurant = restaurant;
         this.state = state;

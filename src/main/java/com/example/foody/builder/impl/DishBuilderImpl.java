@@ -2,9 +2,9 @@ package com.example.foody.builder.impl;
 
 import com.example.foody.builder.DishBuilder;
 import com.example.foody.model.Dish;
-import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
+import com.example.foody.model.order_dish.OrderDish;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ public class DishBuilderImpl implements DishBuilder {
     private String photo;
     private Restaurant restaurant;
     private List<Review> reviews;
-    private List<Order> orders;
+    private List<OrderDish> orderDishes;
 
     @Override
     public DishBuilder id(long id) {
@@ -64,13 +64,13 @@ public class DishBuilderImpl implements DishBuilder {
     }
 
     @Override
-    public DishBuilder orders(List<Order> orders) {
-        this.orders = orders;
+    public DishBuilder orderDishes(List<OrderDish> orderDishes) {
+        this.orderDishes = orderDishes;
         return this;
     }
 
     @Override
     public Dish build() {
-        return new Dish(id, name, description, price, photo, restaurant, reviews, orders);
+        return new Dish(id, name, description, price, photo, restaurant, reviews, orderDishes);
     }
 }
