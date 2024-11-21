@@ -23,16 +23,22 @@ public class CustomRoleAuthorizationManager implements AuthorizationManager<Requ
     // This method checks if the principal has a specific role, it does not consider the role hierarchy
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
-        if (authentication == null || authentication.get() == null) {
+        Authentication auth = authentication != null ? authentication.get() : null;
+        if (auth == null) {
             return new AuthorizationDecision(false);
         }
 
-        User principal = (User) authentication.get().getPrincipal();
+        User principal = getUserPrincipal(auth);
         if (principal == null || principal.getRole() == null) {
             return new AuthorizationDecision(false);
         }
 
-        boolean hasRole = requiredRoles.contains(principal.getRole());
-        return new AuthorizationDecision(hasRole);
+        boolean hasRequiredRole = requiredRoles.contains(principal.getRole());
+        return new AuthorizationDecision(hasRequiredRole);
+    }
+
+    private User getUserPrincipal(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        return (principal instanceof User) ? (User) principal : null;
     }
 }
