@@ -3,6 +3,7 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
+import com.example.foody.exceptions.entity.EntityDataIntegrityViolationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.mapper.WeekDayInfoMapper;
@@ -13,6 +14,7 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.WeekDayInfoRepository;
 import com.example.foody.service.SittingTimeService;
 import com.example.foody.service.WeekDayInfoService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +47,9 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
         try {
             weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
+        } catch (DataIntegrityViolationException e) {
+            // todo specify DataIntegrityViolationException's violated constraint in EntityDataIntegrityViolationException
+            throw new EntityDataIntegrityViolationException("week day info");
         } catch (Exception e) {
             throw new EntityCreationException("week day info");
         }

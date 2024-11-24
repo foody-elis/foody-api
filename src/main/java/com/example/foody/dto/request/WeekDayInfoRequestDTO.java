@@ -1,7 +1,8 @@
 package com.example.foody.dto.request;
 
 import com.example.foody.utils.enums.SittingTimeStep;
-import com.example.foody.utils.validators.ValueOfEnum;
+import com.example.foody.utils.validators.uniform_nullity.UniformNullity;
+import com.example.foody.utils.validators.value_of_enum.ValueOfEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
@@ -14,25 +15,23 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@UniformNullity(fields = {"startLaunch", "endLaunch"}, message = "startLaunch and endLaunch must be both null or both not null")
+@UniformNullity(fields = {"startDinner", "endDinner"}, message = "startDinner and endDinner must be both null or both not null")
 public class WeekDayInfoRequestDTO {
     @NotNull(message = "weekDay cannot be null")
     @Min(value = 1, message = "weekDay cannot be less than 1")
     @Max(value = 7, message = "weekDay cannot be greater than 7")
     private Integer weekDay;
 
-    @NotNull(message = "startLaunch cannot be null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startLaunch;
 
-    @NotNull(message = "endLaunch cannot be null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endLaunch;
 
-    @NotNull(message = "startDinner cannot be null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startDinner;
 
-    @NotNull(message = "endDinner cannot be null")
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endDinner;
 
@@ -45,18 +44,18 @@ public class WeekDayInfoRequestDTO {
     @AssertTrue(message = "endLaunch must be after startLaunch")
     @JsonIgnore
     public boolean isEndLaunchAfterStartLaunch() {
-        return endLaunch.isAfter(startLaunch);
+        return endLaunch == null || startLaunch == null || endLaunch.isAfter(startLaunch);
     }
 
     @AssertTrue(message = "endDinner must be after startDinner")
     @JsonIgnore
     public boolean isEndDinnerAfterStartDinner() {
-        return endDinner.isAfter(startDinner);
+        return endDinner == null || startDinner == null || endDinner.isAfter(startDinner);
     }
 
     @AssertTrue(message = "startDinner must be after endLaunch")
     @JsonIgnore
     public boolean isStartDinnerAfterEndLaunch() {
-        return startDinner.isAfter(endLaunch);
+        return startDinner == null || endLaunch == null || startDinner.isAfter(endLaunch);
     }
 }

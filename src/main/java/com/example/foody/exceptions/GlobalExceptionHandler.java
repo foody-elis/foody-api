@@ -3,6 +3,7 @@ package com.example.foody.exceptions;
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.entity.EntityCreationException;
+import com.example.foody.exceptions.entity.EntityDataIntegrityViolationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,22 +31,17 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
-        Map<String, String> errorMap = new HashMap<>();
-
-        // getFieldsErrors() returns all fields that have validation errors
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errorMap.put(error.getField(), error.getDefaultMessage())
-        );
-
+        Map<String, Object> errorMap = collectErrors(exception);
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
@@ -56,7 +53,8 @@ public class GlobalExceptionHandler {
             InvalidBookingRestaurantException.class,
             InvalidBookingStateException.class,
             OrderNotAllowedException.class,
-            InvalidOrderStateException.class
+            InvalidOrderStateException.class,
+            EntityDataIntegrityViolationException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
@@ -112,6 +110,46 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_GATEWAY);
+    }
+
+    /*
+    Collects validation errors from a MethodArgumentNotValidException and returns a map with the object name as key and the error message/s as value.
+    It manages:
+    - single error messages, the key is the object name and the value is the error message
+    - multiple error messages, the key is the object name and the value is a list of error messages
+     */
+    private Map<String, Object> collectErrors(MethodArgumentNotValidException exception) {
+        // getAllErrors() returns all errors, both global and field errors
+        return exception.getBindingResult().getAllErrors().stream()
+                .collect(Collectors.toMap(
+                        ObjectError::getObjectName,
+                        this::getErrorMessage,
+                        this::mergeErrors // Merge function to handle conflicts
+                ));
+    }
+
+    // Returns the error message from the ObjectError, it manage getDefaultMessage() returning null
+    private String getErrorMessage(ObjectError error) {
+        String defaultMessage = error.getDefaultMessage();
+        return defaultMessage != null ? defaultMessage : "unknown error";
+    }
+
+    /*
+    Handles conflicts when there are several errors for the same object when collecting validation errors.
+    Returns the new value associated with the specified key.
+     */
+    private Object mergeErrors(Object existing, Object replacement) {
+        if (existing instanceof String) {
+            List<String> errorList = new ArrayList<>();
+            errorList.add((String) existing);
+            errorList.add((String) replacement);
+            return errorList;
+        } else if (existing instanceof List) {
+            List<String> errorList = (List<String>) existing;
+            errorList.add((String) replacement);
+            return existing;
+        }
+        return replacement;
     }
 
     private ErrorDTO buildErrorDTO(HttpStatus httpStatus, Object message, String path) {

@@ -24,13 +24,11 @@ import java.util.List;
 @Transactional(rollbackOn = Exception.class)
 public class SittingTimeServiceImpl implements SittingTimeService {
     private final SittingTimeRepository sittingTimeRepository;
-    private final RestaurantRepository restaurantRepository;
     private final SittingTimeMapper sittingTimeMapper;
     private final SittingTimeBuilder sittingTimeBuilder;
 
-    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, SittingTimeMapper sittingTimeMapper, SittingTimeBuilder sittingTimeBuilder) {
+    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository,SittingTimeMapper sittingTimeMapper, SittingTimeBuilder sittingTimeBuilder) {
         this.sittingTimeRepository = sittingTimeRepository;
-        this.restaurantRepository = restaurantRepository;
         this.sittingTimeMapper = sittingTimeMapper;
         this.sittingTimeBuilder = sittingTimeBuilder;
     }
@@ -47,6 +45,8 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     }
 
     private List<SittingTime> generateSittingTimes(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
+        if (start == null || end == null) return new ArrayList<>();
+
         List<SittingTime> sittingTimes = new ArrayList<>();
         LocalTime currentStart = start;
 

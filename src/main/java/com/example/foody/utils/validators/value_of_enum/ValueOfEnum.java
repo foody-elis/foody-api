@@ -1,4 +1,4 @@
-package com.example.foody.utils.validators;
+package com.example.foody.utils.validators.value_of_enum;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

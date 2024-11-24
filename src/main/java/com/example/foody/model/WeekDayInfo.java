@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -20,6 +21,14 @@ import java.util.List;
                 @UniqueConstraint(columnNames = { "week_day", "restaurant_id" })
         }
 )
+@Check(
+        name = "launch_time_constraints",
+        constraints = "start_launch IS NULL AND end_launch IS NULL OR start_launch IS NOT NULL AND end_launch IS NOT NULL"
+)
+@Check(
+        name = "dinner_time_constraints",
+        constraints = "start_dinner IS NULL AND end_dinner IS NULL OR start_dinner IS NOT NULL AND end_dinner IS NOT NULL"
+)
 public class WeekDayInfo extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,16 +39,16 @@ public class WeekDayInfo extends DefaultEntity {
     @Max(7)
     private int weekDay;
 
-    @Column(name = "start_launch", nullable = false)
+    @Column(name = "start_launch")
     private LocalTime startLaunch;
 
-    @Column(name = "end_launch", nullable = false)
+    @Column(name = "end_launch")
     private LocalTime endLaunch;
 
-    @Column(name = "start_dinner", nullable = false)
+    @Column(name = "start_dinner")
     private LocalTime startDinner;
 
-    @Column(name = "end_dinner", nullable = false)
+    @Column(name = "end_dinner")
     private LocalTime endDinner;
 
     @Column(name = "sitting_time_step", nullable = false)
