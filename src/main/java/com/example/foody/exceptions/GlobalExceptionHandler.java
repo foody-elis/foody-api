@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -122,10 +123,19 @@ public class GlobalExceptionHandler {
         // getAllErrors() returns all errors, both global and field errors
         return exception.getBindingResult().getAllErrors().stream()
                 .collect(Collectors.toMap(
-                        ObjectError::getObjectName,
+                        this::getErrorKey,
                         this::getErrorMessage,
                         this::mergeErrors // Merge function to handle conflicts
                 ));
+    }
+
+    // Returns the key for the error map, it is the field name if the error is a FieldError, otherwise it is the object name (if the error is a ObjectError)
+    private String getErrorKey(ObjectError error) {
+        if (error instanceof FieldError) {
+            return ((FieldError) error).getField();
+        } else {
+            return error.getObjectName();
+        }
     }
 
     // Returns the error message from the ObjectError, it manage getDefaultMessage() returning null
