@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface OrderBuilder {
     OrderBuilder id(long id);
-    OrderBuilder tableNumber(String tableNumber);
+    OrderBuilder tableCode(String tableCode);
     OrderBuilder orderDishes(List<OrderDish> orderDishes);
     OrderBuilder buyer(BuyerUser buyer);
     OrderBuilder restaurant(Restaurant restaurant);

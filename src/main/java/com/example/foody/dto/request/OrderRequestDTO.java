@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequestDTO {
-    @NotBlank(message = "tableNumber cannot be blank")
-    @Pattern(regexp = "^[0-9]*$", message = "tableNumber should be a non-negative number")
-    private String tableNumber;
+    @NotBlank(message = "tableCode cannot be blank")
+    @Size(min = 1, max = 10, message = "tableCode cannot be less than 1 character or more than 10 characters long")
+    private String tableCode;
 
     @NotEmpty(message = "orderDishes cannot be empty")
     private List<OrderDishRequestDTO> orderDishes = new ArrayList<>();

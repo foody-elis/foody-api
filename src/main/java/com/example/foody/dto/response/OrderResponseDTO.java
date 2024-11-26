@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponseDTO {
     private long id;
-    private String tableNumber;
+    private String tableCode;
     private List<OrderDishResponseDTO> orderDishes = new ArrayList<>();
     private long buyerId;
     private long restaurantId;

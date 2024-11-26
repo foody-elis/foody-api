@@ -19,8 +19,8 @@ public class Order extends DefaultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "table_number", length = 10, nullable = false)
-    private String tableNumber;
+    @Column(name = "table_code", length = 10, nullable = false)
+    private String tableCode;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderDish> orderDishes = new ArrayList<>();
@@ -45,9 +45,9 @@ public class Order extends DefaultEntity {
     public Order() {
     }
 
-    public Order(long id, String tableNumber, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
+    public Order(long id, String tableCode, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
         this.id = id;
-        this.tableNumber = tableNumber;
+        this.tableCode = tableCode;
         this.orderDishes = orderDishes;
         this.buyer = buyer;
         this.restaurant = restaurant;

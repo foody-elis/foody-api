@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class OrderBuilderImpl implements OrderBuilder {
     private long id;
-    private String tableNumber;
+    private String tableCode;
     private List<OrderDish> orderDishes = new ArrayList<>();
     private BuyerUser buyer;
     private Restaurant restaurant;
@@ -27,8 +27,8 @@ public class OrderBuilderImpl implements OrderBuilder {
     }
 
     @Override
-    public OrderBuilder tableNumber(String tableNumber) {
-        this.tableNumber = tableNumber;
+    public OrderBuilder tableCode(String tableCode) {
+        this.tableCode = tableCode;
         return this;
     }
 
@@ -58,6 +58,6 @@ public class OrderBuilderImpl implements OrderBuilder {
 
     @Override
     public Order build() {
-        return new Order(id, tableNumber, orderDishes, buyer, restaurant, state);
+        return new Order(id, tableCode, orderDishes, buyer, restaurant, state);
     }
 }

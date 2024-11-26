@@ -3,7 +3,6 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.OrderBuilder;
 import com.example.foody.dto.request.OrderRequestDTO;
 import com.example.foody.dto.response.OrderResponseDTO;
-import com.example.foody.mapper.DishMapper;
 import com.example.foody.mapper.OrderDishMapper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Order;
@@ -38,7 +37,7 @@ public class OrderMapperImpl implements OrderMapper {
         orderResponseDTO.setBuyerId(orderBuyerId(order));
         orderResponseDTO.setRestaurantId(orderRestaurantId(order));
         orderResponseDTO.setId(order.getId());
-        orderResponseDTO.setTableNumber(order.getTableNumber());
+        orderResponseDTO.setTableCode(order.getTableCode());
         if (order.getStatus() != null) {
             orderResponseDTO.setStatus(order.getStatus().name());
         }
@@ -53,7 +52,7 @@ public class OrderMapperImpl implements OrderMapper {
         }
 
         return orderBuilder
-                .tableNumber(orderRequestDTO.getTableNumber())
+                .tableCode(orderRequestDTO.getTableCode())
                 .build();
     }
 
