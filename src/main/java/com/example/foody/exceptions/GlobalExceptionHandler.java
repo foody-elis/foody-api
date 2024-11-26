@@ -116,8 +116,8 @@ public class GlobalExceptionHandler {
     /*
     Collects validation errors from a MethodArgumentNotValidException and returns a map with the object name as key and the error message/s as value.
     It manages:
-    - single error messages, the key is the object name and the value is the error message
-    - multiple error messages, the key is the object name and the value is a list of error messages
+    - single error messages, {objectName: errorMessage}
+    - multiple error messages, {objectName: [errorMessage1, errorMessage2, ...]}
      */
     private Map<String, Object> collectErrors(MethodArgumentNotValidException exception) {
         // getAllErrors() returns all errors, both global and field errors

@@ -1,15 +1,18 @@
 package com.example.foody.utils.validators.uniform_nullity;
 
+import com.example.foody.utils.ValidatorUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.lang.reflect.Field;
 
 public class UniformNullityValidator implements ConstraintValidator<UniformNullity, Object> {
+    private String message;
     private String[] fields;
 
     @Override
     public void initialize(UniformNullity constraintAnnotation) {
+        message = constraintAnnotation.message();
         fields = constraintAnnotation.fields();
     }
 
@@ -33,10 +36,16 @@ public class UniformNullityValidator implements ConstraintValidator<UniformNulli
                     allNotNull = false;
                 }
             } catch (Exception e) {
+                ValidatorUtils.addConstraintViolation(context, message, "uniformNullity");
                 return false;
             }
         }
 
-        return allNull || allNotNull;
+        if (!allNull && !allNotNull) {
+            ValidatorUtils.addConstraintViolation(context, message, "uniformNullity");
+            return false;
+        }
+
+        return true;
     }
 }

@@ -55,8 +55,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// todo If you have a "strange" problems, try to add the following dependencies
-	implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
-	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+//	implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
+//	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
 }
 
 tasks.named('test') {

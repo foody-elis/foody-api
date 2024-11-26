@@ -13,6 +13,6 @@ public class ErrorDTO {
     private LocalDateTime timestamp;
     private int status;
     private String error;
-    private Object message;
+    private Object message; // String or Map<String, String> or Map<String, List<String>>
     private String path;
 }
