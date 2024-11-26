@@ -1,6 +1,6 @@
-package com.example.foody.utils.validators.uniform_nullity;
+package com.example.foody.utils.validator.uniform_nullity;
 
-import com.example.foody.utils.ValidatorUtils;
+import com.example.foody.utils.validator.ValidatorUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

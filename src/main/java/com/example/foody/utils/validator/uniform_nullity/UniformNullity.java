@@ -1,4 +1,4 @@
-package com.example.foody.utils.validators.uniform_nullity;
+package com.example.foody.utils.validator.uniform_nullity;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

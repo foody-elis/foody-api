@@ -8,6 +8,7 @@ import com.example.foody.mapper.CategoryMapper;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
 import com.example.foody.model.Restaurant;
+import com.example.foody.model.Review;
 import com.example.foody.model.user.RestaurateurUser;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setCategories(
                 categoryMapper.categoriesToCategoryResponseDTOs(restaurant.getCategories())
         );
+        restaurantResponseDTO.setAverageRating(restaurantAverageRating(restaurant));
         restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
         restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
         restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
@@ -86,6 +88,16 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurants.forEach(restaurant -> list.add(restaurantToRestaurantResponseDTO(restaurant)));
 
         return list;
+    }
+
+    private double restaurantAverageRating(Restaurant restaurant) {
+        if (restaurant == null) {
+            return 0L;
+        }
+        return restaurant.getReviews().stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
     }
 
     private long restaurantRestaurateurId(Restaurant restaurant) {

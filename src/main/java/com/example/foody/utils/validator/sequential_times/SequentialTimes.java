@@ -1,4 +1,4 @@
-package com.example.foody.utils.validators.sequential_times;
+package com.example.foody.utils.validator.sequential_times;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -1,9 +1,9 @@
 package com.example.foody.dto.request;
 
 import com.example.foody.utils.enums.SittingTimeStep;
-import com.example.foody.utils.validators.sequential_times.SequentialTimes;
-import com.example.foody.utils.validators.uniform_nullity.UniformNullity;
-import com.example.foody.utils.validators.value_of_enum.ValueOfEnum;
+import com.example.foody.utils.validator.sequential_times.SequentialTimes;
+import com.example.foody.utils.validator.uniform_nullity.UniformNullity;
+import com.example.foody.utils.validator.value_of_enum.ValueOfEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
