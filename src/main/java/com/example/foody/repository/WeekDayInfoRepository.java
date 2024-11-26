@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface WeekDayInfoRepository extends JpaRepository<WeekDayInfo, Long> {
     boolean existsByDeletedAtIsNullAndWeekDayAndRestaurantId(int weekDay, long restaurantId);
     List<WeekDayInfo> findAllByDeletedAtIsNull();
+    List<WeekDayInfo> findAllByDeletedAtIsNullAndRestaurantIdOrderByWeekDay(long restaurantId);
     Optional<WeekDayInfo> findByIdAndDeletedAtIsNull(long id);
 }

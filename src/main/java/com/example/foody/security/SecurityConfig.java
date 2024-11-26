@@ -83,6 +83,7 @@ public class SecurityConfig {
 
                         .requestMatchers(POST, "/api/v1/week-day-infos").access(hasSpecificRole(Role.RESTAURATEUR))
                         .requestMatchers(GET, "/api/v1/week-day-infos").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/week-day-infos/*").authenticated()
 
                         .requestMatchers(GET, "/api/v1/sitting-times").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers("/api/v1/sitting-times/**").authenticated()

@@ -32,4 +32,10 @@ public class WeekDayInfoController {
     public ResponseEntity<List<WeekDayInfoResponseDTO>> getWeekDayInfos() {
         return new ResponseEntity<>(weekDayInfoService.findAll(), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/restaurant/{restaurant-id}")
+    public ResponseEntity<List<WeekDayInfoResponseDTO>> getWeekDayInfosByRestaurant(@PathVariable("restaurant-id") long restaurantId)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException {
+        return new ResponseEntity<>(weekDayInfoService.findAllByRestaurant(restaurantId), HttpStatus.OK);
+    }
 }

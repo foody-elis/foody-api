@@ -66,6 +66,12 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     }
 
     @Override
+    public List<WeekDayInfoResponseDTO> findAllByRestaurant(long restaurantId) {
+        List<WeekDayInfo> weekDayInfos = weekDayInfoRepository.findAllByDeletedAtIsNullAndRestaurantIdOrderByWeekDay(restaurantId);
+        return weekDayInfoMapper.weekDayInfosToWeekDayInfoResponseDTOs(weekDayInfos);
+    }
+
+    @Override
     public boolean remove(long id) {
         WeekDayInfo weekDayInfo = weekDayInfoRepository
                 .findByIdAndDeletedAtIsNull(id)
