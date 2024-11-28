@@ -3,11 +3,9 @@ package com.example.foody.utils.validator.sequential_times;
 import com.example.foody.utils.validator.ValidatorUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.beans.BeanWrapperImpl;
 
-import java.lang.reflect.Field;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
 
 public class SequentialTimesValidator implements ConstraintValidator<SequentialTimes, Object> {
     private String message;
@@ -21,30 +19,20 @@ public class SequentialTimesValidator implements ConstraintValidator<SequentialT
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) {
+        if (value == null || fields == null || fields.length < 2) {
             return true;
         }
 
-        try {
-            List<String> fieldList = Arrays.asList(fields);
-            for (int i = 0; i < fieldList.size() - 1; i++) {
-                Field firstField = value.getClass().getDeclaredField(fieldList.get(i));
-                Field secondField = value.getClass().getDeclaredField(fieldList.get(i + 1));
+        BeanWrapperImpl wrapper = new BeanWrapperImpl(value);
 
-                firstField.setAccessible(true);
-                secondField.setAccessible(true);
+        for (int i = 0; i < fields.length - 1; i++) {
+            LocalTime firstTime = (LocalTime) wrapper.getPropertyValue(fields[i]);
+            LocalTime secondTime = (LocalTime) wrapper.getPropertyValue(fields[i + 1]);
 
-                LocalTime firstValue = (LocalTime) firstField.get(value);
-                LocalTime secondValue = (LocalTime) secondField.get(value);
-
-                if (firstValue == null || secondValue == null || !firstValue.isBefore(secondValue)) {
-                    ValidatorUtils.addConstraintViolation(context, message, "sequentialTimes");
-                    return false;
-                }
+            if (firstTime != null && secondTime != null && !firstTime.isBefore(secondTime)) {
+                ValidatorUtils.addConstraintViolation(context, message, "sequentialTimes");
+                return false;
             }
-        } catch (Exception e) {
-            ValidatorUtils.addConstraintViolation(context, message, "sequentialTimes");
-            return false;
         }
 
         return true;
