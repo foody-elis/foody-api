@@ -32,7 +32,7 @@ public class Dish extends DefaultEntity {
     private String photo;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)

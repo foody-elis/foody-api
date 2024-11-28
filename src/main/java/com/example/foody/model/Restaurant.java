@@ -38,8 +38,8 @@ public class Restaurant extends DefaultEntity {
     @ManyToMany
     @JoinTable(
             name = "restaurant_category",
-            joinColumns = @JoinColumn(name = "restaurant_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
+            joinColumns = @JoinColumn(name = "restaurant_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
     )
     protected List<Category> categories = new ArrayList<>();
 
@@ -60,11 +60,11 @@ public class Restaurant extends DefaultEntity {
     protected List<Booking> bookings = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id", nullable = false)
     protected Address address;
 
     @OneToOne
-    @JoinColumn(name = "restaurateur_id")
+    @JoinColumn(name = "restaurateur_id", nullable = false)
     protected RestaurateurUser restaurateur;
 
     @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)

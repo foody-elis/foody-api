@@ -47,7 +47,7 @@ public class WeekDayInfo extends DefaultEntity {
     private SittingTimeStep sittingTimeStep;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     @OneToMany(mappedBy = "weekDayInfo", cascade = CascadeType.REMOVE, orphanRemoval = true)

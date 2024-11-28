@@ -29,15 +29,15 @@ public class Booking extends DefaultEntity {
     private int seats;
 
     @ManyToOne
-    @JoinColumn(name = "sitting_time_id")
+    @JoinColumn(name = "sitting_time_id", nullable = false)
     private SittingTime sittingTime;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private CustomerUser customer;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     @Transient

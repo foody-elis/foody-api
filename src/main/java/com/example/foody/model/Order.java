@@ -32,7 +32,7 @@ public class Order extends DefaultEntity {
     private BuyerUser buyer;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     @Transient

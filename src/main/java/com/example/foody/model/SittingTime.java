@@ -22,7 +22,7 @@ public class SittingTime extends DefaultEntity {
     private LocalTime end;
 
     @ManyToOne
-    @JoinColumn(name = "week_day_info_id")
+    @JoinColumn(name = "week_day_info_id", nullable = false)
     private WeekDayInfo weekDayInfo;
 
     public SittingTime() {

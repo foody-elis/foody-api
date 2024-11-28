@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 public abstract class EmployeeUser extends User {
     @ManyToOne
-    @JoinColumn(name = "employer_restaurant_id")
+    @JoinColumn(name = "employer_restaurant_id", nullable = false)
     private Restaurant employerRestaurant;
 
     public EmployeeUser() {
