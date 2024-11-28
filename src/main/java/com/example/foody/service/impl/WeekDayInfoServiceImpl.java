@@ -3,13 +3,14 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
-import com.example.foody.exceptions.entity.EntityDataIntegrityViolationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.WeekDayInfo;
 import com.example.foody.model.user.RestaurateurUser;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.WeekDayInfoRepository;
 import com.example.foody.service.SittingTimeService;
@@ -39,17 +40,18 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     public WeekDayInfoResponseDTO save(WeekDayInfoRequestDTO weekDayInfoRequestDTO) {
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         WeekDayInfo weekDayInfo = weekDayInfoMapper.weekDayInfoRequestDTOToWeekDayInfo(weekDayInfoRequestDTO);
-        Restaurant restaurant = getRestaurant(principal);
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndDeletedAtIsNull(weekDayInfoRequestDTO.getRestaurantId())
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", weekDayInfoRequestDTO.getRestaurantId()));
 
         weekDayInfo.setRestaurant(restaurant);
 
-        checkWeekDayInfoCreationOrThrow(weekDayInfo, restaurant);
+        checkWeekDayInfoCreationOrThrow(weekDayInfo, principal);
 
         try {
             weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
         } catch (DataIntegrityViolationException e) {
-            // todo specify DataIntegrityViolationException's violated constraint in EntityDataIntegrityViolationException
-            throw new EntityDataIntegrityViolationException("week day info");
+            throw new EntityDuplicateException("week day info", "weekDay", weekDayInfo.getWeekDay(), "restaurantId", weekDayInfo.getRestaurant().getId());
         } catch (Exception e) {
             throw new EntityCreationException("week day info");
         }
@@ -89,24 +91,14 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         return true;
     }
 
-    private Restaurant getRestaurant(RestaurateurUser restaurateur) {
-        if (restaurateur.getRestaurant() == null) {
-            throw new EntityNotFoundException("restaurant", "restaurateur_id", restaurateur.getId());
-        } else {
-            return restaurantRepository
-                    .findByIdAndDeletedAtIsNull(restaurateur.getRestaurant().getId())
-                    .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurateur.getRestaurant().getId()));
-        }
+    private void checkWeekDayInfoCreationOrThrow(WeekDayInfo weekDayInfo, User user) {
+        checkRestaurantAccessOrThrow(user, weekDayInfo.getRestaurant());
     }
 
-    private void checkWeekDayInfoCreationOrThrow(WeekDayInfo weekDayInfo, Restaurant restaurant) {
-        checkWeekDayInfoExists(weekDayInfo, restaurant);
-    }
+    private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
-    private void checkWeekDayInfoExists(WeekDayInfo weekDayInfo, Restaurant restaurant) {
-        if (!weekDayInfoRepository.existsByDeletedAtIsNullAndWeekDayAndRestaurantId(weekDayInfo.getWeekDay(), restaurant.getId())) return;
-
-        throw new EntityDuplicateException("week day info", "weekDay", weekDayInfo.getWeekDay(), "restaurantId", restaurant.getId());
+        throw new ForbiddenRestaurantAccessException();
     }
 
     private void removeAssociatedEntities(WeekDayInfo weekDayInfo) {

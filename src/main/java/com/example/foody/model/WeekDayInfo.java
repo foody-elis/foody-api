@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Check;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,18 +15,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
-        name = "week_day_infos",
+        name = "week_day_info",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = { "week_day", "restaurant_id" })
+                @UniqueConstraint(name = "week_day_restaurant_id_unique", columnNames = {"week_day", "restaurant_id"})
         }
-)
-@Check(
-        name = "launch_time_constraints",
-        constraints = "start_launch IS NULL AND end_launch IS NULL OR start_launch IS NOT NULL AND end_launch IS NOT NULL"
-)
-@Check(
-        name = "dinner_time_constraints",
-        constraints = "start_dinner IS NULL AND end_dinner IS NULL OR start_dinner IS NOT NULL AND end_dinner IS NOT NULL"
 )
 public class WeekDayInfo extends DefaultEntity {
     @Id

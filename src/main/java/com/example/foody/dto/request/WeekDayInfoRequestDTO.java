@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,4 +44,8 @@ public class WeekDayInfoRequestDTO {
     @ValueOfEnum(enumClass = SittingTimeStep.class, message = "invalid sittingTimeStep value")
     @NotNull(message = "sittingTimeStep cannot be null")
     private String sittingTimeStep;
+
+    @NotNull(message = "restaurantId cannot be null")
+    @Positive(message = "restaurantId cannot be a negative number or zero")
+    private Long restaurantId;
 }

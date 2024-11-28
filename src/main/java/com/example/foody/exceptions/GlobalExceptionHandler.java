@@ -3,7 +3,6 @@ package com.example.foody.exceptions;
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.entity.EntityCreationException;
-import com.example.foody.exceptions.entity.EntityDataIntegrityViolationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
@@ -54,8 +53,7 @@ public class GlobalExceptionHandler {
             InvalidBookingRestaurantException.class,
             InvalidBookingStateException.class,
             OrderNotAllowedException.class,
-            InvalidOrderStateException.class,
-            EntityDataIntegrityViolationException.class
+            InvalidOrderStateException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
