@@ -14,6 +14,7 @@ import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.utils.enums.CustomHttpStatus;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -42,6 +43,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
         Map<String, Object> errorMap = collectErrors(exception);
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    // InvalidFormatException is thrown by Jackson when it cannot deserialize a value to a specific type (@JsonFormat pattern is not respected)
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorDTO> handleInvalidFormatException(InvalidFormatException exception, WebRequest webRequest) {
+        String message = String.format("Invalid value '%s' for %s field.", exception.getValue(), exception.getPath().getFirst().getFieldName());
+        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, message, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 

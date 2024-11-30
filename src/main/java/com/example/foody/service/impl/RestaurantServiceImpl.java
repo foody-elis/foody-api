@@ -38,7 +38,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final DishService dishService;
     private final OrderService orderService;
 
-    // todo is a best practice to inject many services in another service?
+    // todo is a best practice to inject many services in another service? Try to manage cascade with @PreRemove
 
     public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService) {
         this.restaurantRepository = restaurantRepository;
@@ -56,10 +56,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponseDTO save(RestaurantRequestDTO restaurantDTO) {
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantMapper.restaurantRequestDTOToRestaurant(restaurantDTO);
-        Address address = saveRestaurantAddress(restaurant);
-        List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
 
         checkRestaurantCreationOrThrow(principal);
+
+        Address address = saveRestaurantAddress(restaurant);
+        List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
 
         restaurant.setRestaurateur(principal);
         restaurant.setAddress(address);
@@ -150,7 +151,6 @@ public class RestaurantServiceImpl implements RestaurantService {
         address.setRestaurant(restaurant);
 
         return addressService.save(address);
-
     }
 
     private List<Category> addRestaurantToCategories(Restaurant restaurant, List<Long> categoryIds) {

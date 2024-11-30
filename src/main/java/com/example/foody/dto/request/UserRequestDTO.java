@@ -36,6 +36,7 @@ public class UserRequestDTO {
 
     @NotBlank(message = "phoneNumber cannot be blank")
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")
+    @Pattern(regexp = "^\\+?[0-9\\s\\-()]{7,15}$", message = "phoneNumber must be a valid format, including optional country code, and contain only digits, spaces, dashes, or brackets")
     private String phoneNumber;
 
     @NotBlank(message = "avatar cannot be blank")
