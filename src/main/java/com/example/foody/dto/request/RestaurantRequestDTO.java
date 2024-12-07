@@ -1,9 +1,6 @@
 package com.example.foody.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +19,9 @@ public class RestaurantRequestDTO {
     @NotBlank(message = "description cannot be blank")
     @Size(min = 1, max = 65535, message = "description cannot be less than 1 character or more than 65535 characters long")
     private String description;
+
+    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "photoBase64 must be a valid Base64 encoded string")
+    private String photoBase64;
 
     @NotBlank(message = "phoneNumber cannot be blank")
     @Size(min = 1, max = 16, message = "phoneNumber cannot be less than 1 character or more than 16 characters long")

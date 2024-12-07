@@ -16,7 +16,7 @@ public class ModeratorUserBuilderImpl extends UserBuilderImpl<ModeratorUser> imp
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active
         );

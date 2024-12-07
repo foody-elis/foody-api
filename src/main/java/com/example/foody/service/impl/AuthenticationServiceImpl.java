@@ -19,7 +19,9 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.service.AuthenticationService;
+import com.example.foody.service.GoogleDriveService;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.GoogleDriveFileType;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,10 +32,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final UserRepository userRepository;
     private final UserMapper<User> userMapper;
     private final UserMapper<AdminUser> adminUserMapper;
     private final UserMapper<ModeratorUser> moderatorUserMapper;
@@ -41,13 +44,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper<CookUser> cookUserMapper;
     private final UserMapper<WaiterUser> waiterUserMapper;
     private final UserMapper<CustomerUser> customerUserMapper;
+    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final GoogleDriveService googleDriveService;
     private final JwtService jwtService;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
-        this.userRepository = userRepository;
+    public AuthenticationServiceImpl(UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, UserRepository userRepository, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService) {
         this.userMapper = userMapper;
         this.adminUserMapper = adminUserMapper;
         this.moderatorUserMapper = moderatorUserMapper;
@@ -55,9 +59,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.cookUserMapper = cookUserMapper;
         this.waiterUserMapper = waiterUserMapper;
         this.customerUserMapper = customerUserMapper;
+        this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.googleDriveService = googleDriveService;
         this.jwtService = jwtService;
     }
 
@@ -78,7 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRequestDTO.setRole(Role.ADMIN.name());
 
         AdminUser admin = adminUserMapper.userRequestDTOToUser(userRequestDTO);
-        admin = (AdminUser) register(admin);
+        admin = (AdminUser) register(admin, userRequestDTO.getAvatarBase64());
 
         return adminUserMapper.userToUserResponseDTO(admin);
     }
@@ -88,7 +94,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRequestDTO.setRole(Role.MODERATOR.name());
 
         ModeratorUser moderator = moderatorUserMapper.userRequestDTOToUser(userRequestDTO);
-        moderator = (ModeratorUser) register(moderator);
+        moderator = (ModeratorUser) register(moderator, userRequestDTO.getAvatarBase64());
 
         return moderatorUserMapper.userToUserResponseDTO(moderator);
     }
@@ -98,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRequestDTO.setRole(Role.RESTAURATEUR.name());
 
         RestaurateurUser restaurateur = restaurateurUserMapper.userRequestDTOToUser(userRequestDTO);
-        restaurateur = (RestaurateurUser) register(restaurateur);
+        restaurateur = (RestaurateurUser) register(restaurateur, userRequestDTO.getAvatarBase64());
 
         return restaurateurUserMapper.userToUserResponseDTO(restaurateur);
     }
@@ -108,7 +114,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRequestDTO.setRole(Role.COOK.name());
 
         CookUser cookUser = cookUserMapper.userRequestDTOToUser(userRequestDTO);
-        cookUser = (CookUser) registerEmployee(restaurantId, cookUser);
+        cookUser = (CookUser) registerEmployee(restaurantId, cookUser, userRequestDTO.getAvatarBase64());
 
         return (EmployeeUserResponseDTO) cookUserMapper.userToUserResponseDTO(cookUser);
     }
@@ -118,54 +124,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRequestDTO.setRole(Role.WAITER.name());
 
         WaiterUser waiterUser = waiterUserMapper.userRequestDTOToUser(userRequestDTO);
-        waiterUser = (WaiterUser) registerEmployee(restaurantId, waiterUser);
+        waiterUser = (WaiterUser) registerEmployee(restaurantId, waiterUser, userRequestDTO.getAvatarBase64());
 
         return (EmployeeUserResponseDTO) waiterUserMapper.userToUserResponseDTO(waiterUser);
     }
 
-    private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser) {
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
-
-        checkRestaurantAccessOrThrow(principal, restaurant);
-
-        employeeUser.setEmployerRestaurant(restaurant);
-        employeeUser = (E) register(employeeUser);
-
-        return employeeUser;
-    }
-
+    @Override
     public CustomerUserResponseDTO registerCustomer(UserRequestDTO userRequestDTO) {
         userRequestDTO.setRole(Role.CUSTOMER.name());
 
         CustomerUser customer = customerUserMapper.userRequestDTOToUser(userRequestDTO);
-        customer = (CustomerUser) register(customer);
+        customer = (CustomerUser) register(customer, userRequestDTO.getAvatarBase64());
 
         return (CustomerUserResponseDTO) customerUserMapper.userToUserResponseDTO(customer);
     }
 
-    private <T extends User> User register(T user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        try {
-            user = userRepository.save(user);
-        } catch (DataIntegrityViolationException e) {
-            throw new EntityDuplicateException("user", "email", user.getEmail());
-        } catch (Exception e) {
-            throw new EntityCreationException("user");
-        }
-
-        // todo send email confirmation
-
-        return user;
-    }
-
+    @Override
     public TokenResponseDTO authenticate(UserLoginRequestDTO userLoginRequestDTO) {
         return authenticate(userLoginRequestDTO.getEmail(), userLoginRequestDTO.getPassword());
     }
 
+    @Override
     public TokenResponseDTO authenticate(String email, String password) {
         try {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
@@ -177,9 +156,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", password));
 
-        if (!user.isActive()) {
-            throw new UserNotActiveException(user.getEmail());
-        }
+        if (!user.isActive()) throw new UserNotActiveException(user.getEmail());
 
         String accessToken = jwtService.generateToken(user);
 
@@ -190,6 +167,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public UserResponseDTO getAuthenticatedUser() {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userMapper.userToUserResponseDTO(principal);
+    }
+
+    private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser, String avatarBase64) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndDeletedAtIsNull(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
+
+        checkRestaurantAccessOrThrow(principal, restaurant);
+
+        employeeUser.setEmployerRestaurant(restaurant);
+        employeeUser = (E) register(employeeUser, avatarBase64);
+
+        return employeeUser;
+    }
+
+    private <T extends User> User register(T user, String avatarBase64) {
+        String avatarUrl = Optional.ofNullable(avatarBase64)
+                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.USER_AVATAR))
+                .orElse(null);
+
+        user.setAvatarUrl(avatarUrl);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            rollbackAvatar(user);
+            throw new EntityDuplicateException("user", "email", user.getEmail());
+        } catch (Exception e) {
+            rollbackAvatar(user);
+            throw new EntityCreationException("user");
+        }
+
+        // todo send email confirmation
+
+        return user;
+    }
+
+    private void rollbackAvatar(User user) {
+        Optional.ofNullable(user.getAvatarUrl())
+                .ifPresent(googleDriveService::deleteImage);
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {

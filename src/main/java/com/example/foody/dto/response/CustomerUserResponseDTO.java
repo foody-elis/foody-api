@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerUserResponseDTO extends UserResponseDTO{
+public class CustomerUserResponseDTO extends UserResponseDTO {
     private Long creditCardId; // may be null
 }

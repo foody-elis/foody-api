@@ -13,13 +13,16 @@ import com.example.foody.model.user.User;
 import com.example.foody.repository.DishRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.DishService;
+import com.example.foody.service.GoogleDriveService;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.GoogleDriveFileType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -27,11 +30,13 @@ public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishMapper dishMapper;
+    private final GoogleDriveService googleDriveService;
 
-    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper) {
+    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper, GoogleDriveService googleDriveService) {
         this.dishRepository = dishRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishMapper = dishMapper;
+        this.googleDriveService = googleDriveService;
     }
 
     @Override
@@ -44,11 +49,17 @@ public class DishServiceImpl implements DishService {
 
         checkDishCreationOrThrow(principal, restaurant);
 
+        String photoUrl = Optional.ofNullable(dishDTO.getPhotoBase64())
+                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.DISH_PHOTO))
+                .orElse(null);
+
         dish.setRestaurant(restaurant);
+        dish.setPhotoUrl(photoUrl);
 
         try {
             dish = dishRepository.save(dish);
         } catch (Exception e) {
+            rollbackPhoto(dish);
             throw new EntityCreationException("dish");
         }
 
@@ -85,6 +96,7 @@ public class DishServiceImpl implements DishService {
         dish.setDeletedAt(LocalDateTime.now());
 
         checkDishAccessOrThrow(principal, dish);
+        googleDriveService.deleteImage(dish.getPhotoUrl());
 
         try {
             dishRepository.save(dish);
@@ -107,5 +119,10 @@ public class DishServiceImpl implements DishService {
         if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenRestaurantAccessException();
+    }
+
+    private void rollbackPhoto(Dish dish) {
+        Optional.ofNullable(dish.getPhotoUrl())
+                .ifPresent(googleDriveService::deleteImage);
     }
 }

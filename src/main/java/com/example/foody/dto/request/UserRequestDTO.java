@@ -39,9 +39,8 @@ public class UserRequestDTO {
     @Pattern(regexp = "^\\+?[0-9\\s\\-()]{7,15}$", message = "phoneNumber must be a valid format, including optional country code, and contain only digits, spaces, dashes, or brackets")
     private String phoneNumber;
 
-    @NotBlank(message = "avatar cannot be blank")
-    @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
-    private String avatar;
+    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "avatarBase64 must be a valid Base64 encoded string")
+    private String avatarBase64;
 
     // The role is set by the AuthenticationService during the registration process
     @Null(message = "role cannot be specified")

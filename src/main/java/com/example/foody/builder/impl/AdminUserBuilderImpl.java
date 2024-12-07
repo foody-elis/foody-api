@@ -16,7 +16,7 @@ public class AdminUserBuilderImpl extends UserBuilderImpl<AdminUser> implements 
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active
         );

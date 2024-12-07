@@ -13,7 +13,7 @@ public interface DishBuilder {
     DishBuilder name(String name);
     DishBuilder description(String description);
     DishBuilder price(BigDecimal price);
-    DishBuilder photo(String photo);
+    DishBuilder photoUrl(String photoUrl);
     DishBuilder restaurant(Restaurant restaurant);
     DishBuilder reviews(List<Review> reviews);
     DishBuilder orderDishes(List<OrderDish> orderDishes);

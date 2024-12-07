@@ -5,6 +5,7 @@ import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
 import com.example.foody.exceptions.order.InvalidOrderStateException;
 import com.example.foody.exceptions.order.OrderNotAllowedException;
@@ -114,7 +115,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(CustomHttpStatus.INVALID_TOKEN.getValue()).body(errorDTO);
     }
 
-    @ExceptionHandler(EntityCreationException.class)
+    @ExceptionHandler({
+            EntityCreationException.class,
+            GoogleDriveFileUploadException.class
+    })
     public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_GATEWAY);

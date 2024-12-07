@@ -13,7 +13,7 @@ public interface UserBuilder<U extends User> {
     UserBuilder<U> surname(String surname);
     UserBuilder<U> birthDate(LocalDate birthDate);
     UserBuilder<U> phoneNumber(String phoneNumber);
-    UserBuilder<U> avatar(String avatar);
+    UserBuilder<U> avatarUrl(String avatarUrl);
     UserBuilder<U> role(Role role);
     UserBuilder<U> active(boolean active);
     U build();

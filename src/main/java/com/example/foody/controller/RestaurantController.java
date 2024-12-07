@@ -6,6 +6,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.service.RestaurantService;
@@ -28,7 +29,7 @@ public class RestaurantController {
 
     @PostMapping
     public ResponseEntity<RestaurantResponseDTO> saveRestaurant(@Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
-            throws RestaurateurAlreadyHasRestaurantException, EntityCreationException {
+            throws RestaurateurAlreadyHasRestaurantException, GoogleDriveFileUploadException, EntityCreationException {
         return new ResponseEntity<>(restaurantService.save(restaurantRequestDTO), HttpStatus.CREATED);
     }
 
@@ -63,7 +64,7 @@ public class RestaurantController {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> removeEvent(@PathVariable long id)
-            throws EntityNotFoundException, EntityDeletionException {
+            throws EntityNotFoundException, GoogleDriveFileUploadException, EntityDeletionException {
         restaurantService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -17,6 +17,7 @@ import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.service.*;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.GoogleDriveFileType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -37,10 +39,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final AddressService addressService;
     private final DishService dishService;
     private final OrderService orderService;
+    private final GoogleDriveService googleDriveService;
 
     // todo is a best practice to inject many services in another service? Try to manage cascade with @PreRemove
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService, GoogleDriveService googleDriveService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
@@ -50,6 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         this.addressService = addressService;
         this.dishService = dishService;
         this.orderService = orderService;
+        this.googleDriveService = googleDriveService;
     }
 
     @Override
@@ -62,13 +66,19 @@ public class RestaurantServiceImpl implements RestaurantService {
         Address address = saveRestaurantAddress(restaurant);
         List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
 
+        String photoUrl = Optional.ofNullable(restaurantDTO.getPhotoBase64())
+                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.RESTAURANT_PHOTO))
+                .orElse(null);
+
         restaurant.setRestaurateur(principal);
         restaurant.setAddress(address);
         restaurant.setCategories(categories);
+        restaurant.setPhotoUrl(photoUrl);
 
         try {
             restaurant = restaurantRepository.save(restaurant);
         } catch (Exception e) {
+            rollbackPhoto(restaurant);
             throw new EntityCreationException("restaurant");
         }
 
@@ -130,6 +140,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setDeletedAt(LocalDateTime.now());
 
         removeAssociatedEntities(restaurant);
+        googleDriveService.deleteImage(restaurant.getPhotoUrl());
 
         try {
             restaurantRepository.save(restaurant);
@@ -197,6 +208,11 @@ public class RestaurantServiceImpl implements RestaurantService {
             return restaurantRepository
                     .findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
         }
+    }
+
+    private void rollbackPhoto(Restaurant restaurant) {
+        Optional.ofNullable(restaurant.getPhotoUrl())
+                .ifPresent(googleDriveService::deleteImage);
     }
 
     private void removeAssociatedEntities(Restaurant restaurant) {

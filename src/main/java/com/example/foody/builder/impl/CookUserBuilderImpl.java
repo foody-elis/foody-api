@@ -25,7 +25,7 @@ public class CookUserBuilderImpl extends UserBuilderImpl<CookUser> implements Co
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active,
                 employerRestaurant

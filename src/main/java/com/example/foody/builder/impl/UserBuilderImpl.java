@@ -14,7 +14,7 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     protected String surname;
     protected LocalDate birthDate;
     protected String phoneNumber;
-    protected String avatar;
+    protected String avatarUrl;
     protected Role role;
     protected boolean active = true;
 
@@ -61,8 +61,8 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     }
 
     @Override
-    public UserBuilder<U> avatar(String avatar) {
-        this.avatar = avatar;
+    public UserBuilder<U> avatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
         return this;
     }
 

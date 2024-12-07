@@ -16,7 +16,7 @@ public class DishBuilderImpl implements DishBuilder {
     private String name;
     private String description;
     private BigDecimal price;
-    private String photo;
+    private String photoUrl;
     private Restaurant restaurant;
     private List<Review> reviews;
     private List<OrderDish> orderDishes;
@@ -46,8 +46,8 @@ public class DishBuilderImpl implements DishBuilder {
     }
 
     @Override
-    public DishBuilder photo(String photo) {
-        this.photo = photo;
+    public DishBuilder photoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
         return this;
     }
 
@@ -71,6 +71,6 @@ public class DishBuilderImpl implements DishBuilder {
 
     @Override
     public Dish build() {
-        return new Dish(id, name, description, price, photo, restaurant, reviews, orderDishes);
+        return new Dish(id, name, description, price, photoUrl, restaurant, reviews, orderDishes);
     }
 }

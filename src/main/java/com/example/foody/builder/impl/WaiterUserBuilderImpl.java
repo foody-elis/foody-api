@@ -35,7 +35,7 @@ public class WaiterUserBuilderImpl extends UserBuilderImpl<WaiterUser> implement
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active,
                 employerRestaurant,

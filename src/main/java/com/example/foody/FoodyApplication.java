@@ -37,7 +37,7 @@ public class FoodyApplication {
 			File file = new File(path);
 
 			if (!file.exists()) {
-				UserRequestDTO adminDTO = new UserRequestDTO(adminEmail, adminPassword, "Admin", "Admin", LocalDate.of(1999, 1, 1), "0123456789", "avatar.png", null);
+				UserRequestDTO adminDTO = new UserRequestDTO(adminEmail, adminPassword, "Admin", "Admin", LocalDate.of(1999, 1, 1), "0123456789", null , null);
 
 				authenticationServiceImpl.registerAdmin(adminDTO);
 

@@ -10,6 +10,7 @@ public interface RestaurantBuilder {
     RestaurantBuilder id(long id);
     RestaurantBuilder name(String name);
     RestaurantBuilder description(String description);
+    RestaurantBuilder photoUrl(String photoUrl);
     RestaurantBuilder phoneNumber(String phoneNumber);
     RestaurantBuilder seats(int seats);
     RestaurantBuilder approved(boolean approved);

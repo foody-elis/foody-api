@@ -14,6 +14,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     private long id;
     private String name;
     private String description;
+    private String photoUrl;
     private String phoneNumber;
     private int seats;
     private boolean approved = false;
@@ -42,6 +43,12 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
     @Override
     public RestaurantBuilder description(String description) {
         this.description = description;
+        return this;
+    }
+
+    @Override
+    public RestaurantBuilder photoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
         return this;
     }
 
@@ -123,6 +130,7 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 id,
                 name,
                 description,
+                photoUrl,
                 phoneNumber,
                 seats,
                 approved,

@@ -5,6 +5,7 @@ import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.service.DishService;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class DishController {
 
     @PostMapping
     public ResponseEntity<DishResponseDTO> saveDish(@Valid @RequestBody DishRequestDTO dishRequestDTO)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, EntityCreationException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException,  EntityCreationException {
         return new ResponseEntity<>(dishService.save(dishRequestDTO), HttpStatus.CREATED);
     }
 
@@ -47,7 +48,7 @@ public class DishController {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> removeDish(@PathVariable long id)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, EntityDeletionException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityDeletionException {
         dishService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

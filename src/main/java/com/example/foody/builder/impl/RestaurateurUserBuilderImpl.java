@@ -25,7 +25,7 @@ public class RestaurateurUserBuilderImpl extends UserBuilderImpl<RestaurateurUse
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active,
                 restaurant

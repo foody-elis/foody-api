@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
-        name = "week_day_info",
+        name = "week_day_infos",
         uniqueConstraints = {
                 @UniqueConstraint(name = "week_day_restaurant_id_unique", columnNames = {"week_day", "restaurant_id"})
         }

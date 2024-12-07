@@ -25,6 +25,9 @@ public class Restaurant extends DefaultEntity {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     protected String description;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @Column(name = "phone_number", length = 16, nullable = false)
     protected String phoneNumber;
 
@@ -73,10 +76,11 @@ public class Restaurant extends DefaultEntity {
     public Restaurant() {
     }
 
-    public Restaurant(long id, String name, String description, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<EmployeeUser> employees) {
+    public Restaurant(long id, String name, String description, String photoUrl, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<EmployeeUser> employees) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.photoUrl = photoUrl;
         this.phoneNumber = phoneNumber;
         this.seats = seats;
         this.approved = approved;

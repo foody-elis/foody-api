@@ -75,8 +75,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
                 .name(userRequestDTO.getName())
                 .surname(userRequestDTO.getSurname())
                 .birthDate(userRequestDTO.getBirthDate())
-                .phoneNumber(userRequestDTO.getPhoneNumber())
-                .avatar(userRequestDTO.getAvatar());
+                .phoneNumber(userRequestDTO.getPhoneNumber());
 
         if (userRequestDTO.getRole() != null) {
             userBuilder.role(Enum.valueOf(Role.class, userRequestDTO.getRole()));
@@ -106,7 +105,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         userResponseDTO.setSurname(user.getSurname());
         userResponseDTO.setBirthDate(user.getBirthDate());
         userResponseDTO.setPhoneNumber(user.getPhoneNumber());
-        userResponseDTO.setAvatar(user.getAvatar());
+        userResponseDTO.setAvatarUrl(user.getAvatarUrl());
         userResponseDTO.setRole(user.getRole());
         userResponseDTO.setActive(user.isActive());
 
@@ -123,7 +122,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         employeeUserResponseDTO.setSurname(employeeUser.getSurname());
         employeeUserResponseDTO.setBirthDate(employeeUser.getBirthDate());
         employeeUserResponseDTO.setPhoneNumber(employeeUser.getPhoneNumber());
-        employeeUserResponseDTO.setAvatar(employeeUser.getAvatar());
+        employeeUserResponseDTO.setAvatarUrl(employeeUser.getAvatarUrl());
         employeeUserResponseDTO.setRole(employeeUser.getRole());
         employeeUserResponseDTO.setActive(employeeUser.isActive());
 
@@ -140,7 +139,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         customerUserResponseDTO.setSurname(customerUser.getSurname());
         customerUserResponseDTO.setBirthDate(customerUser.getBirthDate());
         customerUserResponseDTO.setPhoneNumber(customerUser.getPhoneNumber());
-        customerUserResponseDTO.setAvatar(customerUser.getAvatar());
+        customerUserResponseDTO.setAvatarUrl(customerUser.getAvatarUrl());
         customerUserResponseDTO.setRole(customerUser.getRole());
         customerUserResponseDTO.setActive(customerUser.isActive());
 

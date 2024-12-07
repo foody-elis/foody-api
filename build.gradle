@@ -54,6 +54,11 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Google (API client, Drive, OAuth2)
+	implementation 'com.google.api-client:google-api-client:2.7.0'
+	implementation 'com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0'
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.17.0'
+
 	// todo If you have a "strange" problems, try to add the following dependencies
 //	implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
 //	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'

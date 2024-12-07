@@ -28,8 +28,8 @@ public class Dish extends DefaultEntity {
     @Column(name = "price", precision = 8, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Column(name = "photo")
-    private String photo;
+    @Column(name = "photo_url")
+    private String photoUrl;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -44,12 +44,12 @@ public class Dish extends DefaultEntity {
     public Dish() {
     }
 
-    public Dish(long id, String name, String description, BigDecimal price, String photo, Restaurant restaurant, List<Review> reviews, List<OrderDish> orderDishes) {
+    public Dish(long id, String name, String description, BigDecimal price, String photoUrl, Restaurant restaurant, List<Review> reviews, List<OrderDish> orderDishes) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
-        this.photo = photo;
+        this.photoUrl = photoUrl;
         this.restaurant = restaurant;
         this.reviews = reviews;
         this.orderDishes = orderDishes;

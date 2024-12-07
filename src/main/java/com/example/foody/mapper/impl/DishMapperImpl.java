@@ -32,7 +32,7 @@ public class DishMapperImpl implements DishMapper {
         dishResponseDTO.setName(dish.getName());
         dishResponseDTO.setDescription(dish.getDescription());
         dishResponseDTO.setPrice(dish.getPrice());
-        dishResponseDTO.setPhoto(dish.getPhoto());
+        dishResponseDTO.setPhotoUrl(dish.getPhotoUrl());
 
         return dishResponseDTO;
     }
@@ -47,7 +47,6 @@ public class DishMapperImpl implements DishMapper {
                 .name(dishRequestDTO.getName())
                 .description(dishRequestDTO.getDescription())
                 .price(dishRequestDTO.getPrice())
-                .photo(dishRequestDTO.getPhoto())
                 .build();
     }
 

@@ -24,9 +24,8 @@ public class DishRequestDTO {
     @Digits(integer = 6, fraction = 2, message = "price should have up to 6 integer digits and 2 decimal places")
     private BigDecimal price;
 
-    @NotBlank(message = "avatar cannot be blank")
-    @Size(min = 1, max = 255, message = "avatar cannot be less than 1 character or more than 255 characters long")
-    private String photo;
+    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "photoBase64 must be a valid Base64 encoded string")
+    private String photoBase64;
 
     @NotNull(message = "restaurantId cannot be null")
     @Positive(message = "restaurantId cannot be a negative number or zero")

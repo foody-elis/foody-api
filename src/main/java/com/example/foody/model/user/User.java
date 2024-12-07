@@ -42,8 +42,8 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "phone_number", length = 16)
     protected String phoneNumber;
 
-    @Column(name = "avatar")
-    protected String avatar;
+    @Column(name = "avatar_url")
+    protected String avatarUrl;
 
     @Column(name = "role", nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
@@ -55,7 +55,7 @@ public class User extends DefaultEntity implements UserDetails {
     public User() {
     }
 
-    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active) {
+    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarUrl, Role role, boolean active) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -63,7 +63,7 @@ public class User extends DefaultEntity implements UserDetails {
         this.surname = surname;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
-        this.avatar = avatar;
+        this.avatarUrl = avatarUrl;
         this.role = role;
         this.active = active;
     }

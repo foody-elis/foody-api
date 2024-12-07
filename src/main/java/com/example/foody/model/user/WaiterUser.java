@@ -24,8 +24,8 @@ public class WaiterUser extends EmployeeUser {
     public WaiterUser() {
     }
 
-    public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Restaurant employerRestaurant, List<Order> orders) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, employerRestaurant);
+    public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarGoogleDriveFileId, Role role, boolean active, Restaurant employerRestaurant, List<Order> orders) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatarGoogleDriveFileId, role, active, employerRestaurant);
         this.buyer = new BuyerUser(id, orders);
     }
 

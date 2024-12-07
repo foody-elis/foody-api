@@ -14,6 +14,6 @@ public class DishResponseDTO {
     private String name;
     private String description;
     private BigDecimal price;
-    private String photo;
+    private String photoUrl;
     private long restaurantId;
 }

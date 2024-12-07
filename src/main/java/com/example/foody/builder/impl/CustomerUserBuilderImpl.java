@@ -52,7 +52,7 @@ public class CustomerUserBuilderImpl extends UserBuilderImpl<CustomerUser> imple
                 surname,
                 birthDate,
                 phoneNumber,
-                avatar,
+                avatarUrl,
                 role,
                 active,
                 creditCard,

@@ -48,6 +48,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setId(restaurant.getId());
         restaurantResponseDTO.setName(restaurant.getName());
         restaurantResponseDTO.setDescription(restaurant.getDescription());
+        restaurantResponseDTO.setPhotoUrl(restaurant.getPhotoUrl());
         restaurantResponseDTO.setPhoneNumber(restaurant.getPhoneNumber());
         restaurantResponseDTO.setSeats(restaurant.getSeats());
         restaurantResponseDTO.setApproved(restaurant.isApproved());
