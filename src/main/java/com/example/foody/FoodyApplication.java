@@ -1,7 +1,7 @@
 package com.example.foody;
 
-import com.example.foody.service.impl.AuthenticationServiceImpl;
 import com.example.foody.dto.request.UserRequestDTO;
+import com.example.foody.service.impl.AuthenticationServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +18,10 @@ import java.time.LocalDate;
 
 @SpringBootApplication
 public class FoodyApplication {
-	@Value("${admin.email}")
+	@Value("${spring.application.admin.email}")
 	private String adminEmail;
 
-	@Value("${admin.password}")
+	@Value("${sprimg.application.admin.password}")
 	private String adminPassword;
 
 	public static void main(String[] args) {

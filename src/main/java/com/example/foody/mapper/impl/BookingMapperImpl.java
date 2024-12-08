@@ -3,10 +3,12 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.BookingBuilder;
 import com.example.foody.dto.request.BookingRequestDTO;
 import com.example.foody.dto.response.BookingResponseDTO;
+import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.mapper.BookingMapper;
+import com.example.foody.mapper.RestaurantMapper;
+import com.example.foody.mapper.SittingTimeMapper;
+import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Booking;
-import com.example.foody.model.Restaurant;
-import com.example.foody.model.SittingTime;
 import com.example.foody.model.user.CustomerUser;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +18,15 @@ import java.util.List;
 @Component
 public class BookingMapperImpl implements BookingMapper {
     private final BookingBuilder bookingBuilder;
+    private final SittingTimeMapper sittingTimeMapper;
+    private final UserMapper<CustomerUser> userMapper;
+    private final RestaurantMapper restaurantMapper;
 
-    public BookingMapperImpl(BookingBuilder bookingBuilder) {
+    public BookingMapperImpl(BookingBuilder bookingBuilder, SittingTimeMapper sittingTimeMapper, UserMapper<CustomerUser> userMapper, RestaurantMapper restaurantMapper) {
         this.bookingBuilder = bookingBuilder;
+        this.sittingTimeMapper = sittingTimeMapper;
+        this.userMapper = userMapper;
+        this.restaurantMapper = restaurantMapper;
     }
 
     @Override
@@ -29,9 +37,15 @@ public class BookingMapperImpl implements BookingMapper {
 
         BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
 
-        bookingResponseDTO.setSittingTimeId(bookingSittingTimeId(booking));
-        bookingResponseDTO.setCustomerId(bookingCustomerId(booking));
-        bookingResponseDTO.setRestaurantId(bookingRestaurantId(booking));
+        bookingResponseDTO.setSittingTime(
+                sittingTimeMapper.sittingTimeToSittingTimeResponseDTO(booking.getSittingTime())
+        );
+        bookingResponseDTO.setCustomer(
+                (CustomerUserResponseDTO) userMapper.userToUserResponseDTO(booking.getCustomer())
+        );
+        bookingResponseDTO.setRestaurant(
+                restaurantMapper.restaurantToRestaurantResponseDTO(booking.getRestaurant())
+        );
         bookingResponseDTO.setId(booking.getId());
         bookingResponseDTO.setDate(booking.getDate());
         bookingResponseDTO.setSeats(booking.getSeats());
@@ -64,38 +78,5 @@ public class BookingMapperImpl implements BookingMapper {
         bookings.forEach(booking -> list.add(bookingToBookingResponseDTO(booking)));
 
         return list;
-    }
-
-    private long bookingSittingTimeId(Booking booking) {
-        if (booking == null) {
-            return 0L;
-        }
-        SittingTime sittingTime = booking.getSittingTime();
-        if (sittingTime == null) {
-            return 0L;
-        }
-        return sittingTime.getId();
-    }
-
-    private long bookingCustomerId(Booking booking) {
-        if (booking == null) {
-            return 0L;
-        }
-        CustomerUser customer = booking.getCustomer();
-        if (customer == null) {
-            return 0L;
-        }
-        return customer.getId();
-    }
-
-    private long bookingRestaurantId(Booking booking) {
-        if (booking == null) {
-            return 0L;
-        }
-        Restaurant restaurant = booking.getRestaurant();
-        if (restaurant == null) {
-            return 0L;
-        }
-        return restaurant.getId();
     }
 }

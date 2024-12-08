@@ -13,8 +13,8 @@ public class BookingResponseDTO {
     private long id;
     private LocalDate date;
     private int seats;
-    private long sittingTimeId;
-    private long customerId;
-    private long restaurantId;
+    private SittingTimeResponseDTO sittingTime;
+    private CustomerUserResponseDTO customer;
+    private RestaurantResponseDTO restaurant;
     private String status;
 }
