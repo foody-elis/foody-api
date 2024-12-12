@@ -3,16 +3,13 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.AddressBuilder;
 import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.dto.request.RestaurantRequestDTO;
+import com.example.foody.dto.response.DetailedRestaurantResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
-import com.example.foody.mapper.CategoryMapper;
-import com.example.foody.mapper.RestaurantMapper;
-import com.example.foody.model.Address;
-import com.example.foody.model.Restaurant;
-import com.example.foody.model.Review;
+import com.example.foody.mapper.*;
+import com.example.foody.model.*;
 import com.example.foody.model.user.RestaurateurUser;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -20,11 +17,17 @@ public class RestaurantMapperImpl implements RestaurantMapper {
     private final RestaurantBuilder restaurantBuilder;
     private final AddressBuilder addressBuilder;
     private final CategoryMapper categoryMapper;
+    private final SittingTimeMapper sittingTimeMapper;
+    private final DishMapper dishMapper;
+    private final ReviewMapper reviewMapper;
 
-    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper) {
+    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper, SittingTimeMapper sittingTimeMapper, DishMapper dishMapper, ReviewMapper reviewMapper) {
         this.restaurantBuilder = restaurantBuilder;
         this.addressBuilder = addressBuilder;
         this.categoryMapper = categoryMapper;
+        this.sittingTimeMapper = sittingTimeMapper;
+        this.dishMapper = dishMapper;
+        this.reviewMapper = reviewMapper;
     }
 
     @Override
@@ -34,26 +37,32 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         }
 
         RestaurantResponseDTO restaurantResponseDTO = new RestaurantResponseDTO();
-
-        restaurantResponseDTO.setCategories(
-                categoryMapper.categoriesToCategoryResponseDTOs(restaurant.getCategories())
-        );
-        restaurantResponseDTO.setAverageRating(restaurantAverageRating(restaurant));
-        restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
-        restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
-        restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
-        restaurantResponseDTO.setStreet(restaurantAddressStreet(restaurant));
-        restaurantResponseDTO.setCivicNumber(restaurantAddressCivicNumber(restaurant));
-        restaurantResponseDTO.setPostalCode(restaurantAddressPostalCode(restaurant));
-        restaurantResponseDTO.setId(restaurant.getId());
-        restaurantResponseDTO.setName(restaurant.getName());
-        restaurantResponseDTO.setDescription(restaurant.getDescription());
-        restaurantResponseDTO.setPhotoUrl(restaurant.getPhotoUrl());
-        restaurantResponseDTO.setPhoneNumber(restaurant.getPhoneNumber());
-        restaurantResponseDTO.setSeats(restaurant.getSeats());
-        restaurantResponseDTO.setApproved(restaurant.isApproved());
+        mapCommonFields(restaurant, restaurantResponseDTO);
 
         return restaurantResponseDTO;
+    }
+
+    @Override
+    public DetailedRestaurantResponseDTO restaurantToDetailedRestaurantResponseDTO(Restaurant restaurant, double averageRating, List<SittingTime> sittingTimes, List<Dish> dishes, List<Review> reviews) {
+        if (restaurant == null) {
+            return null;
+        }
+
+        DetailedRestaurantResponseDTO detailedRestaurantResponseDTO = new DetailedRestaurantResponseDTO();
+
+        mapCommonFields(restaurant, detailedRestaurantResponseDTO);
+        detailedRestaurantResponseDTO.setAverageRating(averageRating);
+        detailedRestaurantResponseDTO.setSittingTimes(
+                sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes)
+        );
+        detailedRestaurantResponseDTO.setDishes(
+                dishMapper.dishesToDishResponseDTOs(dishes)
+        );
+        detailedRestaurantResponseDTO.setReviews(
+                reviewMapper.reviewsToReviewResponseDTOs(reviews)
+        );
+
+        return detailedRestaurantResponseDTO;
     }
 
     @Override
@@ -75,30 +84,27 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 .description(restaurantRequestDTO.getDescription())
                 .phoneNumber(restaurantRequestDTO.getPhoneNumber())
                 .seats(restaurantRequestDTO.getSeats())
-                .address(address) // I set the address
+                .address(address)
                 .build();
     }
 
-    @Override
-    public List<RestaurantResponseDTO> restaurantsToRestaurantResponseDTOs(List<Restaurant> restaurants) {
-        if (restaurants == null) {
-            return null;
-        }
-
-        List<RestaurantResponseDTO> list = new ArrayList<>(restaurants.size());
-        restaurants.forEach(restaurant -> list.add(restaurantToRestaurantResponseDTO(restaurant)));
-
-        return list;
-    }
-
-    private double restaurantAverageRating(Restaurant restaurant) {
-        if (restaurant == null) {
-            return 0L;
-        }
-        return restaurant.getReviews().stream()
-                .mapToDouble(Review::getRating)
-                .average()
-                .orElse(0.0);
+    private void mapCommonFields(Restaurant restaurant, RestaurantResponseDTO restaurantResponseDTO) {
+        restaurantResponseDTO.setId(restaurant.getId());
+        restaurantResponseDTO.setName(restaurant.getName());
+        restaurantResponseDTO.setDescription(restaurant.getDescription());
+        restaurantResponseDTO.setPhotoUrl(restaurant.getPhotoUrl());
+        restaurantResponseDTO.setPhoneNumber(restaurant.getPhoneNumber());
+        restaurantResponseDTO.setSeats(restaurant.getSeats());
+        restaurantResponseDTO.setApproved(restaurant.isApproved());
+        restaurantResponseDTO.setCategories(
+                categoryMapper.categoriesToCategoryResponseDTOs(restaurant.getCategories())
+        );
+        restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
+        restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
+        restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
+        restaurantResponseDTO.setStreet(restaurantAddressStreet(restaurant));
+        restaurantResponseDTO.setCivicNumber(restaurantAddressCivicNumber(restaurant));
+        restaurantResponseDTO.setPostalCode(restaurantAddressPostalCode(restaurant));
     }
 
     private long restaurantRestaurateurId(Restaurant restaurant) {

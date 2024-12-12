@@ -184,9 +184,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private <T extends User> User register(T user, String avatarBase64) {
-        String avatarUrl = Optional.ofNullable(avatarBase64)
-                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.USER_AVATAR))
-                .orElse(null);
+        String avatarUrl = uploadUserAvatar(avatarBase64);
 
         user.setAvatarUrl(avatarUrl);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -204,6 +202,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // todo send email confirmation
 
         return user;
+    }
+
+    private String uploadUserAvatar(String userAvatarBase64) {
+        return Optional.ofNullable(userAvatarBase64)
+                .map(avatarBase64 -> googleDriveService.uploadBase64Image(avatarBase64, GoogleDriveFileType.USER_AVATAR))
+                .orElse(null);
     }
 
     private void rollbackAvatar(User user) {

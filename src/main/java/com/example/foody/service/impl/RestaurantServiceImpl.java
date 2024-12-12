@@ -1,12 +1,14 @@
 package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.RestaurantRequestDTO;
+import com.example.foody.dto.response.DetailedRestaurantResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
+import com.example.foody.helper.RestaurantHelper;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.model.Address;
 import com.example.foody.model.Category;
@@ -33,6 +35,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final CategoryRepository categoryRepository;
     private final RestaurantMapper restaurantMapper;
+    private final RestaurantHelper restaurantHelper;
     private final CategoryService categoryService;
     private final WeekDayInfoService weekDayInfoService;
     private final BookingService bookingService;
@@ -41,12 +44,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final OrderService orderService;
     private final GoogleDriveService googleDriveService;
 
-    // todo is a best practice to inject many services in another service? Try to manage cascade with @PreRemove
+    // todo is a best practice to inject many services in another service? Try to manage cascade with @PreDelete
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService, GoogleDriveService googleDriveService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, RestaurantHelper restaurantHelper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService, GoogleDriveService googleDriveService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
+        this.restaurantHelper = restaurantHelper;
         this.categoryService = categoryService;
         this.weekDayInfoService = weekDayInfoService;
         this.bookingService = bookingService;
@@ -65,10 +69,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         Address address = saveRestaurantAddress(restaurant);
         List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
-
-        String photoUrl = Optional.ofNullable(restaurantDTO.getPhotoBase64())
-                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.RESTAURANT_PHOTO))
-                .orElse(null);
+        String photoUrl = uploadRestaurantPhoto(restaurantDTO.getPhotoBase64());
 
         restaurant.setRestaurateur(principal);
         restaurant.setAddress(address);
@@ -86,36 +87,36 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<RestaurantResponseDTO> findAll() {
+    public List<DetailedRestaurantResponseDTO> findAll() {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Restaurant> restaurants = getRestaurantsBasedOnUserRole(principal);
-        return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
+        return restaurantHelper.buildDetailedRestaurantResponseDTOs(restaurants);
     }
 
     @Override
-    public RestaurantResponseDTO findById(long id) {
+    public DetailedRestaurantResponseDTO findById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = getRestaurantByIdBasedOnUserRole(principal, id);
-        return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
+        return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }
 
     @Override
-    public RestaurantResponseDTO findByRestaurateur(long restaurateurId) {
+    public DetailedRestaurantResponseDTO findByRestaurateur(long restaurateurId) {
         Restaurant restaurant = restaurantRepository
-                .findAllByRestaurateur_IdAndDeletedAtIsNull(restaurateurId)
+                .findAllByDeletedAtIsNullAndRestaurateur_Id(restaurateurId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
-        return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
+        return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }
 
     @Override
-    public List<RestaurantResponseDTO> findAllByCategory(long categoryId) {
+    public List<DetailedRestaurantResponseDTO> findAllByCategory(long categoryId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Restaurant> restaurants = getRestaurantByCategoryBasedOnUserRole(principal, categoryId);
-        return restaurantMapper.restaurantsToRestaurantResponseDTOs(restaurants);
+        return restaurantHelper.buildDetailedRestaurantResponseDTOs(restaurants);
     }
 
     @Override
-    public RestaurantResponseDTO approveById(long id) {
+    public DetailedRestaurantResponseDTO approveById(long id) {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
@@ -129,7 +130,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         // todo send email to the restaurateur
 
-        return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
+        return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }
 
     @Override
@@ -180,6 +181,12 @@ public class RestaurantServiceImpl implements RestaurantService {
         return categories;
     }
 
+    private String uploadRestaurantPhoto(String restaurantPhotoBase64) {
+        return Optional.ofNullable(restaurantPhotoBase64)
+                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.RESTAURANT_PHOTO))
+                .orElse(null);
+    }
+
     private List<Restaurant> getRestaurantsBasedOnUserRole(User user) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
             return restaurantRepository.findAllByDeletedAtIsNull();
@@ -203,10 +210,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     private List<Restaurant> getRestaurantByCategoryBasedOnUserRole(User user, long categoryId) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
             return restaurantRepository
-                    .findAllByCategoryAndDeletedAtIsNull(categoryId);
+                    .findAllByDeletedAtIsNullAndCategory_Id(categoryId);
         } else {
             return restaurantRepository
-                    .findAllByCategoryAndDeletedAtIsNullAndApproved(categoryId, true);
+                    .findAllByDeletedAtIsNullAndCategory_IdAndApproved(categoryId, true);
         }
     }
 

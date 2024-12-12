@@ -9,7 +9,6 @@ import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.mapper.SittingTimeMapper;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.WeekDayInfo;
-import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.service.SittingTimeService;
 import jakarta.transaction.Transactional;
@@ -92,7 +91,7 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay) {
         checkWeekDay(weekDay);
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayOrderByStart(restaurantId, weekDay);
+                .findAllByDeletedAtIsNullAndWeekDayInfo_Restaurant_IdAndWeekDayInfo_WeekDayOrderByStart(restaurantId, weekDay);
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 

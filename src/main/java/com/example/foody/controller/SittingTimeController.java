@@ -24,8 +24,6 @@ public class SittingTimeController {
         return new ResponseEntity<>(sittingTimeService.findAll(), HttpStatus.OK);
     }
 
-    // todo add weekDay to SittingTimeResponseDTO (keep weekDayInfoId)
-    // todo "order by weekDay, start"
     @GetMapping(path = "/restaurant/{restaurant-id}")
     public ResponseEntity<List<SittingTimeResponseDTO>> getSittingTimesByRestaurant(@PathVariable("restaurant-id") long restaurantId)
             throws EntityNotFoundException {

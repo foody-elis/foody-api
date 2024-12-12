@@ -49,9 +49,7 @@ public class DishServiceImpl implements DishService {
 
         checkDishCreationOrThrow(principal, restaurant);
 
-        String photoUrl = Optional.ofNullable(dishDTO.getPhotoBase64())
-                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.DISH_PHOTO))
-                .orElse(null);
+        String photoUrl = uploadDishPhoto(dishDTO.getPhotoBase64());
 
         dish.setRestaurant(restaurant);
         dish.setPhotoUrl(photoUrl);
@@ -83,7 +81,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<DishResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Dish> dishes = dishRepository
-                .findAllByDeletedAtIsNullAndRestaurant(restaurantId);
+                .findAllByDeletedAtIsNullAndRestaurant_Id(restaurantId);
         return dishMapper.dishesToDishResponseDTOs(dishes);
     }
 
@@ -112,6 +110,12 @@ public class DishServiceImpl implements DishService {
         if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenRestaurantAccessException();
+    }
+
+    private String uploadDishPhoto(String dishPhotoBase64) {
+        return Optional.ofNullable(dishPhotoBase64)
+                .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.DISH_PHOTO))
+                .orElse(null);
     }
 
     private void checkDishAccessOrThrow(User user, Dish dish) {

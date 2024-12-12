@@ -1,7 +1,5 @@
 package com.example.foody.dto.response;
 
-import com.example.foody.utils.serializer.RoundedDoubleSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,8 +19,6 @@ public class RestaurantResponseDTO {
     private int seats;
     private boolean approved;
     private List<CategoryResponseDTO> categories = new ArrayList<>();
-    @JsonSerialize(using = RoundedDoubleSerializer.class)
-    private double averageRating;
     private String city;
     private String province;
     private String street;

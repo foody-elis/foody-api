@@ -157,6 +157,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkWeekDayOrThrow(Booking booking) {
+        // todo check if sitting time is in the future
+
         if (booking.getDate().getDayOfWeek().getValue() == booking.getSittingTime().getWeekDayInfo().getWeekDay()) return;
 
         throw new InvalidBookingWeekDayException();

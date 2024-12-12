@@ -41,17 +41,12 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
 
     @Override
     public UserResponseDTO userToUserResponseDTO(U user) {
-        if (user == null) {
-            return null;
-        }
-
-        if (user instanceof CookUser || user instanceof WaiterUser) {
-            return buildEmployeeUserResponseDTO((EmployeeUser) user);
-        } else if (user instanceof CustomerUser) {
-            return buildCustomerUserResponseDTO((CustomerUser) user);
-        } else {
-            return buildUserResponseDTO(user);
-        }
+        return switch (user) {
+            case null -> null;
+            case EmployeeUser employeeUser -> buildEmployeeUserResponseDTO(employeeUser);
+            case CustomerUser customerUser -> buildCustomerUserResponseDTO(customerUser);
+            default -> buildUserResponseDTO(user);
+        };
     }
 
     @Override
@@ -98,7 +93,28 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
 
     private UserResponseDTO buildUserResponseDTO(U user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
+        return mapCommonFields(user, userResponseDTO);
+    }
 
+    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser) {
+        EmployeeUserResponseDTO employeeUserResponseDTO = new EmployeeUserResponseDTO();
+
+        mapCommonFields(employeeUser, employeeUserResponseDTO);
+        employeeUserResponseDTO.setEmployerRestaurantId(employerRestaurantId(employeeUser));
+
+        return employeeUserResponseDTO;
+    }
+
+    private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser) {
+        CustomerUserResponseDTO customerUserResponseDTO = new CustomerUserResponseDTO();
+
+        mapCommonFields(customerUser, customerUserResponseDTO);
+        customerUserResponseDTO.setCreditCardId(creditCardId(customerUser));
+
+        return customerUserResponseDTO;
+    }
+
+    private <T extends UserResponseDTO> T mapCommonFields(User user, T userResponseDTO) {
         userResponseDTO.setId(user.getId());
         userResponseDTO.setEmail(user.getEmail());
         userResponseDTO.setName(user.getName());
@@ -110,40 +126,6 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         userResponseDTO.setActive(user.isActive());
 
         return userResponseDTO;
-    }
-
-    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser) {
-        EmployeeUserResponseDTO employeeUserResponseDTO = new EmployeeUserResponseDTO();
-
-        employeeUserResponseDTO.setEmployerRestaurantId(employerRestaurantId(employeeUser));
-        employeeUserResponseDTO.setId(employeeUser.getId());
-        employeeUserResponseDTO.setEmail(employeeUser.getEmail());
-        employeeUserResponseDTO.setName(employeeUser.getName());
-        employeeUserResponseDTO.setSurname(employeeUser.getSurname());
-        employeeUserResponseDTO.setBirthDate(employeeUser.getBirthDate());
-        employeeUserResponseDTO.setPhoneNumber(employeeUser.getPhoneNumber());
-        employeeUserResponseDTO.setAvatarUrl(employeeUser.getAvatarUrl());
-        employeeUserResponseDTO.setRole(employeeUser.getRole());
-        employeeUserResponseDTO.setActive(employeeUser.isActive());
-
-        return employeeUserResponseDTO;
-    }
-
-    private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser) {
-        CustomerUserResponseDTO customerUserResponseDTO = new CustomerUserResponseDTO();
-
-        customerUserResponseDTO.setCreditCardId(creditCardId(customerUser));
-        customerUserResponseDTO.setId(customerUser.getId());
-        customerUserResponseDTO.setEmail(customerUser.getEmail());
-        customerUserResponseDTO.setName(customerUser.getName());
-        customerUserResponseDTO.setSurname(customerUser.getSurname());
-        customerUserResponseDTO.setBirthDate(customerUser.getBirthDate());
-        customerUserResponseDTO.setPhoneNumber(customerUser.getPhoneNumber());
-        customerUserResponseDTO.setAvatarUrl(customerUser.getAvatarUrl());
-        customerUserResponseDTO.setRole(customerUser.getRole());
-        customerUserResponseDTO.setActive(customerUser.isActive());
-
-        return customerUserResponseDTO;
     }
 
     private long employerRestaurantId(EmployeeUser employee) {

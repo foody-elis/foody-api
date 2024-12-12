@@ -1,6 +1,7 @@
 package com.example.foody.controller;
 
 import com.example.foody.dto.request.RestaurantRequestDTO;
+import com.example.foody.dto.response.DetailedRestaurantResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -34,30 +35,30 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurants() {
+    public ResponseEntity<List<DetailedRestaurantResponseDTO>> getRestaurants() {
         return new ResponseEntity<>(restaurantService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<RestaurantResponseDTO> getRestaurantById(@PathVariable long id)
+    public ResponseEntity<DetailedRestaurantResponseDTO> getRestaurantById(@PathVariable long id)
             throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurateur")
-    public ResponseEntity<RestaurantResponseDTO> getRestaurantByRestaurateur(@AuthenticationPrincipal RestaurateurUser restaurateur)
+    public ResponseEntity<DetailedRestaurantResponseDTO> getRestaurantByRestaurateur(@AuthenticationPrincipal RestaurateurUser restaurateur)
             throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findByRestaurateur(restaurateur.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/category/{category-id}")
-    public ResponseEntity<List<RestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId)
+    public ResponseEntity<List<DetailedRestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId)
             throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findAllByCategory(categoryId), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/approve/{id}")
-    public ResponseEntity<RestaurantResponseDTO> approveRestaurant(@PathVariable long id)
+    public ResponseEntity<DetailedRestaurantResponseDTO> approveRestaurant(@PathVariable long id)
             throws EntityNotFoundException, EntityEditException {
         return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
     }
