@@ -62,6 +62,7 @@ public class GlobalExceptionHandler {
             InvalidBookingWeekDayException.class,
             InvalidBookingRestaurantException.class,
             InvalidBookingStateException.class,
+            InvalidBookingSittingTimeException.class,
             OrderNotAllowedException.class,
             InvalidOrderStateException.class
     })
@@ -98,6 +99,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             EntityDuplicateException.class,
             RestaurateurAlreadyHasRestaurantException.class,
+            DuplicateActiveFutureBookingException.class
     })
     public ResponseEntity<ErrorDTO> handleConflictException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.CONFLICT, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());

@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 first-boot.txt
 credentials.json
+insert.sql
 
 ### STS ###
 .apt_generated

@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -152,25 +153,38 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingCreationOrThrow(Booking booking) {
         checkWeekDayOrThrow(booking);
-        checkRestaurantOrThrow(booking);
-        checkSeatsOrThrow(booking);
+        checkSittingTimeOrThrow(booking);
+        checkSittingTimeIsInFutureOrThrow(booking);
+        checkNoDuplicateActiveFutureBookingOrThrow(booking);
+        checkSeatsAvailabilityOrThrow(booking);
     }
 
     private void checkWeekDayOrThrow(Booking booking) {
-        // todo check if sitting time is in the future
-
         if (booking.getDate().getDayOfWeek().getValue() == booking.getSittingTime().getWeekDayInfo().getWeekDay()) return;
 
         throw new InvalidBookingWeekDayException();
     }
 
-    private void checkRestaurantOrThrow(Booking booking) {
+    private void checkSittingTimeIsInFutureOrThrow(Booking booking) {
+        if (booking.getSittingTime().getStart().isAfter(LocalTime.now())) return;
+
+        throw new InvalidBookingSittingTimeException();
+    }
+
+    private void checkSittingTimeOrThrow(Booking booking) {
         if (booking.getRestaurant().getId() == booking.getSittingTime().getWeekDayInfo().getRestaurant().getId()) return;
 
         throw new InvalidBookingRestaurantException();
     }
 
-    private void checkSeatsOrThrow(Booking booking) {
+    private void checkNoDuplicateActiveFutureBookingOrThrow(Booking booking) {
+        if (!bookingRepository.existsActiveFutureBookingByCustomer_IdAndRestaurant_IdAndDate(
+                booking.getCustomer().getId(), booking.getRestaurant().getId(), booking.getDate())) return;
+
+        throw new DuplicateActiveFutureBookingException(booking.getRestaurant().getId(), booking.getDate(), booking.getSittingTime().getId());
+    }
+
+    private void checkSeatsAvailabilityOrThrow(Booking booking) {
         long bookedSeats = bookingRepository
                 .countBookedSeats(booking.getDate(), booking.getSittingTime().getId(), booking.getRestaurant().getId());
         if (bookedSeats + booking.getSeats() <= booking.getRestaurant().getSeats()) return;

@@ -15,26 +15,43 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
 
     List<Booking> findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(long restaurantId);
 
-    // todo remove 'ACTIVE' string
+    // todo remove 'ACTIVE' string from these queries
     // colaesce() returns the first non-null argument (case: empty table so sum() returns null)
     @Query("""
             SELECT COALESCE(SUM(b.seats), 0)
             FROM Booking b
-            WHERE b.deletedAt IS NULL AND b.status = 'ACTIVE'
-            AND b.date = :date AND b.sittingTime.id = :sittingTimeId AND b.restaurant.id = :restaurantId
+            WHERE b.deletedAt IS NULL
+            AND b.status = 'ACTIVE'
+            AND b.date = :date
+            AND b.sittingTime.id = :sittingTimeId
+            AND b.restaurant.id = :restaurantId
             """)
     long countBookedSeats(LocalDate date, long sittingTimeId, long restaurantId);
 
-    // todo remove 'ACTIVE' string
+    @Query("""
+            SELECT COUNT(b) > 0
+            FROM Booking b
+            WHERE b.deletedAt IS NULL
+            AND b.status = 'ACTIVE'
+            AND b.customer.id = :customerId
+            AND b.restaurant.id = :restaurantId
+            AND b.date = :date
+            AND b.sittingTime.start > CURRENT_TIME
+            """)
+    boolean existsActiveFutureBookingByCustomer_IdAndRestaurant_IdAndDate(long customerId, long restaurantId, LocalDate date);
+
     // weekday() returns the day of the week (0 = Monday, ..., 6 = Sunday)
     @Query("""
             SELECT COUNT(b) > 0
             FROM Booking b
-            WHERE b.deletedAt IS NULL AND b.status = 'ACTIVE'
-            AND b.customer.id = :customerId AND b.restaurant.id = :restaurantId
+            WHERE b.deletedAt IS NULL
+            AND b.status = 'ACTIVE'
+            AND b.customer.id = :customerId
+            AND b.restaurant.id = :restaurantId
             AND b.date >= CURRENT_DATE
             AND b.sittingTime.weekDayInfo.weekDay = (CAST(WEEKDAY(CURDATE()) AS int) + 1)
-            AND b.sittingTime.start <= CURTIME() AND b.sittingTime.end >= CURTIME()
+            AND b.sittingTime.start <= CURTIME()
+            AND b.sittingTime.end >= CURTIME()
             """)
     boolean existsActiveBookingForOrder(long customerId, long restaurantId);
 }
