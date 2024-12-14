@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -180,6 +181,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkSittingTimeIsInFutureOrThrow(Booking booking) {
+        if (booking.getDate().isAfter(LocalDate.now())) return;
         if (booking.getSittingTime().getStart().isAfter(LocalTime.now())) return;
 
         throw new InvalidBookingSittingTimeException();

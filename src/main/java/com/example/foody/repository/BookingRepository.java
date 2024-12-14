@@ -28,6 +28,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
             """)
     long countBookedSeats(LocalDate date, long sittingTimeId, long restaurantId);
 
+    // If the date is today, the sitting time's start must be in the future
     @Query("""
             SELECT COUNT(b) > 0
             FROM Booking b
@@ -36,7 +37,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
             AND b.customer.id = :customerId
             AND b.restaurant.id = :restaurantId
             AND b.date = :date
-            AND b.sittingTime.start > CURRENT_TIME
+            AND (b.date <> CURRENT_DATE OR b.sittingTime.start > CURRENT_TIME)
             """)
     boolean existsActiveFutureBookingByCustomer_IdAndRestaurant_IdAndDate(long customerId, long restaurantId, LocalDate date);
 
