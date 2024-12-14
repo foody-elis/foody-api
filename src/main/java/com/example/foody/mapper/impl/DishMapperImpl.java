@@ -2,6 +2,7 @@ package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.DishBuilder;
 import com.example.foody.dto.request.DishRequestDTO;
+import com.example.foody.dto.request.DishUpdateRequestDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
@@ -48,6 +49,17 @@ public class DishMapperImpl implements DishMapper {
                 .description(dishRequestDTO.getDescription())
                 .price(dishRequestDTO.getPrice())
                 .build();
+    }
+
+    @Override
+    public void updateDishFromDishUpdateRequestDTO(Dish dish, DishUpdateRequestDTO dishUpdateRequestDTO) {
+        if (dish == null || dishUpdateRequestDTO == null) {
+            return;
+        }
+
+        dish.setName(dishUpdateRequestDTO.getName());
+        dish.setDescription(dishUpdateRequestDTO.getDescription());
+        dish.setPrice(dishUpdateRequestDTO.getPrice());
     }
 
     @Override

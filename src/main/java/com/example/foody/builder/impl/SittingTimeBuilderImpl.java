@@ -1,11 +1,13 @@
 package com.example.foody.builder.impl;
 
 import com.example.foody.builder.SittingTimeBuilder;
+import com.example.foody.model.Booking;
 import com.example.foody.model.SittingTime;
 import com.example.foody.model.WeekDayInfo;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Component
 public class SittingTimeBuilderImpl implements SittingTimeBuilder {
@@ -13,6 +15,7 @@ public class SittingTimeBuilderImpl implements SittingTimeBuilder {
     private LocalTime start;
     private LocalTime end;
     private WeekDayInfo weekDayInfo;
+    private List<Booking> bookings;
 
     @Override
     public SittingTimeBuilder id(long id) {
@@ -39,7 +42,13 @@ public class SittingTimeBuilderImpl implements SittingTimeBuilder {
     }
 
     @Override
+    public SittingTimeBuilder bookings(List<Booking> bookings) {
+        this.bookings = bookings;
+        return this;
+    }
+
+    @Override
     public SittingTime build() {
-        return new SittingTime(id, start, end, weekDayInfo);
+        return new SittingTime(id, start, end, weekDayInfo, bookings);
     }
 }

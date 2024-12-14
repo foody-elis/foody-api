@@ -14,4 +14,5 @@ public interface RestaurantMapper {
     RestaurantResponseDTO restaurantToRestaurantResponseDTO(Restaurant restaurant);
     DetailedRestaurantResponseDTO restaurantToDetailedRestaurantResponseDTO(Restaurant restaurant, double averageRating, List<SittingTime> sittingTimes, List<Dish> dishes, List<Review> reviews);
     Restaurant restaurantRequestDTOToRestaurant(RestaurantRequestDTO restaurantRequestDTO);
+    void updateRestaurantFromRestaurantRequestDTO(Restaurant restaurant, RestaurantRequestDTO restaurantRequestDTO);
 }

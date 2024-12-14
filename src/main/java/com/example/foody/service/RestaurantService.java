@@ -13,5 +13,6 @@ public interface RestaurantService {
     DetailedRestaurantResponseDTO findByRestaurateur(long restaurateurId);
     List<DetailedRestaurantResponseDTO> findAllByCategory(long categoryId);
     DetailedRestaurantResponseDTO approveById(long id);
+    DetailedRestaurantResponseDTO update(long id, RestaurantRequestDTO restaurantDTO);
     boolean remove(long id);
 }

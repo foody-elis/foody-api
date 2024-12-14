@@ -8,6 +8,7 @@ import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.service.RestaurantService;
@@ -61,6 +62,12 @@ public class RestaurantController {
     public ResponseEntity<DetailedRestaurantResponseDTO> approveRestaurant(@PathVariable long id)
             throws EntityNotFoundException, EntityEditException {
         return new ResponseEntity<>(restaurantService.approveById(id), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<DetailedRestaurantResponseDTO> updateRestaurant(@PathVariable long id, @Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityEditException {
+        return new ResponseEntity<>(restaurantService.update(id, restaurantRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

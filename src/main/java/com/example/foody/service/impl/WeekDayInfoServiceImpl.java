@@ -1,6 +1,7 @@
 package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
+import com.example.foody.dto.request.WeekDayInfoUpdateRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
@@ -46,7 +47,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
         weekDayInfo.setRestaurant(restaurant);
 
-        checkWeekDayInfoCreationOrThrow(weekDayInfo, principal);
+        checkRestaurantAccessOrThrow(principal, weekDayInfo.getRestaurant());
 
         try {
             weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
@@ -74,6 +75,28 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     }
 
     @Override
+    public WeekDayInfoResponseDTO update(long id, WeekDayInfoUpdateRequestDTO weekDayInfoUpdateRequestDTO) {
+        RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        WeekDayInfo weekDayInfo = weekDayInfoRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
+
+        checkRestaurantAccessOrThrow(principal, weekDayInfo.getRestaurant());
+
+        weekDayInfoMapper.updateWeekDayInfoFromWeekDayInfoUpdateRequestDTO(weekDayInfo, weekDayInfoUpdateRequestDTO);
+
+        try {
+            weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
+        } catch (Exception e) {
+            throw new EntityNotFoundException("week day info", "id", id);
+        }
+
+        updateWeekDayInfoSittingTimes(weekDayInfo);
+
+        return weekDayInfoMapper.weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo);
+    }
+
+    @Override
     public boolean remove(long id) {
         WeekDayInfo weekDayInfo = weekDayInfoRepository
                 .findByIdAndDeletedAtIsNull(id)
@@ -91,14 +114,15 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         return true;
     }
 
-    private void checkWeekDayInfoCreationOrThrow(WeekDayInfo weekDayInfo, User user) {
-        checkRestaurantAccessOrThrow(user, weekDayInfo.getRestaurant());
-    }
-
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();
+    }
+
+    private void updateWeekDayInfoSittingTimes(WeekDayInfo weekDayInfo) {
+        removeSittingTimes(weekDayInfo);
+        sittingTimeService.createForWeekDayInfo(weekDayInfo);
     }
 
     private void removeAssociatedEntities(WeekDayInfo weekDayInfo) {

@@ -2,6 +2,7 @@ package com.example.foody.service.impl;
 
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.model.Address;
 import com.example.foody.repository.AddressRepository;
@@ -29,6 +30,25 @@ public class AddressServiceImpl implements AddressService {
         }
 
         return address;
+    }
+
+    @Override
+    public Address update(long id, Address newAddress) {
+        Address address = addressRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("address", "id", id));
+
+        address.setCity(newAddress.getCity());
+        address.setProvince(newAddress.getProvince());
+        address.setStreet(newAddress.getStreet());
+        address.setCivicNumber(newAddress.getCivicNumber());
+        address.setPostalCode(newAddress.getPostalCode());
+
+        try {
+            return addressRepository.save(address);
+        } catch (Exception e) {
+            throw new EntityEditException("address", "id", id);
+        }
     }
 
     @Override

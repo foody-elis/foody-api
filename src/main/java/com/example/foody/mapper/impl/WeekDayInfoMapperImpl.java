@@ -2,6 +2,7 @@ package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.WeekDayInfoBuilder;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
+import com.example.foody.dto.request.WeekDayInfoUpdateRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
@@ -63,6 +64,21 @@ public class WeekDayInfoMapperImpl implements WeekDayInfoMapper {
         }
 
         return builder.build();
+    }
+
+    @Override
+    public void updateWeekDayInfoFromWeekDayInfoUpdateRequestDTO(WeekDayInfo weekDayInfo, WeekDayInfoUpdateRequestDTO weekDayInfoUpdateRequestDTO) {
+        if (weekDayInfo == null || weekDayInfoUpdateRequestDTO == null) {
+            return;
+        }
+
+        weekDayInfo.setStartLaunch(weekDayInfoUpdateRequestDTO.getStartLaunch());
+        weekDayInfo.setEndLaunch(weekDayInfoUpdateRequestDTO.getEndLaunch());
+        weekDayInfo.setStartDinner(weekDayInfoUpdateRequestDTO.getStartDinner());
+        weekDayInfo.setEndDinner(weekDayInfoUpdateRequestDTO.getEndDinner());
+        if (weekDayInfoUpdateRequestDTO.getSittingTimeStep() != null) {
+            weekDayInfo.setSittingTimeStep(Enum.valueOf(SittingTimeStep.class, weekDayInfoUpdateRequestDTO.getSittingTimeStep()));
+        }
     }
 
     @Override

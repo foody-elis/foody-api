@@ -88,6 +88,27 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 .build();
     }
 
+    @Override
+    public void updateRestaurantFromRestaurantRequestDTO(Restaurant restaurant, RestaurantRequestDTO restaurantRequestDTO) {
+        if (restaurantRequestDTO == null || restaurant == null) {
+            return;
+        }
+
+        restaurant.setName(restaurantRequestDTO.getName());
+        restaurant.setDescription(restaurantRequestDTO.getDescription());
+        restaurant.setPhoneNumber(restaurantRequestDTO.getPhoneNumber());
+        restaurant.setSeats(restaurantRequestDTO.getSeats());
+
+        Address address = restaurant.getAddress();
+        if (address != null) {
+            address.setCity(restaurantRequestDTO.getCity());
+            address.setProvince(restaurantRequestDTO.getProvince());
+            address.setStreet(restaurantRequestDTO.getStreet());
+            address.setCivicNumber(restaurantRequestDTO.getCivicNumber());
+            address.setPostalCode(restaurantRequestDTO.getPostalCode());
+        }
+    }
+
     private void mapCommonFields(Restaurant restaurant, RestaurantResponseDTO restaurantResponseDTO) {
         restaurantResponseDTO.setId(restaurant.getId());
         restaurantResponseDTO.setName(restaurant.getName());

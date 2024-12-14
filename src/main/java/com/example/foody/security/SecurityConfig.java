@@ -72,6 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         .requestMatchers(POST, "/api/v1/restaurants").access(hasSpecificRole(Role.RESTAURATEUR))
+                        .requestMatchers(PUT, "/api/v1/restaurants/*").access(hasSpecificRole(Role.RESTAURATEUR))
                         .requestMatchers(DELETE, "/api/v1/restaurants/*").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers(PATCH, "/api/v1/restaurants/approve/*").hasRole(Role.Constants.MODERATOR_VALUE)
                         .requestMatchers(GET, "/api/v1/restaurants/restaurateur").access(hasSpecificRole(Role.RESTAURATEUR))
@@ -82,6 +83,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/categories/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/week-day-infos").access(hasSpecificRole(Role.RESTAURATEUR))
+                        .requestMatchers(PUT, "/api/v1/week-day-infos/*").access(hasSpecificRole(Role.RESTAURATEUR))
                         .requestMatchers(GET, "/api/v1/week-day-infos").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers(GET, "/api/v1/week-day-infos/*").authenticated()
 
@@ -96,6 +98,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/bookings/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/dishes").hasRole(Role.Constants.RESTAURATEUR_VALUE)
+                        .requestMatchers(PUT, "/api/v1/dishes/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(DELETE, "/api/v1/dishes/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(GET, "/api/v1/dishes").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers("/api/v1/dishes/**").authenticated()

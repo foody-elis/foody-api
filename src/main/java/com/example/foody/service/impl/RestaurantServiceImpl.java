@@ -7,6 +7,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
 import com.example.foody.helper.RestaurantHelper;
 import com.example.foody.mapper.RestaurantMapper;
@@ -69,7 +70,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         Address address = saveRestaurantAddress(restaurant);
         List<Category> categories = addRestaurantToCategories(restaurant, restaurantDTO.getCategories());
-        String photoUrl = uploadRestaurantPhoto(restaurantDTO.getPhotoBase64());
+        String photoUrl = saveRestaurantPhoto(restaurantDTO.getPhotoBase64());
 
         restaurant.setRestaurateur(principal);
         restaurant.setAddress(address);
@@ -79,7 +80,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         try {
             restaurant = restaurantRepository.save(restaurant);
         } catch (Exception e) {
-            rollbackPhoto(restaurant);
+            removeRestaurantPhoto(restaurant);
             throw new EntityCreationException("restaurant");
         }
 
@@ -134,6 +135,33 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    public DetailedRestaurantResponseDTO update(long id, RestaurantRequestDTO restaurantDTO) {
+        RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
+
+        checkRestaurantAccessOrThrow(principal, restaurant);
+
+        Address updatedAddress = updateRestaurantAddress(restaurant, restaurantDTO);
+        List<Category> updatedCategories = updateRestaurantCategories(restaurant, restaurantDTO.getCategories());
+        String updatedPhotoUrl = updateRestaurantPhoto(restaurant, restaurantDTO.getPhotoBase64());
+
+        restaurantMapper.updateRestaurantFromRestaurantRequestDTO(restaurant, restaurantDTO);
+        restaurant.setAddress(updatedAddress);
+        restaurant.setCategories(updatedCategories);
+        restaurant.setPhotoUrl(updatedPhotoUrl);
+
+        try {
+            restaurant = restaurantRepository.save(restaurant);
+        } catch (Exception e) {
+            throw new EntityEditException("restaurant", "id", id);
+        }
+
+        return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
+    }
+
+    @Override
     public boolean remove(long id) {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(id)
@@ -141,7 +169,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setDeletedAt(LocalDateTime.now());
 
         removeAssociatedEntities(restaurant);
-        googleDriveService.deleteImage(restaurant.getPhotoUrl());
+        removeRestaurantPhoto(restaurant);
 
         try {
             restaurantRepository.save(restaurant);
@@ -172,19 +200,23 @@ public class RestaurantServiceImpl implements RestaurantService {
             Category category = categoryRepository
                     .findById(categoryId)
                     .orElse(null);
-            if (category != null) {
-                category = categoryService.addRestaurant(category.getId(), restaurant);
-                categories.add(category);
-            }
+            Optional.ofNullable(category)
+                    .map(c -> categoryService.addRestaurant(c.getId(), restaurant))
+                    .ifPresent(categories::add);
         });
 
         return categories;
     }
 
-    private String uploadRestaurantPhoto(String restaurantPhotoBase64) {
+    private String saveRestaurantPhoto(String restaurantPhotoBase64) {
         return Optional.ofNullable(restaurantPhotoBase64)
                 .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.RESTAURANT_PHOTO))
                 .orElse(null);
+    }
+
+    private void removeRestaurantPhoto(Restaurant restaurant) {
+        Optional.ofNullable(restaurant.getPhotoUrl())
+                .ifPresent(googleDriveService::deleteImage);
     }
 
     private List<Restaurant> getRestaurantsBasedOnUserRole(User user) {
@@ -217,9 +249,37 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
     }
 
-    private void rollbackPhoto(Restaurant restaurant) {
-        Optional.ofNullable(restaurant.getPhotoUrl())
-                .ifPresent(googleDriveService::deleteImage);
+    private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
+
+        throw new ForbiddenRestaurantAccessException();
+    }
+
+    private Address updateRestaurantAddress(Restaurant restaurant, RestaurantRequestDTO restaurantDTO) {
+        Address newAddress = new Address(
+                restaurant.getAddress().getId(),
+                restaurantDTO.getCity(),
+                restaurantDTO.getProvince(),
+                restaurantDTO.getStreet(),
+                restaurantDTO.getCivicNumber(),
+                restaurantDTO.getPostalCode(),
+                restaurant
+        );
+        return addressService.update(restaurant.getAddress().getId(), newAddress);
+    }
+
+    private List<Category> updateRestaurantCategories(Restaurant restaurant, List<Long> categoryIds) {
+        restaurant.getCategories().forEach(category ->
+                category.getRestaurants().remove(restaurant)
+        );
+        categoryRepository.saveAll(restaurant.getCategories());
+
+        return addRestaurantToCategories(restaurant, categoryIds);
+    }
+
+    private String updateRestaurantPhoto(Restaurant restaurant, String photoBase64) {
+        removeRestaurantPhoto(restaurant);
+        return saveRestaurantPhoto(photoBase64);
     }
 
     private void removeAssociatedEntities(Restaurant restaurant) {

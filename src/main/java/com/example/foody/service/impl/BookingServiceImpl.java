@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        checkBookingAccessOrThrow(principal, booking);
+        checkBookingEditOrThrow(principal, booking);
 
         try {
             booking.cancel();
@@ -130,7 +130,12 @@ public class BookingServiceImpl implements BookingService {
             throw new EntityEditException("booking", "id", id);
         }
 
-        // todo send email to user and restaurant (???)
+        /*
+        todo
+            send email to user and restaurant (???).
+            Booking is deleted by the user (if it is the booking's customer) or when the associated SittingTime is deleted.
+            I could send a message based simply on the authenticated user: if it is a restaurateur/admin -> ‘your booking has been cancelled by the restaurant’, otherwise -> ‘your booking has been cancelled’)
+         */
 
         return bookingMapper.bookingToBookingResponseDTO(booking);
     }
@@ -157,6 +162,15 @@ public class BookingServiceImpl implements BookingService {
         checkSittingTimeIsInFutureOrThrow(booking);
         checkNoDuplicateActiveFutureBookingOrThrow(booking);
         checkSeatsAvailabilityOrThrow(booking);
+    }
+
+    private void checkBookingEditOrThrow(User user, Booking booking) {
+        if (UserRoleUtils.isCustomer(user)) {
+            checkBookingAccessOrThrow(user, booking);
+        }
+        if (UserRoleUtils.isRestaurateur(user)) {
+            checkRestaurantAccessOrThrow(user, booking.getRestaurant());
+        }
     }
 
     private void checkWeekDayOrThrow(Booking booking) {
@@ -194,14 +208,12 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingAccessOrThrow(User user, Booking booking) {
         if (booking.getCustomer().getId() == user.getId()) return;
-        if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenBookingAccessException();
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
-        if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenRestaurantAccessException();
     }

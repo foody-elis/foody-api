@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -25,13 +27,17 @@ public class SittingTime extends DefaultEntity {
     @JoinColumn(name = "week_day_info_id", nullable = false)
     private WeekDayInfo weekDayInfo;
 
+    @OneToMany(mappedBy = "sittingTime", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Booking> bookings = new ArrayList<>();
+
     public SittingTime() {
     }
 
-    public SittingTime(long id, LocalTime start, LocalTime end, WeekDayInfo weekDayInfo) {
+    public SittingTime(long id, LocalTime start, LocalTime end, WeekDayInfo weekDayInfo, List<Booking> bookings) {
         this.id = id;
         this.start = start;
         this.end = end;
         this.weekDayInfo = weekDayInfo;
+        this.bookings = bookings;
     }
 }

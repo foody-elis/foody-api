@@ -1,6 +1,7 @@
 package com.example.foody.controller;
 
 import com.example.foody.dto.request.DishRequestDTO;
+import com.example.foody.dto.request.DishUpdateRequestDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -44,6 +45,12 @@ public class DishController {
     @GetMapping(path = "/restaurant/{restaurant-id}")
     public ResponseEntity<List<DishResponseDTO>> getDishesByRestaurant(@PathVariable("restaurant-id") long restaurantId) {
         return new ResponseEntity<>(dishService.findAllByRestaurant(restaurantId), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<DishResponseDTO> updateDish(@PathVariable long id, @Valid @RequestBody DishUpdateRequestDTO dishUpdateRequestDTO)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityCreationException {
+        return new ResponseEntity<>(dishService.update(id, dishUpdateRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

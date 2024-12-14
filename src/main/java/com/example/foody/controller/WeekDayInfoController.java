@@ -1,6 +1,7 @@
 package com.example.foody.controller;
 
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
+import com.example.foody.dto.request.WeekDayInfoUpdateRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
@@ -37,5 +38,11 @@ public class WeekDayInfoController {
     public ResponseEntity<List<WeekDayInfoResponseDTO>> getWeekDayInfosByRestaurant(@PathVariable("restaurant-id") long restaurantId)
             throws EntityNotFoundException, ForbiddenRestaurantAccessException {
         return new ResponseEntity<>(weekDayInfoService.findAllByRestaurant(restaurantId), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<WeekDayInfoResponseDTO> updateWeekDayInfo(@PathVariable("id") long id, @Valid @RequestBody WeekDayInfoUpdateRequestDTO weekDayInfoUpdateRequestDTO)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException {
+        return new ResponseEntity<>(weekDayInfoService.update(id, weekDayInfoUpdateRequestDTO), HttpStatus.OK);
     }
 }

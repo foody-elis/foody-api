@@ -1,9 +1,11 @@
 package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.DishRequestDTO;
+import com.example.foody.dto.request.DishUpdateRequestDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.DishMapper;
@@ -49,7 +51,7 @@ public class DishServiceImpl implements DishService {
 
         checkDishCreationOrThrow(principal, restaurant);
 
-        String photoUrl = uploadDishPhoto(dishDTO.getPhotoBase64());
+        String photoUrl = saveDishPhoto(dishDTO.getPhotoBase64());
 
         dish.setRestaurant(restaurant);
         dish.setPhotoUrl(photoUrl);
@@ -57,7 +59,7 @@ public class DishServiceImpl implements DishService {
         try {
             dish = dishRepository.save(dish);
         } catch (Exception e) {
-            rollbackPhoto(dish);
+            removeDishPhoto(dish);
             throw new EntityCreationException("dish");
         }
 
@@ -83,6 +85,29 @@ public class DishServiceImpl implements DishService {
         List<Dish> dishes = dishRepository
                 .findAllByDeletedAtIsNullAndRestaurant_Id(restaurantId);
         return dishMapper.dishesToDishResponseDTOs(dishes);
+    }
+
+    @Override
+    public DishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Dish dish = dishRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
+
+        checkDishAccessOrThrow(principal, dish);
+
+        String updatedPhotoUrl = updateDishPhoto(dish, dishDTO.getPhotoBase64());
+
+        dishMapper.updateDishFromDishUpdateRequestDTO(dish, dishDTO);
+        dish.setPhotoUrl(updatedPhotoUrl);
+
+        try {
+            dish = dishRepository.save(dish);
+        } catch (Exception e) {
+            throw new EntityEditException("dish", "id", id);
+        }
+
+        return dishMapper.dishToDishResponseDTO(dish);
     }
 
     @Override
@@ -112,7 +137,7 @@ public class DishServiceImpl implements DishService {
         throw new ForbiddenRestaurantAccessException();
     }
 
-    private String uploadDishPhoto(String dishPhotoBase64) {
+    private String saveDishPhoto(String dishPhotoBase64) {
         return Optional.ofNullable(dishPhotoBase64)
                 .map(photoBase64 -> googleDriveService.uploadBase64Image(photoBase64, GoogleDriveFileType.DISH_PHOTO))
                 .orElse(null);
@@ -125,7 +150,12 @@ public class DishServiceImpl implements DishService {
         throw new ForbiddenRestaurantAccessException();
     }
 
-    private void rollbackPhoto(Dish dish) {
+    private String updateDishPhoto(Dish dish, String photoBase64) {
+        removeDishPhoto(dish);
+        return saveDishPhoto(photoBase64);
+    }
+
+    private void removeDishPhoto(Dish dish) {
         Optional.ofNullable(dish.getPhotoUrl())
                 .ifPresent(googleDriveService::deleteImage);
     }
