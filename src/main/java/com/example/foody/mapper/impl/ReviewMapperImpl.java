@@ -23,12 +23,16 @@ public class ReviewMapperImpl implements ReviewMapper {
         ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
 
         reviewResponseDTO.setId(review.getId());
+        reviewResponseDTO.setCreatedAt(review.getCreatedAt());
         reviewResponseDTO.setTitle(review.getTitle());
         reviewResponseDTO.setDescription(review.getDescription());
         reviewResponseDTO.setRating(review.getRating());
-        reviewResponseDTO.setCustomerId(reviewCustomerId(review));
         reviewResponseDTO.setRestaurantId(reviewRestaurantId(review));
         reviewResponseDTO.setDishId(reviewDishId(review));
+        reviewResponseDTO.setCustomerId(reviewCustomerId(review));
+        reviewResponseDTO.setCustomerName(reviewCustomerName(review));
+        reviewResponseDTO.setCustomerSurname(reviewCustomerSurname(review));
+        reviewResponseDTO.setCustomerAvatarUrl(reviewCustomerAvatarUrl(review));
 
         return reviewResponseDTO;
     }
@@ -43,17 +47,6 @@ public class ReviewMapperImpl implements ReviewMapper {
         reviews.forEach(review -> list.add(reviewToReviewResponseDTO(review)));
 
         return list;
-    }
-
-    private long reviewCustomerId(Review review) {
-        if (review == null) {
-            return 0L;
-        }
-        CustomerUser customerUser = review.getCustomer();
-        if (customerUser == null) {
-            return 0L;
-        }
-        return customerUser.getId();
     }
 
     private long reviewRestaurantId(Review review) {
@@ -76,5 +69,49 @@ public class ReviewMapperImpl implements ReviewMapper {
             return 0L;
         }
         return dish.getId();
+    }
+
+    private long reviewCustomerId(Review review) {
+        if (review == null) {
+            return 0L;
+        }
+        CustomerUser customerUser = review.getCustomer();
+        if (customerUser == null) {
+            return 0L;
+        }
+        return customerUser.getId();
+    }
+
+    private String reviewCustomerName(Review review) {
+        if (review == null) {
+            return null;
+        }
+        CustomerUser customerUser = review.getCustomer();
+        if (customerUser == null) {
+            return null;
+        }
+        return customerUser.getName();
+    }
+
+    private String reviewCustomerSurname(Review review) {
+        if (review == null) {
+            return null;
+        }
+        CustomerUser customerUser = review.getCustomer();
+        if (customerUser == null) {
+            return null;
+        }
+        return customerUser.getSurname();
+    }
+
+    private String reviewCustomerAvatarUrl(Review review) {
+        if (review == null) {
+            return null;
+        }
+        CustomerUser customerUser = review.getCustomer();
+        if (customerUser == null) {
+            return null;
+        }
+        return customerUser.getAvatarUrl();
     }
 }
