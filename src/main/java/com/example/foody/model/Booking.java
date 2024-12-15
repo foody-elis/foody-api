@@ -9,10 +9,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "bookings")
@@ -46,9 +48,6 @@ public class Booking extends DefaultEntity {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-    public Booking() {
-    }
 
     public Booking(long id, LocalDate date, int seats, SittingTime sittingTime, CustomerUser customer, Restaurant restaurant, BookingState state) {
         this.id = id;

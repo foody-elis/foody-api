@@ -13,7 +13,6 @@ import com.example.foody.repository.SittingTimeRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Component

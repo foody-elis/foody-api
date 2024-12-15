@@ -2,7 +2,6 @@ package com.example.foody.controller;
 
 import com.example.foody.dto.request.CategoryRequestDTO;
 import com.example.foody.dto.response.CategoryResponseDTO;
-import com.example.foody.dto.response.RestaurantResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;

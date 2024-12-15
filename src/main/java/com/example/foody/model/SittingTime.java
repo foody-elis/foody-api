@@ -1,14 +1,18 @@
 package com.example.foody.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "sitting_times")
@@ -27,17 +31,7 @@ public class SittingTime extends DefaultEntity {
     @JoinColumn(name = "week_day_info_id", nullable = false)
     private WeekDayInfo weekDayInfo;
 
-    @OneToMany(mappedBy = "sittingTime", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    // The CascadeType.REMOVE is not used for bookings because when a sitting time is deleted, the associated bookings are canceled (BookingStatus.CANCELLED)
+    @OneToMany(mappedBy = "sittingTime")
     private List<Booking> bookings = new ArrayList<>();
-
-    public SittingTime() {
-    }
-
-    public SittingTime(long id, LocalTime start, LocalTime end, WeekDayInfo weekDayInfo, List<Booking> bookings) {
-        this.id = id;
-        this.start = start;
-        this.end = end;
-        this.weekDayInfo = weekDayInfo;
-        this.bookings = bookings;
-    }
 }

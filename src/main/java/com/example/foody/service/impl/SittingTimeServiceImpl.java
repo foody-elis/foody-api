@@ -15,7 +15,6 @@ import com.example.foody.service.SittingTimeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +23,15 @@ import java.util.List;
 @Transactional(rollbackOn = Exception.class)
 public class SittingTimeServiceImpl implements SittingTimeService {
     private final SittingTimeRepository sittingTimeRepository;
-    private final BookingService bookingService;
     private final SittingTimeMapper sittingTimeMapper;
     private final SittingTimeBuilder sittingTimeBuilder;
+    private final BookingService bookingService;
 
-    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository, BookingService bookingService, SittingTimeMapper sittingTimeMapper, SittingTimeBuilder sittingTimeBuilder) {
+    public SittingTimeServiceImpl(SittingTimeRepository sittingTimeRepository, SittingTimeMapper sittingTimeMapper, SittingTimeBuilder sittingTimeBuilder, BookingService bookingService) {
         this.sittingTimeRepository = sittingTimeRepository;
-        this.bookingService = bookingService;
         this.sittingTimeMapper = sittingTimeMapper;
         this.sittingTimeBuilder = sittingTimeBuilder;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -111,9 +110,9 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         SittingTime sittingTime = sittingTimeRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", id));
-        sittingTime.setDeletedAt(LocalDateTime.now());
+        sittingTime.delete();
 
-        removeAssociatedEntities(sittingTime);
+        cancelBookings(sittingTime);
 
         try {
             sittingTimeRepository.save(sittingTime);
@@ -130,11 +129,7 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         throw new InvalidWeekDayException(weekDay);
     }
 
-    private void removeAssociatedEntities(SittingTime sittingTime) {
-        removeBookings(sittingTime);
-    }
-
-    private void removeBookings(SittingTime sittingTime) {
+    private void cancelBookings(SittingTime sittingTime) {
         sittingTime.getBookings().forEach(booking ->
                 bookingService.cancelById(booking.getId())
         );

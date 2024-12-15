@@ -4,10 +4,14 @@ import com.example.foody.model.user.CustomerUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "reviews")
@@ -39,17 +43,4 @@ public class Review extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "dish_id")
     private Dish dish;
-
-    public Review() {
-    }
-
-    public Review(long id, String title, String description, int rating, CustomerUser customer, Restaurant restaurant, Dish dish) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.rating = rating;
-        this.customer = customer;
-        this.restaurant = restaurant;
-        this.dish = dish;
-    }
 }

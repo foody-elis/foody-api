@@ -6,11 +6,13 @@ import com.example.foody.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue(Role.Constants.WAITER_VALUE)
@@ -20,9 +22,6 @@ public class WaiterUser extends EmployeeUser {
             @AttributeOverride(name = "id", column = @Column(name = "buyer_id", insertable = false, updatable = false))
     })
     private BuyerUser buyer;
-
-    public WaiterUser() {
-    }
 
     public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarGoogleDriveFileId, Role role, boolean active, Restaurant employerRestaurant, List<Order> orders) {
         super(id, email, password, name, surname, birthDate, phoneNumber, avatarGoogleDriveFileId, role, active, employerRestaurant);

@@ -10,8 +10,6 @@ import com.example.foody.service.AddressService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class AddressServiceImpl implements AddressService {
@@ -56,7 +54,7 @@ public class AddressServiceImpl implements AddressService {
         Address address = addressRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("address", "id", id));
-        address.setDeletedAt(LocalDateTime.now());
+        address.delete();
 
         try {
             addressRepository.save(address);

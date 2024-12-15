@@ -1,10 +1,14 @@
 package com.example.foody.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "addresses")
@@ -30,17 +34,4 @@ public class Address extends DefaultEntity {
 
     @OneToOne(mappedBy = "address")
     private Restaurant restaurant;
-
-    public Address() {
-    }
-
-    public Address(long id, String city, String province, String street, String civicNumber, String postalCode, Restaurant restaurant) {
-        this.id = id;
-        this.city = city;
-        this.province = province;
-        this.street = street;
-        this.civicNumber = civicNumber;
-        this.postalCode = postalCode;
-        this.restaurant = restaurant;
-    }
 }

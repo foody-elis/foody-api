@@ -9,9 +9,13 @@ import java.time.LocalDateTime;
 @Data
 @MappedSuperclass
 public class DefaultEntity {
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

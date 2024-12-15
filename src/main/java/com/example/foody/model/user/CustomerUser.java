@@ -8,12 +8,14 @@ import com.example.foody.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue(Role.Constants.CUSTOMER_VALUE)
@@ -34,9 +36,6 @@ public class CustomerUser extends User {
     })
     private BuyerUser buyer;
 
-    public CustomerUser() {
-    }
-
     public CustomerUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard, List<Review> reviews, List<Booking> bookings, List<Order> orders) {
         super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active);
         this.creditCard = creditCard;
@@ -51,5 +50,17 @@ public class CustomerUser extends User {
 
     public void setOrders(List<Order> orders) {
         buyer.setOrders(orders);
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+        deleteChildren();
+    }
+
+    private void deleteChildren() {
+        this.creditCard.delete();
+        this.reviews.forEach(Review::delete);
+        this.bookings.forEach(Booking::delete);
     }
 }

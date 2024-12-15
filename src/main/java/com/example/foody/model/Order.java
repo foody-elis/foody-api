@@ -6,11 +6,13 @@ import com.example.foody.state.order.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "orders")
@@ -41,9 +43,6 @@ public class Order extends DefaultEntity {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
-    public Order() {
-    }
 
     public Order(long id, String tableCode, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
         this.id = id;

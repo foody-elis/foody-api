@@ -1,8 +1,8 @@
 package com.example.foody.security;
 
 import com.example.foody.model.user.User;
-import com.example.foody.utils.enums.Role;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

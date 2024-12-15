@@ -91,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
         return true;
     }
 
+    // todo can I do this in Category entity?
     private void removeCategoryFromRestaurants(Category category) {
         category.getRestaurants().forEach(restaurant ->
                 restaurant.getCategories().remove(category)

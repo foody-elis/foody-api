@@ -4,14 +4,18 @@ import com.example.foody.utils.enums.SittingTimeStep;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
@@ -53,18 +57,9 @@ public class WeekDayInfo extends DefaultEntity {
     @OneToMany(mappedBy = "weekDayInfo", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<SittingTime> sittingTimes = new ArrayList<>();
 
-    public WeekDayInfo() {
-    }
-
-    public WeekDayInfo(long id, int weekDay, LocalTime startLaunch, LocalTime endLaunch, LocalTime startDinner, LocalTime endDinner, SittingTimeStep sittingTimeStep, Restaurant restaurant, List<SittingTime> sittingTimes) {
-        this.id = id;
-        this.weekDay = weekDay;
-        this.startLaunch = startLaunch;
-        this.endLaunch = endLaunch;
-        this.startDinner = startDinner;
-        this.endDinner = endDinner;
-        this.sittingTimeStep = sittingTimeStep;
-        this.restaurant = restaurant;
-        this.sittingTimes = sittingTimes;
+    @Override
+    public void delete() {
+        super.delete();
+        sittingTimes.forEach(SittingTime::delete);
     }
 }

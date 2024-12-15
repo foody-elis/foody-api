@@ -4,13 +4,17 @@ import com.example.foody.model.user.EmployeeUser;
 import com.example.foody.model.user.RestaurateurUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "restaurants")
@@ -73,25 +77,19 @@ public class Restaurant extends DefaultEntity {
     @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     protected List<EmployeeUser> employees = new ArrayList<>();
 
-    public Restaurant() {
+    @Override
+    public void delete() {
+        super.delete();
+        deleteChildren();
     }
 
-    public Restaurant(long id, String name, String description, String photoUrl, String phoneNumber, int seats, boolean approved, List<Category> categories, List<Dish> dishes, List<Review> reviews, List<WeekDayInfo> weekDayInfos, List<Order> orders, List<Booking> bookings, Address address, RestaurateurUser restaurateur, List<EmployeeUser> employees) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.photoUrl = photoUrl;
-        this.phoneNumber = phoneNumber;
-        this.seats = seats;
-        this.approved = approved;
-        this.categories = categories;
-        this.dishes = dishes;
-        this.reviews = reviews;
-        this.weekDayInfos = weekDayInfos;
-        this.orders = orders;
-        this.bookings = bookings;
-        this.address = address;
-        this.restaurateur = restaurateur;
-        this.employees = employees;
+    private void deleteChildren() {
+        this.dishes.forEach(Dish::delete);
+        this.reviews.forEach(Review::delete);
+        this.weekDayInfos.forEach(WeekDayInfo::delete);
+        this.orders.forEach(Order::delete);
+        this.bookings.forEach(Booking::delete);
+        this.employees.forEach(EmployeeUser::delete);
+        this.address.delete();
     }
 }

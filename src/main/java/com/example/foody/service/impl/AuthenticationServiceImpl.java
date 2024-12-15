@@ -37,6 +37,8 @@ import java.util.Optional;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private final UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
     private final UserMapper<User> userMapper;
     private final UserMapper<AdminUser> adminUserMapper;
     private final UserMapper<ModeratorUser> moderatorUserMapper;
@@ -44,14 +46,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper<CookUser> cookUserMapper;
     private final UserMapper<WaiterUser> waiterUserMapper;
     private final UserMapper<CustomerUser> customerUserMapper;
-    private final UserRepository userRepository;
-    private final RestaurantRepository restaurantRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final GoogleDriveService googleDriveService;
     private final JwtService jwtService;
 
-    public AuthenticationServiceImpl(UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, UserRepository userRepository, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService) {
+    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.restaurantRepository = restaurantRepository;
         this.userMapper = userMapper;
         this.adminUserMapper = adminUserMapper;
         this.moderatorUserMapper = moderatorUserMapper;
@@ -59,8 +61,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.cookUserMapper = cookUserMapper;
         this.waiterUserMapper = waiterUserMapper;
         this.customerUserMapper = customerUserMapper;
-        this.userRepository = userRepository;
-        this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.googleDriveService = googleDriveService;

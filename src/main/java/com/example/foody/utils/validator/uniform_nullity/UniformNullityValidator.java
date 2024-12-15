@@ -5,8 +5,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanWrapperImpl;
 
-import java.lang.reflect.Field;
-
 public class UniformNullityValidator implements ConstraintValidator<UniformNullity, Object> {
     private String message;
     private String[] fields;

@@ -1,10 +1,12 @@
 package com.example.foody.model.user;
 
-import com.example.foody.model.*;
+import com.example.foody.model.DefaultEntity;
 import com.example.foody.utils.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Inheritance
@@ -51,22 +55,6 @@ public class User extends DefaultEntity implements UserDetails {
 
     @Column(name = "active", nullable = false)
     protected boolean active = true;
-
-    public User() {
-    }
-
-    public User(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarUrl, Role role, boolean active) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-        this.birthDate = birthDate;
-        this.phoneNumber = phoneNumber;
-        this.avatarUrl = avatarUrl;
-        this.role = role;
-        this.active = active;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

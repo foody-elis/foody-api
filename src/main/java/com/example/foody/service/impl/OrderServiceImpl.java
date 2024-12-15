@@ -26,7 +26,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +166,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
-        order.setDeletedAt(LocalDateTime.now());
+        order.delete();
 
         try {
             orderRepository.save(order);

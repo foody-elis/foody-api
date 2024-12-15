@@ -25,7 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -146,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
-        booking.setDeletedAt(LocalDateTime.now());
+        booking.delete();
 
         try {
             bookingRepository.save(booking);

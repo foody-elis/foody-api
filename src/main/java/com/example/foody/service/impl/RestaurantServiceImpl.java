@@ -18,14 +18,16 @@ import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.service.*;
+import com.example.foody.service.AddressService;
+import com.example.foody.service.CategoryService;
+import com.example.foody.service.GoogleDriveService;
+import com.example.foody.service.RestaurantService;
 import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.GoogleDriveFileType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,26 +40,16 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantMapper restaurantMapper;
     private final RestaurantHelper restaurantHelper;
     private final CategoryService categoryService;
-    private final WeekDayInfoService weekDayInfoService;
-    private final BookingService bookingService;
     private final AddressService addressService;
-    private final DishService dishService;
-    private final OrderService orderService;
     private final GoogleDriveService googleDriveService;
 
-    // todo is a best practice to inject many services in another service? Try to manage cascade with @PreDelete
-
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, RestaurantHelper restaurantHelper, CategoryService categoryService, WeekDayInfoService weekDayInfoService, BookingService bookingService, AddressService addressService, DishService dishService, OrderService orderService, GoogleDriveService googleDriveService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, RestaurantHelper restaurantHelper, CategoryService categoryService, AddressService addressService, GoogleDriveService googleDriveService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
         this.restaurantHelper = restaurantHelper;
         this.categoryService = categoryService;
-        this.weekDayInfoService = weekDayInfoService;
-        this.bookingService = bookingService;
         this.addressService = addressService;
-        this.dishService = dishService;
-        this.orderService = orderService;
         this.googleDriveService = googleDriveService;
     }
 
@@ -166,9 +158,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
-        restaurant.setDeletedAt(LocalDateTime.now());
+        restaurant.delete();
 
-        removeAssociatedEntities(restaurant);
+        removeRestaurantFromCategories(restaurant);
         removeRestaurantPhoto(restaurant);
 
         try {
@@ -282,48 +274,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         return saveRestaurantPhoto(photoBase64);
     }
 
-    private void removeAssociatedEntities(Restaurant restaurant) {
-        removeRestaurantFromCategories(restaurant);
-        removeWeekDayInfos(restaurant);
-        removeBookings(restaurant);
-        removeDishes(restaurant);
-        removeAddress(restaurant);
-        removeOrders(restaurant);
-        // todo remove the associated reviews, restaurateur, employees
-    }
-
     private void removeRestaurantFromCategories(Restaurant restaurant) {
         restaurant.getCategories().forEach(category ->
                 category.getRestaurants().remove(restaurant)
         );
         categoryRepository.saveAll(restaurant.getCategories());
-    }
-
-    private void removeWeekDayInfos(Restaurant restaurant) {
-        restaurant.getWeekDayInfos().forEach(weekDayInfo ->
-                weekDayInfoService.remove(weekDayInfo.getId())
-        );
-    }
-
-    private void removeBookings(Restaurant restaurant) {
-        restaurant.getBookings().forEach(booking ->
-                bookingService.remove(booking.getId())
-        );
-    }
-
-    private void removeDishes(Restaurant restaurant) {
-        restaurant.getDishes().forEach(dish ->
-                dishService.remove(dish.getId())
-        );
-    }
-
-    private void removeAddress(Restaurant restaurant) {
-        addressService.remove(restaurant.getAddress().getId());
-    }
-
-    private void removeOrders(Restaurant restaurant) {
-        restaurant.getOrders().forEach(order ->
-                orderService.remove(order.getId())
-        );
     }
 }

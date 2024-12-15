@@ -20,21 +20,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     private final WeekDayInfoRepository weekDayInfoRepository;
     private final RestaurantRepository restaurantRepository;
-    private final SittingTimeService sittingTimeService;
     private final WeekDayInfoMapper weekDayInfoMapper;
+    private final SittingTimeService sittingTimeService;
 
-    public WeekDayInfoServiceImpl(WeekDayInfoRepository weekDayInfoRepository, RestaurantRepository restaurantRepository, SittingTimeService sittingTimeService, WeekDayInfoMapper weekDayInfoMapper) {
+    public WeekDayInfoServiceImpl(WeekDayInfoRepository weekDayInfoRepository, RestaurantRepository restaurantRepository, WeekDayInfoMapper weekDayInfoMapper, SittingTimeService sittingTimeService) {
         this.weekDayInfoRepository = weekDayInfoRepository;
         this.restaurantRepository = restaurantRepository;
-        this.sittingTimeService = sittingTimeService;
         this.weekDayInfoMapper = weekDayInfoMapper;
+        this.sittingTimeService = sittingTimeService;
     }
 
     @Override
@@ -101,9 +100,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         WeekDayInfo weekDayInfo = weekDayInfoRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
-        weekDayInfo.setDeletedAt(LocalDateTime.now());
-
-        removeAssociatedEntities(weekDayInfo);
+        weekDayInfo.delete();
 
         try {
             weekDayInfoRepository.save(weekDayInfo);
@@ -121,17 +118,9 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     }
 
     private void updateWeekDayInfoSittingTimes(WeekDayInfo weekDayInfo) {
-        removeSittingTimes(weekDayInfo);
-        sittingTimeService.createForWeekDayInfo(weekDayInfo);
-    }
-
-    private void removeAssociatedEntities(WeekDayInfo weekDayInfo) {
-        removeSittingTimes(weekDayInfo);
-    }
-
-    private void removeSittingTimes(WeekDayInfo weekDayInfo) {
         weekDayInfo.getSittingTimes().forEach(sittingTime ->
-                sittingTimeService.remove(sittingTime.getId())
+            sittingTimeService.remove(sittingTime.getId())
         );
+        sittingTimeService.createForWeekDayInfo(weekDayInfo);
     }
 }

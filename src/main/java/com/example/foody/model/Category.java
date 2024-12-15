@@ -1,12 +1,16 @@
 package com.example.foody.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -19,13 +23,4 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     private List<Restaurant> restaurants = new ArrayList<>();
-
-    public Category() {
-    }
-
-    public Category(long id, String name, List<Restaurant> restaurants) {
-        this.id = id;
-        this.name = name;
-        this.restaurants = restaurants;
-    }
 }

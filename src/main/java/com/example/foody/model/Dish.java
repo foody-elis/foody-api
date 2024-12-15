@@ -2,14 +2,18 @@ package com.example.foody.model;
 
 import com.example.foody.model.order_dish.OrderDish;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "dishes")
@@ -41,17 +45,9 @@ public class Dish extends DefaultEntity {
     @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderDish> orderDishes = new ArrayList<>();
 
-    public Dish() {
-    }
-
-    public Dish(long id, String name, String description, BigDecimal price, String photoUrl, Restaurant restaurant, List<Review> reviews, List<OrderDish> orderDishes) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.photoUrl = photoUrl;
-        this.restaurant = restaurant;
-        this.reviews = reviews;
-        this.orderDishes = orderDishes;
+    @Override
+    public void delete() {
+        super.delete();
+        this.reviews.forEach(Review::delete);
     }
 }
