@@ -118,7 +118,7 @@ public class DishServiceImpl implements DishService {
         dish.delete();
 
         checkDishAccessOrThrow(principal, dish);
-        googleDriveService.deleteImage(dish.getPhotoUrl());
+        removeDishPhoto(dish);
 
         try {
             dishRepository.save(dish);
