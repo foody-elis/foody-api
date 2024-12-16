@@ -81,62 +81,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.ADMIN.name());
-
-        AdminUser admin = adminUserMapper.userRequestDTOToUser(userRequestDTO);
-        admin = (AdminUser) register(admin, userRequestDTO.getAvatarBase64());
-
-        return adminUserMapper.userToUserResponseDTO(admin);
+        return registerUserWithRole(userRequestDTO, Role.ADMIN, adminUserMapper);
     }
 
     @Override
     public UserResponseDTO registerModerator(UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.MODERATOR.name());
-
-        ModeratorUser moderator = moderatorUserMapper.userRequestDTOToUser(userRequestDTO);
-        moderator = (ModeratorUser) register(moderator, userRequestDTO.getAvatarBase64());
-
-        return moderatorUserMapper.userToUserResponseDTO(moderator);
+        return registerUserWithRole(userRequestDTO, Role.MODERATOR, moderatorUserMapper);
     }
 
     @Override
     public UserResponseDTO registerRestaurateur(UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.RESTAURATEUR.name());
-
-        RestaurateurUser restaurateur = restaurateurUserMapper.userRequestDTOToUser(userRequestDTO);
-        restaurateur = (RestaurateurUser) register(restaurateur, userRequestDTO.getAvatarBase64());
-
-        return restaurateurUserMapper.userToUserResponseDTO(restaurateur);
+        return registerUserWithRole(userRequestDTO, Role.RESTAURATEUR, restaurateurUserMapper);
     }
 
     @Override
     public EmployeeUserResponseDTO registerCook(long restaurantId, UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.COOK.name());
-
-        CookUser cookUser = cookUserMapper.userRequestDTOToUser(userRequestDTO);
-        cookUser = (CookUser) registerEmployee(restaurantId, cookUser, userRequestDTO.getAvatarBase64());
-
-        return (EmployeeUserResponseDTO) cookUserMapper.userToUserResponseDTO(cookUser);
+        return registerEmployeeUser(restaurantId, userRequestDTO, Role.COOK, cookUserMapper);
     }
 
     @Override
     public EmployeeUserResponseDTO registerWaiter(long restaurantId, UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.WAITER.name());
 
-        WaiterUser waiterUser = waiterUserMapper.userRequestDTOToUser(userRequestDTO);
-        waiterUser = (WaiterUser) registerEmployee(restaurantId, waiterUser, userRequestDTO.getAvatarBase64());
-
-        return (EmployeeUserResponseDTO) waiterUserMapper.userToUserResponseDTO(waiterUser);
+        return registerEmployeeUser(restaurantId, userRequestDTO, Role.WAITER, waiterUserMapper);
     }
 
     @Override
     public CustomerUserResponseDTO registerCustomer(UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRole(Role.CUSTOMER.name());
-
-        CustomerUser customer = customerUserMapper.userRequestDTOToUser(userRequestDTO);
-        customer = (CustomerUser) register(customer, userRequestDTO.getAvatarBase64());
-
-        return (CustomerUserResponseDTO) customerUserMapper.userToUserResponseDTO(customer);
+        return (CustomerUserResponseDTO) registerUserWithRole(userRequestDTO, Role.CUSTOMER, customerUserMapper);
     }
 
     @Override
@@ -169,7 +140,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userMapper.userToUserResponseDTO(principal);
     }
 
-    private <E extends EmployeeUser> EmployeeUser registerEmployee(long restaurantId, E employeeUser, String avatarBase64) {
+    private <T extends User> UserResponseDTO registerUserWithRole(UserRequestDTO userRequestDTO, Role role, UserMapper<T> mapper) {
+        userRequestDTO.setRole(role.name());
+
+        T user = mapper.userRequestDTOToUser(userRequestDTO);
+        user = saveUser(user, userRequestDTO.getAvatarBase64());
+
+        return mapper.userToUserResponseDTO(user);
+    }
+
+    private <E extends EmployeeUser> EmployeeUserResponseDTO registerEmployeeUser(long restaurantId, UserRequestDTO userRequestDTO, Role role, UserMapper<E> mapper) {
+        userRequestDTO.setRole(role.name());
+
+        E employee = mapper.userRequestDTOToUser(userRequestDTO);
+        employee = saveEmployeeUser(restaurantId, employee, userRequestDTO.getAvatarBase64());
+
+        return (EmployeeUserResponseDTO) mapper.userToUserResponseDTO(employee);
+    }
+
+    private <E extends EmployeeUser> E saveEmployeeUser(long restaurantId, E employeeUser, String avatarBase64) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
                 .findByIdAndDeletedAtIsNull(restaurantId)
@@ -178,12 +167,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         checkRestaurantAccessOrThrow(principal, restaurant);
 
         employeeUser.setEmployerRestaurant(restaurant);
-        employeeUser = (E) register(employeeUser, avatarBase64);
+        employeeUser = saveUser(employeeUser, avatarBase64);
 
         return employeeUser;
     }
 
-    private <T extends User> User register(T user, String avatarBase64) {
+    private <T extends User> T saveUser(T user, String avatarBase64) {
         String avatarUrl = saveUserAvatar(avatarBase64);
 
         user.setAvatarUrl(avatarUrl);
