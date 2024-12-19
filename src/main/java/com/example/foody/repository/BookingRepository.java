@@ -55,4 +55,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
             AND b.sittingTime.end >= CURTIME()
             """)
     boolean existsActiveBookingForOrder(long customerId, long restaurantId);
+
+    @Query("""
+            SELECT COUNT(b) > 0
+            FROM Booking b
+            WHERE b.deletedAt IS NULL
+            AND b.status = 'ACTIVE'
+            AND b.customer.id = :customerId
+            AND b.restaurant.id = :restaurantId
+            AND b.date <= CURRENT_DATE
+            """)
+    boolean existsPastActiveBookingByCustomer_IdAndRestaurant_Id(long customerId, long restaurantId);
 }

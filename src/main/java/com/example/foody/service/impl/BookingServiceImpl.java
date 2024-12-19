@@ -165,12 +165,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkBookingEditOrThrow(User user, Booking booking) {
-        if (UserRoleUtils.isCustomer(user)) {
-            checkBookingAccessOrThrow(user, booking);
-        }
-        if (UserRoleUtils.isRestaurateur(user)) {
-            checkRestaurantAccessOrThrow(user, booking.getRestaurant());
-        }
+        if (UserRoleUtils.isCustomer(user)) checkBookingAccessOrThrow(user, booking);
+        if (UserRoleUtils.isRestaurateur(user)) checkRestaurantAccessOrThrow(user, booking.getRestaurant());
     }
 
     private void checkWeekDayOrThrow(Booking booking) {

@@ -112,6 +112,12 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/orders/restaurant/*").access(hasSpecificRole(Role.ADMIN, Role.RESTAURATEUR, Role.COOK, Role.WAITER))
                         .requestMatchers("/api/v1/orders/**").authenticated()
 
+                        .requestMatchers(POST, "/api/v1/reviews").access(hasSpecificRole(Role.CUSTOMER))
+                        .requestMatchers(DELETE, "/api/v1/reviews/*").access(hasSpecificRole(Role.ADMIN, Role.MODERATOR, Role.CUSTOMER)) // todo add MODERATOR > CUSTOMER ?
+                        .requestMatchers(GET, "/api/v1/reviews").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/reviews/customer").access(hasSpecificRole(Role.CUSTOMER))
+                        .requestMatchers("/api/v1/reviews/**").authenticated()
+
                         .anyRequest().permitAll() // todo remove?
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

@@ -130,8 +130,8 @@ public class DishServiceImpl implements DishService {
     }
 
     private void checkDishCreationOrThrow(User user, Restaurant restaurant) {
-        if (restaurant.getRestaurateur().getId() == user.getId()) return;
         if (UserRoleUtils.isAdmin(user)) return;
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();
     }
@@ -143,8 +143,8 @@ public class DishServiceImpl implements DishService {
     }
 
     private void checkDishAccessOrThrow(User user, Dish dish) {
-        if (dish.getRestaurant().getRestaurateur().getId() == user.getId()) return;
         if (UserRoleUtils.isAdmin(user)) return;
+        if (dish.getRestaurant().getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();
     }

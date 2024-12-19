@@ -1,5 +1,7 @@
 package com.example.foody.mapper.impl;
 
+import com.example.foody.builder.ReviewBuilder;
+import com.example.foody.dto.request.ReviewRequestDTO;
 import com.example.foody.dto.response.ReviewResponseDTO;
 import com.example.foody.mapper.ReviewMapper;
 import com.example.foody.model.Dish;
@@ -13,6 +15,11 @@ import java.util.List;
 
 @Component
 public class ReviewMapperImpl implements ReviewMapper {
+    private final ReviewBuilder reviewBuilder;
+
+    public ReviewMapperImpl(ReviewBuilder reviewBuilder) {
+        this.reviewBuilder = reviewBuilder;
+    }
 
     @Override
     public ReviewResponseDTO reviewToReviewResponseDTO(Review review) {
@@ -35,6 +42,19 @@ public class ReviewMapperImpl implements ReviewMapper {
         reviewResponseDTO.setCustomerAvatarUrl(reviewCustomerAvatarUrl(review));
 
         return reviewResponseDTO;
+    }
+
+    @Override
+    public Review reviewRequestDTOToReview(ReviewRequestDTO reviewRequestDTO) {
+        if (reviewRequestDTO == null) {
+            return null;
+        }
+
+        return reviewBuilder
+                .title(reviewRequestDTO.getTitle())
+                .description(reviewRequestDTO.getDescription())
+                .rating(reviewRequestDTO.getRating())
+                .build();
     }
 
     @Override

@@ -205,8 +205,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
-        if (restaurant.getRestaurateur().getId() == user.getId()) return;
         if (UserRoleUtils.isAdmin(user)) return;
+        if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();
     }

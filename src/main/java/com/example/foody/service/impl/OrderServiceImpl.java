@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderMapper.orderRequestDTOToOrder(orderDTO);
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(orderDTO.getRestaurantId())
+                .findByIdAndDeletedAtIsNullAndApproved(orderDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", orderDTO.getRestaurantId()));
 
         order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponseDTO> findAllByRestaurant(long restaurantId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(restaurantId)
+                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
         checkRestaurantAccessOrThrow(principal, restaurant);
@@ -197,12 +197,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderCreationOrThrow(User user, Order order) {
-        if (UserRoleUtils.isWaiter(user)) {
-            checkIsWaiterOfRestaurant(user, order);
-        }
-        if (UserRoleUtils.isCustomer(user)) {
-            checkActiveBookingOrThrow(order);
-        }
+        if (UserRoleUtils.isWaiter(user)) checkIsWaiterOfRestaurant(user, order);
+        if (UserRoleUtils.isCustomer(user)) checkActiveBookingOrThrow(order);
+
         checkDishesBelongToRestaurantOrThrow(order);
     }
 
@@ -235,32 +232,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderAccessOrThrow(User user, Order order) {
-        if(order.getBuyer().getId() == user.getId()) return;
-        if(order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
-        if(UserRoleUtils.isAdmin(user)) return;
-        if(order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (UserRoleUtils.isAdmin(user)) return;
+        if (order.getBuyer().getId() == user.getId()) return;
+        if (order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
 
         throw new ForbiddenOrderAccessException();
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (UserRoleUtils.isAdmin(user)) return;
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
         if (restaurant.getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
-        if (UserRoleUtils.isAdmin(user)) return;
 
         throw new ForbiddenRestaurantAccessException();
     }
 
     private void checkAwaitPaymentAccess(User user, Order order) {
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
         if (UserRoleUtils.isAdmin(user)) return;
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
 
         throw new ForbiddenOrderAccessException();
     }
 
     private void checkCompleteAccess(User user, Order order) {
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
         if (UserRoleUtils.isAdmin(user)) return;
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
 
         throw new ForbiddenOrderAccessException();
     }

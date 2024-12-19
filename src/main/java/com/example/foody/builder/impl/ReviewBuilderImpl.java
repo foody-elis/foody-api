@@ -5,7 +5,9 @@ import com.example.foody.model.Dish;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
 import com.example.foody.model.user.CustomerUser;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReviewBuilderImpl implements ReviewBuilder {
     private long id;
     private String title;
