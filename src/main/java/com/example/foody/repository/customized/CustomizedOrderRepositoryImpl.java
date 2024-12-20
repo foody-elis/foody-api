@@ -1,10 +1,10 @@
 package com.example.foody.repository.customized;
 
 import com.example.foody.model.Order;
-import com.example.foody.state.order.AwaitingPaymentState;
-import com.example.foody.state.order.CompletedState;
+import com.example.foody.state.order.impl.AwaitingPaymentState;
+import com.example.foody.state.order.impl.CompletedState;
 import com.example.foody.state.order.OrderStatus;
-import com.example.foody.state.order.PreparingState;
+import com.example.foody.state.order.impl.PreparingState;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 

@@ -1,10 +1,10 @@
 package com.example.foody.model;
 
 import com.example.foody.model.user.CustomerUser;
-import com.example.foody.state.booking.ActiveState;
+import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.state.booking.BookingState;
 import com.example.foody.state.booking.BookingStatus;
-import com.example.foody.state.booking.CancelledState;
+import com.example.foody.state.booking.impl.CancelledState;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;

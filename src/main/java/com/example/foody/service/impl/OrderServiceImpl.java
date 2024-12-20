@@ -20,7 +20,7 @@ import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.*;
 import com.example.foody.service.OrderService;
-import com.example.foody.state.order.PreparingState;
+import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;

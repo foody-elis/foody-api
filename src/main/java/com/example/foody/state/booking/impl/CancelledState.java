@@ -1,6 +1,8 @@
-package com.example.foody.state.booking;
+package com.example.foody.state.booking.impl;
 
 import com.example.foody.model.Booking;
+import com.example.foody.state.booking.BookingState;
+import com.example.foody.state.booking.BookingStatus;
 
 public class CancelledState extends BookingState {
     public CancelledState(Booking booking) {

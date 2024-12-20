@@ -18,7 +18,7 @@ import com.example.foody.repository.BookingRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.service.BookingService;
-import com.example.foody.state.booking.ActiveState;
+import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;

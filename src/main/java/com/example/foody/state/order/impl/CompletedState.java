@@ -1,6 +1,8 @@
-package com.example.foody.state.order;
+package com.example.foody.state.order.impl;
 
 import com.example.foody.model.Order;
+import com.example.foody.state.order.OrderState;
+import com.example.foody.state.order.OrderStatus;
 
 public class CompletedState extends OrderState {
     public CompletedState(Order order) {
