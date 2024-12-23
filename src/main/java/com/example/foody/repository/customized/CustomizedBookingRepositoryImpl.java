@@ -23,15 +23,17 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
         query.setParameter("id", id);
 
         Optional<Booking> booking = query.getResultList().stream().findFirst();
-        booking.ifPresent(b -> {
-            if (b.getState() == null && b.getStatus() != null) {
-                switch (b.getStatus()) {
-                    case BookingStatus.ACTIVE -> b.setState(new ActiveState(b));
-                    case BookingStatus.CANCELLED -> b.setState(new CancelledState(b));
-                }
-            }
-        });
+        booking.ifPresent(this::setBookingState);
 
         return booking;
+    }
+
+    private void setBookingState(Booking booking) {
+        if (booking.getState() == null && booking.getStatus() != null) {
+            switch (booking.getStatus()) {
+                case BookingStatus.ACTIVE -> booking.setState(new ActiveState(booking));
+                case BookingStatus.CANCELLED -> booking.setState(new CancelledState(booking));
+            }
+        }
     }
 }
