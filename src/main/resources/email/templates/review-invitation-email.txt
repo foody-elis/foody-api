@@ -2,7 +2,7 @@
 La tua opinione è importante per noi!
 
 # Body
-Ciao {name} {surname},
+Ciao {customerName} {customerSurname},
 
 Grazie per aver scelto {restaurantName}! Saremmo felici se potessi lasciare una recensione su {reviewLink} per condividere la tua esperienza.
 Ci piacerebbe sapere cosa ne pensi!

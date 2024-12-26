@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EmailTemplateType {
     REVIEW_INVITATION("review-invitation-email"),
-    PAYMENT_RECEIVED("payment-received-email");
+    PAYMENT_RECEIVED("payment-received-email"),
+    NEW_ORDER("new-order-email");
 
     private final String templateName;
 }

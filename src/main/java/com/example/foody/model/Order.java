@@ -79,13 +79,6 @@ public class Order extends DefaultEntity implements Publisher<Order> {
         setStatus(state);
     }
 
-    // todo make private?
-    private void setStatus(OrderState state) {
-        if (state != null) {
-            this.status = OrderStatus.valueOf(state.getName());
-        }
-    }
-
     public void prepare() {
         state.prepare();
     }
@@ -96,7 +89,6 @@ public class Order extends DefaultEntity implements Publisher<Order> {
 
     public void complete() {
         state.complete();
-        notifySubscribers();
     }
 
     @Override
@@ -112,5 +104,11 @@ public class Order extends DefaultEntity implements Publisher<Order> {
     @Override
     public void notifySubscribers() {
         subscribers.forEach(subscriber -> subscriber.update(this));
+    }
+
+    private void setStatus(OrderState state) {
+        if (state != null) {
+            this.status = OrderStatus.valueOf(state.getName());
+        }
     }
 }

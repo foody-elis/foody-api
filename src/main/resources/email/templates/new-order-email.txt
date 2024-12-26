@@ -1,0 +1,16 @@
+# Subject
+Nuovo ordine ricevuto al ristorante {restaurantName}
+
+# Body
+Ciao {cookName} {cookSurname},
+
+È arrivato un nuovo ordine al ristorante {restaurantName}!
+
+Dettagli dell'ordine:
+- ID Ordine: #{orderId}
+- Cliente: {customerName} {customerSurname}
+
+Accedi alla piattaforma Foody per visualizzare tutti i dettagli dell'ordine e iniziare la preparazione.
+
+Grazie per il tuo lavoro e il tuo impegno!
+Foody Team

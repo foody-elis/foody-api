@@ -17,9 +17,11 @@ import com.example.foody.model.Order;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
+import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.User;
+import com.example.foody.observer.impl.CookUserSubscriber;
 import com.example.foody.observer.impl.RestaurantSubscriber;
-import com.example.foody.observer.impl.UserSubscriber;
+import com.example.foody.observer.impl.CustomerUserSubscriber;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.service.OrderService;
@@ -74,8 +76,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setOrderDishes(addDishesToOrder(order, orderDTO.getOrderDishes()));
+        order.getBuyer().setUser(principal);
 
-        // todo notify someone ???
+        subscribePrepareOrderObservers(order);
+        order.notifySubscribers();
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -138,8 +142,6 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
-        // todo notity someone ???
-
         return orderMapper.orderToOrderResponseDTO(order);
     }
 
@@ -151,7 +153,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkCompleteAccess(principal, order);
-        subscribeObservers(order);
 
         try {
             order.complete();
@@ -161,6 +162,9 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             throw new EntityEditException("order", "id", id);
         }
+
+        subscribeCompleteOrderObservers(order);
+        order.notifySubscribers();
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -266,8 +270,14 @@ public class OrderServiceImpl implements OrderService {
         throw new ForbiddenOrderAccessException();
     }
 
-    private void subscribeObservers(Order order) {
-        order.subscribe(new UserSubscriber(emailService));
+    private void subscribePrepareOrderObservers(Order order) {
+        order.getRestaurant().getEmployees().stream()
+                .filter(UserRoleUtils::isCook)
+                .forEach(cookUser -> order.subscribe(new CookUserSubscriber(emailService, (CookUser) cookUser)));
+    }
+
+    private void subscribeCompleteOrderObservers(Order order) {
+        order.subscribe(new CustomerUserSubscriber(emailService));
         order.subscribe(new RestaurantSubscriber(emailService));
     }
 }

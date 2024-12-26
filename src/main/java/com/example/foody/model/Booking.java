@@ -75,18 +75,17 @@ public class Booking extends DefaultEntity {
         setStatus(state);
     }
 
-    // todo make private?
-    public void setStatus(BookingState state) {
-        if (state != null) {
-            this.status = BookingStatus.valueOf(state.getName());
-        }
-    }
-
     public void activate() {
         state.activate();
     }
 
     public void cancel() {
         state.cancel();
+    }
+
+    private void setStatus(BookingState state) {
+        if (state != null) {
+            this.status = BookingStatus.valueOf(state.getName());
+        }
     }
 }

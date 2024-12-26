@@ -7,14 +7,20 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EmailPlaceholder {
     // review-invitation-email
-    NAME("name"),
-    SURNAME("surname"),
+    CUSTOMER_NAME("customerName"),
+    CUSTOMER_SURNAME("customerSurname"),
     RESTAURANT_NAME("restaurantName"),
     REVIEW_LINK("reviewLink"),
 
     // payment-received-email
     ORDER_ID("orderId"),
-    AMOUNT("amount");
+    RESTAURATEUR_NAME("restaurateurName"),
+    RESTAURATEUR_SURNAME("restaurateurSurname"),
+    AMOUNT("amount"),
+
+    // new-order-email
+    COOK_NAME("cookName"),
+    COOK_SURNAME("cookSurname");
 
     private final String placeholder;
 

@@ -18,9 +18,9 @@ public class RestaurantSubscriber implements Subscriber<Order> {
     @Override
     public void update(Order order) {
         Map<EmailPlaceholder, Object> variables = Map.of(
-                EmailPlaceholder.NAME, order.getRestaurant().getRestaurateur().getName(),
-                EmailPlaceholder.SURNAME, order.getRestaurant().getRestaurateur().getSurname(),
                 EmailPlaceholder.ORDER_ID, order.getId(),
+                EmailPlaceholder.RESTAURATEUR_NAME, order.getRestaurant().getRestaurateur().getName(),
+                EmailPlaceholder.RESTAURATEUR_SURNAME, order.getRestaurant().getRestaurateur().getSurname(),
                 EmailPlaceholder.AMOUNT, 30 // todo set the correct amount
         );
         emailService.sendTemplatedEmail(

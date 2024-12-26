@@ -8,18 +8,18 @@ import com.example.foody.utils.enums.EmailTemplateType;
 
 import java.util.Map;
 
-public class UserSubscriber implements Subscriber<Order> {
+public class CustomerUserSubscriber implements Subscriber<Order> {
     private final EmailService emailService;
 
-    public UserSubscriber(EmailService emailService) {
+    public CustomerUserSubscriber(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @Override
     public void update(Order order) {
         Map<EmailPlaceholder, Object> variables = Map.of(
-                EmailPlaceholder.NAME, order.getBuyer().getUser().getName(),
-                EmailPlaceholder.SURNAME, order.getBuyer().getUser().getSurname(),
+                EmailPlaceholder.CUSTOMER_NAME, order.getBuyer().getUser().getName(),
+                EmailPlaceholder.CUSTOMER_SURNAME, order.getBuyer().getUser().getSurname(),
                 EmailPlaceholder.RESTAURANT_NAME, order.getRestaurant().getName(),
                 EmailPlaceholder.REVIEW_LINK, order.getRestaurant().getName() + "/reviews" // todo should be review link
         );

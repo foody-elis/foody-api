@@ -2,7 +2,7 @@
 Nuovo pagamento ricevuto per l'ordine #{orderId}
 
 # Body
-Ciao {name} {surname},
+Ciao {restaurateurName} {restaurateurSurname},
 
 Volevamo informarti che abbiamo ricevuto con successo il pagamento per l'ordine #{orderId} effettuato tramite Foody.
 L'importo di {amount} euro è stato accreditato sul tuo conto.
