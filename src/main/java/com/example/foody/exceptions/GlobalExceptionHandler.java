@@ -2,6 +2,7 @@ package com.example.foody.exceptions;
 
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.booking.*;
+import com.example.foody.exceptions.email.EmailSendingException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
@@ -125,7 +126,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             EntityCreationException.class,
             GoogleDriveFileUploadException.class,
-            GoogleDriveFileDeleteException.class
+            GoogleDriveFileDeleteException.class,
+            EmailSendingException.class
     })
     public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());

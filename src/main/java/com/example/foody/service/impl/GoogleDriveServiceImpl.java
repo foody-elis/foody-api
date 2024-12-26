@@ -8,7 +8,7 @@ import com.example.foody.utils.enums.GoogleDriveFileType;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.Permission;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-@Component
+@Service
 public class GoogleDriveServiceImpl implements GoogleDriveService {
     private final Drive drive;
     private final Map<String, String> folders;

@@ -18,7 +18,10 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
+import com.example.foody.observer.impl.RestaurantSubscriber;
+import com.example.foody.observer.impl.UserSubscriber;
 import com.example.foody.repository.*;
+import com.example.foody.service.EmailService;
 import com.example.foody.service.OrderService;
 import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.UserRoleUtils;
@@ -38,14 +41,16 @@ public class OrderServiceImpl implements OrderService {
     private final DishRepository dishRepository;
     private final OrderDishRepository orderDishRepository;
     private final OrderMapper orderMapper;
+    private final EmailService emailService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
         this.dishRepository = dishRepository;
         this.orderDishRepository = orderDishRepository;
         this.orderMapper = orderMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -146,6 +151,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkCompleteAccess(principal, order);
+        subscribeObservers(order);
 
         try {
             order.complete();
@@ -155,8 +161,6 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             throw new EntityEditException("order", "id", id);
         }
-
-        // todo notity someone ???
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -260,5 +264,10 @@ public class OrderServiceImpl implements OrderService {
         if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
 
         throw new ForbiddenOrderAccessException();
+    }
+
+    private void subscribeObservers(Order order) {
+        order.subscribe(new UserSubscriber(emailService));
+        order.subscribe(new RestaurantSubscriber(emailService));
     }
 }

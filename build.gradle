@@ -59,6 +59,9 @@ dependencies {
 	implementation 'com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0'
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.17.0'
 
+	// Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	// todo If you have a "strange" problems, try to add the following dependencies
 //	implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
 //	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'

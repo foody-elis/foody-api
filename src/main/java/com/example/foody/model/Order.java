@@ -2,7 +2,10 @@ package com.example.foody.model;
 
 import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
-import com.example.foody.state.order.*;
+import com.example.foody.observer.Publisher;
+import com.example.foody.observer.Subscriber;
+import com.example.foody.state.order.OrderState;
+import com.example.foody.state.order.OrderStatus;
 import com.example.foody.state.order.impl.AwaitingPaymentState;
 import com.example.foody.state.order.impl.CompletedState;
 import com.example.foody.state.order.impl.PreparingState;
@@ -19,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "orders")
-public class Order extends DefaultEntity {
+public class Order extends DefaultEntity implements Publisher<Order> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -46,6 +49,9 @@ public class Order extends DefaultEntity {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    @Transient
+    private List<Subscriber<Order>> subscribers = new ArrayList<>();
 
     public Order(long id, String tableCode, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
         this.id = id;
@@ -90,5 +96,21 @@ public class Order extends DefaultEntity {
 
     public void complete() {
         state.complete();
+        notifySubscribers();
+    }
+
+    @Override
+    public void subscribe(Subscriber<Order> subscriber) {
+        subscribers.add(subscriber);
+    }
+
+    @Override
+    public void unsubscribe(Subscriber<Order> subscriber) {
+        subscribers.remove(subscriber);
+    }
+
+    @Override
+    public void notifySubscribers() {
+        subscribers.forEach(subscriber -> subscriber.update(this));
     }
 }

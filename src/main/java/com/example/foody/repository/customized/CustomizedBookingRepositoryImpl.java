@@ -1,8 +1,8 @@
 package com.example.foody.repository.customized;
 
 import com.example.foody.model.Booking;
-import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.state.booking.BookingStatus;
+import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.state.booking.impl.CancelledState;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
