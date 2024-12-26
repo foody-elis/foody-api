@@ -22,4 +22,12 @@ public interface OrderRepository extends JpaRepository<Order, Long>, CustomizedO
             AND od.dish.id = :dishId
             """)
     boolean existsByBuyer_IdAndDish_Id(long buyerId, long dishId);
+
+    @Query("""
+            SELECT COALESCE(SUM(od.quantity * od.dish.price), 0)
+            FROM Order o
+            JOIN o.orderDishes od
+            WHERE o.id = :orderId
+            """)
+    double findAmountByOrder_Id(long orderId);
 }

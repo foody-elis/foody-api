@@ -1,5 +1,6 @@
 package com.example.foody.observer.impl;
 
+import com.example.foody.helper.OrderHelper;
 import com.example.foody.model.Order;
 import com.example.foody.observer.Subscriber;
 import com.example.foody.service.EmailService;
@@ -10,9 +11,11 @@ import java.util.Map;
 
 public class RestaurateurUserSubscriber implements Subscriber<Order> {
     private final EmailService emailService;
+    private final OrderHelper orderHelper;
 
-    public RestaurateurUserSubscriber(EmailService emailService) {
+    public RestaurateurUserSubscriber(EmailService emailService, OrderHelper orderHelper) {
         this.emailService = emailService;
+        this.orderHelper = orderHelper;
     }
 
     @Override
@@ -21,12 +24,17 @@ public class RestaurateurUserSubscriber implements Subscriber<Order> {
                 EmailPlaceholder.ORDER_ID, order.getId(),
                 EmailPlaceholder.RESTAURATEUR_NAME, order.getRestaurant().getRestaurateur().getName(),
                 EmailPlaceholder.RESTAURATEUR_SURNAME, order.getRestaurant().getRestaurateur().getSurname(),
-                EmailPlaceholder.AMOUNT, 30 // todo set the correct amount
+                EmailPlaceholder.AMOUNT, getOrderedAmount(order)
         );
         emailService.sendTemplatedEmail(
                 order.getRestaurant().getRestaurateur().getEmail(),
                 EmailTemplateType.PAYMENT_RECEIVED,
                 variables
         );
+    }
+
+    private double getOrderedAmount(Order order) {
+        double orderAmount = orderHelper.findAmountByOrderId(order.getId());
+        return Math.round(orderAmount * 100.0) / 100.0;
     }
 }

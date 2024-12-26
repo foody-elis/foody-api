@@ -11,6 +11,7 @@ import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
 import com.example.foody.exceptions.order.InvalidOrderStateException;
 import com.example.foody.exceptions.order.OrderNotAllowedException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.helper.OrderHelper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
@@ -20,8 +21,8 @@ import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.User;
 import com.example.foody.observer.impl.CookUserSubscriber;
-import com.example.foody.observer.impl.RestaurateurUserSubscriber;
 import com.example.foody.observer.impl.CustomerUserSubscriber;
+import com.example.foody.observer.impl.RestaurateurUserSubscriber;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.service.OrderService;
@@ -44,8 +45,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDishRepository orderDishRepository;
     private final OrderMapper orderMapper;
     private final EmailService emailService;
+    private final OrderHelper orderHelper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, OrderHelper orderHelper) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
@@ -53,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderDishRepository = orderDishRepository;
         this.orderMapper = orderMapper;
         this.emailService = emailService;
+        this.orderHelper = orderHelper;
     }
 
     @Override
@@ -278,6 +281,6 @@ public class OrderServiceImpl implements OrderService {
 
     private void subscribeCompleteOrderObservers(Order order) {
         order.subscribe(new CustomerUserSubscriber(emailService));
-        order.subscribe(new RestaurateurUserSubscriber(emailService));
+        order.subscribe(new RestaurateurUserSubscriber(emailService, orderHelper));
     }
 }
