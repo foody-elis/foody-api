@@ -20,7 +20,13 @@ public enum EmailPlaceholder {
 
     // new-order-email
     COOK_NAME("cookName"),
-    COOK_SURNAME("cookSurname");
+    COOK_SURNAME("cookSurname"),
+
+    // new-review-email
+    NAME("name"),
+    SURNAME("surname"),
+    DATE_TIME("dateTime"),
+    RATING("rating");
 
     private final String placeholder;
 

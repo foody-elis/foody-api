@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum EmailTemplateType {
     REVIEW_INVITATION("review-invitation-email"),
     PAYMENT_RECEIVED("payment-received-email"),
-    NEW_ORDER("new-order-email");
+    NEW_ORDER("new-order-email"),
+    NEW_REVIEW("new-review-email");
 
     private final String templateName;
 }

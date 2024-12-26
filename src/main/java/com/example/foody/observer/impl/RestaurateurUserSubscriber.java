@@ -8,10 +8,10 @@ import com.example.foody.utils.enums.EmailTemplateType;
 
 import java.util.Map;
 
-public class RestaurantSubscriber implements Subscriber<Order> {
+public class RestaurateurUserSubscriber implements Subscriber<Order> {
     private final EmailService emailService;
 
-    public RestaurantSubscriber(EmailService emailService) {
+    public RestaurateurUserSubscriber(EmailService emailService) {
         this.emailService = emailService;
     }
 

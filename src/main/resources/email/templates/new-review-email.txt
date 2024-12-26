@@ -1,0 +1,17 @@
+# Subject
+Nuova recensione per il ristorante {restaurantName}
+
+# Body
+Ciao {name} {surname},
+
+Una nuova recensione è stata lasciata per il ristorante {restaurantName}!
+
+Dettagli della recensione:
+- Cliente: {customerName} {customerSurname}
+- Data e ora: {dateTime}
+- Valutazione: {rating}/5
+
+Accedi alla piattaforma Foody per visualizzare la recensione completa.
+
+Grazie per il tuo impegno nel rendere {restaurantName} un luogo speciale per i nostri clienti!
+Foody Team

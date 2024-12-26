@@ -13,7 +13,9 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
 import com.example.foody.model.user.CustomerUser;
 import com.example.foody.model.user.User;
+import com.example.foody.observer.impl.RestaurantStaffSubscriber;
 import com.example.foody.repository.*;
+import com.example.foody.service.EmailService;
 import com.example.foody.service.ReviewService;
 import com.example.foody.utils.UserRoleUtils;
 import jakarta.transaction.Transactional;
@@ -32,14 +34,16 @@ public class ReviewServiceImpl implements ReviewService {
     private final BookingRepository bookingRepository;
     private final OrderRepository orderRepository;
     private final ReviewMapper reviewMapper;
+    private final EmailService emailService;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, BookingRepository bookingRepository, OrderRepository orderRepository, ReviewMapper reviewMapper) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, BookingRepository bookingRepository, OrderRepository orderRepository, ReviewMapper reviewMapper, EmailService emailService) {
         this.reviewRepository = reviewRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
         this.bookingRepository = bookingRepository;
         this.orderRepository = orderRepository;
         this.reviewMapper = reviewMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -62,6 +66,9 @@ public class ReviewServiceImpl implements ReviewService {
         } catch (Exception e) {
             throw new EntityCreationException("review");
         }
+
+        subscribeReviewObservers(review);
+        review.notifySubscribers();
 
         return reviewMapper.reviewToReviewResponseDTO(review);
     }
@@ -171,5 +178,12 @@ public class ReviewServiceImpl implements ReviewService {
         if (review.getCustomer().getId() == user.getId()) return;
 
         throw new ForbiddenReviewAccessException();
+    }
+
+    private void subscribeReviewObservers(Review review) {
+        review.subscribe(new RestaurantStaffSubscriber(emailService, review.getRestaurant().getRestaurateur()));
+        review.getRestaurant().getEmployees().forEach(employee ->
+                review.subscribe(new RestaurantStaffSubscriber(emailService, employee))
+        );
     }
 }

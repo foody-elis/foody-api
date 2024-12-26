@@ -20,7 +20,7 @@ import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.User;
 import com.example.foody.observer.impl.CookUserSubscriber;
-import com.example.foody.observer.impl.RestaurantSubscriber;
+import com.example.foody.observer.impl.RestaurateurUserSubscriber;
 import com.example.foody.observer.impl.CustomerUserSubscriber;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
@@ -278,6 +278,6 @@ public class OrderServiceImpl implements OrderService {
 
     private void subscribeCompleteOrderObservers(Order order) {
         order.subscribe(new CustomerUserSubscriber(emailService));
-        order.subscribe(new RestaurantSubscriber(emailService));
+        order.subscribe(new RestaurateurUserSubscriber(emailService));
     }
 }
