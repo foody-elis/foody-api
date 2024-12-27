@@ -1,0 +1,14 @@
+# Subject
+Il tuo ristorante {restaurantName} è in attesa di approvazione
+
+# Body
+Ciao {restaurateurName} {restaurateurSurname},
+
+Grazie per aver registrato il tuo ristorante {restaurantName} sulla nostra piattaforma!
+
+Il tuo ristorante è attualmente in attesa di approvazione. Ti informeremo non appena il processo di revisione sarà completato.
+
+Grazie per la tua pazienza e per aver scelto Foody!
+
+Cordiali saluti,
+Foody Team

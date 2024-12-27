@@ -18,15 +18,20 @@ import com.example.foody.repository.BookingRepository;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.SittingTimeRepository;
 import com.example.foody.service.BookingService;
+import com.example.foody.service.EmailService;
 import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EmailPlaceholder;
+import com.example.foody.utils.enums.EmailTemplateType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -35,12 +40,14 @@ public class BookingServiceImpl implements BookingService {
     private final SittingTimeRepository sittingTimeRepository;
     private final RestaurantRepository restaurantRepository;
     private final BookingMapper bookingMapper;
+    private final EmailService emailService;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper) {
+    public BookingServiceImpl(BookingRepository bookingRepository, SittingTimeRepository sittingTimeRepository, RestaurantRepository restaurantRepository, BookingMapper bookingMapper, EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.sittingTimeRepository = sittingTimeRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingMapper = bookingMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -67,7 +74,7 @@ public class BookingServiceImpl implements BookingService {
             throw new EntityCreationException("booking");
         }
 
-        // todo send email to user
+        sendBookingCreatedEmail(booking);
 
         return bookingMapper.bookingToBookingResponseDTO(booking);
     }
@@ -130,12 +137,8 @@ public class BookingServiceImpl implements BookingService {
             throw new EntityEditException("booking", "id", id);
         }
 
-        /*
-        todo
-            send email to user and restaurant (???).
-            Booking is deleted by the user (if it is the booking's customer) or when the associated SittingTime is deleted.
-            I could send a message based simply on the authenticated user: if it is a restaurateur/admin -> ‘your booking has been cancelled by the restaurant’, otherwise -> ‘your booking has been cancelled’)
-         */
+        // Booking is deleted by the user (if it is the booking's customer) or when the associated SittingTime is deleted.
+        sendBookingCancelledEmailBasedOnUserRole(principal, booking);
 
         return bookingMapper.bookingToBookingResponseDTO(booking);
     }
@@ -164,9 +167,46 @@ public class BookingServiceImpl implements BookingService {
         checkSeatsAvailabilityOrThrow(booking);
     }
 
+    private void sendBookingCreatedEmail(Booking booking) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.RESTAURANT_NAME, booking.getRestaurant().getName(),
+                EmailPlaceholder.CUSTOMER_NAME, booking.getCustomer().getName(),
+                EmailPlaceholder.CUSTOMER_SURNAME, booking.getCustomer().getSurname(),
+                EmailPlaceholder.BOOKING_ID, booking.getId(),
+                EmailPlaceholder.DATE, booking.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                EmailPlaceholder.TIME, booking.getSittingTime().getStart().format(DateTimeFormatter.ofPattern("HH:mm")),
+                EmailPlaceholder.DURATION, booking.getSittingTime().getWeekDayInfo().getSittingTimeStep().getMinutes(),
+                EmailPlaceholder.SEATS, booking.getSeats()
+        );
+        emailService.sendTemplatedEmail(
+                booking.getCustomer().getEmail(),
+                EmailTemplateType.BOOKING_CREATED,
+                variables
+        );
+    }
+
     private void checkBookingEditOrThrow(User user, Booking booking) {
         if (UserRoleUtils.isCustomer(user)) checkBookingAccessOrThrow(user, booking);
         if (UserRoleUtils.isRestaurateur(user)) checkRestaurantAccessOrThrow(user, booking.getRestaurant());
+    }
+
+    private void sendBookingCancelledEmailBasedOnUserRole(User user, Booking booking) {
+        EmailTemplateType emailTemplateType = UserRoleUtils.isCustomer(user)
+                ? EmailTemplateType.BOOKING_CANCELLED_BY_CUSTOMER
+                : EmailTemplateType.BOOKING_CANCELLED_BY_RESTAURANT;
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.RESTAURANT_NAME, booking.getRestaurant().getName(),
+                EmailPlaceholder.CUSTOMER_NAME, booking.getCustomer().getName(),
+                EmailPlaceholder.CUSTOMER_SURNAME, booking.getCustomer().getSurname(),
+                EmailPlaceholder.BOOKING_ID, booking.getId(),
+                EmailPlaceholder.DATE, booking.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                EmailPlaceholder.TIME, booking.getSittingTime().getStart().format(DateTimeFormatter.ofPattern("HH:mm"))
+        );
+        emailService.sendTemplatedEmail(
+                booking.getCustomer().getEmail(),
+                emailTemplateType,
+                variables
+        );
     }
 
     private void checkWeekDayOrThrow(Booking booking) {

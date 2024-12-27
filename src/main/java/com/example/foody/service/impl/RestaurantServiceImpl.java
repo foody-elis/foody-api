@@ -18,11 +18,10 @@ import com.example.foody.model.user.RestaurateurUser;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.CategoryRepository;
 import com.example.foody.repository.RestaurantRepository;
-import com.example.foody.service.AddressService;
-import com.example.foody.service.CategoryService;
-import com.example.foody.service.GoogleDriveService;
-import com.example.foody.service.RestaurantService;
+import com.example.foody.service.*;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EmailPlaceholder;
+import com.example.foody.utils.enums.EmailTemplateType;
 import com.example.foody.utils.enums.GoogleDriveFileType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -42,8 +42,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final CategoryService categoryService;
     private final AddressService addressService;
     private final GoogleDriveService googleDriveService;
+    private final EmailService emailService;
 
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, RestaurantHelper restaurantHelper, CategoryService categoryService, AddressService addressService, GoogleDriveService googleDriveService) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, CategoryRepository categoryRepository, RestaurantMapper restaurantMapper, RestaurantHelper restaurantHelper, CategoryService categoryService, AddressService addressService, GoogleDriveService googleDriveService, EmailService emailService) {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
         this.restaurantMapper = restaurantMapper;
@@ -51,6 +52,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         this.categoryService = categoryService;
         this.addressService = addressService;
         this.googleDriveService = googleDriveService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -75,6 +77,8 @@ public class RestaurantServiceImpl implements RestaurantService {
             removeRestaurantPhoto(restaurant);
             throw new EntityCreationException("restaurant");
         }
+
+        sendRestaurantRegistrationEmail(restaurant);
 
         return restaurantMapper.restaurantToRestaurantResponseDTO(restaurant);
     }
@@ -121,7 +125,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new EntityEditException("restaurant", "id", id);
         }
 
-        // todo send email to the restaurateur
+        sendRestaurantApprovalEmail(restaurant);
 
         return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }
@@ -211,6 +215,19 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .ifPresent(googleDriveService::deleteImage);
     }
 
+    private void sendRestaurantRegistrationEmail(Restaurant restaurant) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.RESTAURANT_NAME, restaurant.getName(),
+                EmailPlaceholder.RESTAURATEUR_NAME, restaurant.getRestaurateur().getName(),
+                EmailPlaceholder.RESTAURATEUR_SURNAME, restaurant.getRestaurateur().getSurname()
+        );
+        emailService.sendTemplatedEmail(
+                restaurant.getRestaurateur().getEmail(),
+                EmailTemplateType.RESTAURANT_REGISTRATION,
+                variables
+        );
+    }
+
     private List<Restaurant> getRestaurantsBasedOnUserRole(User user) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
             return restaurantRepository.findAllByDeletedAtIsNull();
@@ -239,6 +256,19 @@ public class RestaurantServiceImpl implements RestaurantService {
             return restaurantRepository
                     .findAllByDeletedAtIsNullAndCategory_IdAndApproved(categoryId, true);
         }
+    }
+
+    private void sendRestaurantApprovalEmail(Restaurant restaurant) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.RESTAURANT_NAME, restaurant.getName(),
+                EmailPlaceholder.RESTAURATEUR_NAME, restaurant.getRestaurateur().getName(),
+                EmailPlaceholder.RESTAURATEUR_SURNAME, restaurant.getRestaurateur().getSurname()
+        );
+        emailService.sendTemplatedEmail(
+                restaurant.getRestaurateur().getEmail(),
+                EmailTemplateType.RESTAURANT_APPROVED,
+                variables
+        );
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {

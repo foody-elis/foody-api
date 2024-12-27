@@ -27,7 +27,7 @@ public class RestaurantStaffSubscriber implements Subscriber<Review> {
                 EmailPlaceholder.SURNAME, user.getSurname(),
                 EmailPlaceholder.CUSTOMER_NAME, review.getCustomer().getName(),
                 EmailPlaceholder.CUSTOMER_SURNAME, review.getCustomer().getSurname(),
-                EmailPlaceholder.DATE_TIME, review.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")),
+                EmailPlaceholder.DATE_TIME, review.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
                 EmailPlaceholder.RATING, review.getRating()
         );
         emailService.sendTemplatedEmail(

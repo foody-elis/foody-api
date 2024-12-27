@@ -1,0 +1,19 @@
+# Subject
+La tua prenotazione presso {restaurantName} è stata confermata!
+
+# Body
+Ciao {customerName} {customerSurname},
+
+Siamo lieti di informarti che la tua prenotazione presso {restaurantName} è stata confermata con successo!
+
+Dettagli della prenotazione:
+- Numero: #{bookingId}
+- Data: {date}
+- Orario: {time}
+- Durata: {duration} minuti
+- Numero di persone: {seats}
+
+Grazie per aver scelto Foody!
+
+Cordiali saluti,
+Foody Team

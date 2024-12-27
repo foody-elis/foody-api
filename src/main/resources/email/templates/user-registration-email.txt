@@ -1,0 +1,16 @@
+# Subject
+Benvenuto su Foody, {name}!
+
+# Body
+Ciao {name} {surname},
+
+Grazie per esserti registrato su Foody!
+
+Siamo entusiasti di averti con noi. Ora puoi iniziare a utilizzare la nostra piattaforma.
+
+Se hai domande o hai bisogno di assistenza, non esitare a contattarci.
+
+Grazie per aver scelto Foody!
+
+Cordiali saluti,
+Foody Team

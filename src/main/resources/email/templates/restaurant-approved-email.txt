@@ -1,0 +1,14 @@
+# Subject
+Il tuo ristorante {restaurantName} è stato approvato!
+
+# Body
+Ciao {restaurateurName} {restaurateurSurname},
+
+Siamo lieti di informarti che il tuo ristorante {restaurantName} è stato approvato con successo sulla nostra piattaforma!
+
+Ora puoi iniziare a ricevere ordini e gestire il tuo ristorante tramite la nostra piattaforma.
+
+Grazie per aver scelto Foody!
+
+Cordiali saluti,
+Foody Team

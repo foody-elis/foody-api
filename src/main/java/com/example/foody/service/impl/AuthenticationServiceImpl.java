@@ -19,8 +19,11 @@ import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.service.AuthenticationService;
+import com.example.foody.service.EmailService;
 import com.example.foody.service.GoogleDriveService;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EmailPlaceholder;
+import com.example.foody.utils.enums.EmailTemplateType;
 import com.example.foody.utils.enums.GoogleDriveFileType;
 import com.example.foody.utils.enums.Role;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -50,8 +54,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final GoogleDriveService googleDriveService;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService) {
+    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService, EmailService emailService) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.userMapper = userMapper;
@@ -65,6 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.googleDriveService = googleDriveService;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -188,7 +194,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new EntityCreationException("user");
         }
 
-        // todo send email confirmation
+        sendRegistrationEmail(user);
 
         return user;
     }
@@ -202,6 +208,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void removeUserAvatar(User user) {
         Optional.ofNullable(user.getAvatarUrl())
                 .ifPresent(googleDriveService::deleteImage);
+    }
+
+    private void sendRegistrationEmail(User user) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.NAME, user.getName(),
+                EmailPlaceholder.SURNAME, user.getSurname()
+        );
+        emailService.sendTemplatedEmail(
+                user.getEmail(),
+                EmailTemplateType.USER_REGISTRATION,
+                variables
+        );
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {

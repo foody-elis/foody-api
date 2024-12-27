@@ -1,0 +1,12 @@
+# Subject
+La tua prenotazione presso {restaurantName} è stata cancellata
+
+# Body
+Ciao {customerName} {customerSurname},
+
+La tua prenotazione con numero #{bookingId} presso {restaurantName} per il giorno {date} alle {time} è stata cancellata con successo.
+
+Grazie per aver scelto Foody!
+
+Cordiali saluti,
+Foody Team
