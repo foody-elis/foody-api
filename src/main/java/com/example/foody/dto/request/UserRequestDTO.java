@@ -1,5 +1,6 @@
 package com.example.foody.dto.request;
 
+import com.example.foody.utils.validator.base64.Base64;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class UserRequestDTO {
     @Pattern(regexp = "^\\+?[0-9\\s\\-()]{7,15}$", message = "phoneNumber must be a valid format, including optional country code, and contain only digits, spaces, dashes, or brackets")
     private String phoneNumber;
 
-    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "avatarBase64 must be a valid Base64 encoded string")
+    @Base64(message = "avatarBase64 must be null or a valid non-empty Base64 string")
     private String avatarBase64;
 
     // The role is set by the AuthenticationService during the registration process

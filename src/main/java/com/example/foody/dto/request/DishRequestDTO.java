@@ -1,5 +1,6 @@
 package com.example.foody.dto.request;
 
+import com.example.foody.utils.validator.base64.Base64;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class DishRequestDTO {
     @Digits(integer = 6, fraction = 2, message = "price should have up to 6 integer digits and 2 decimal places")
     private BigDecimal price;
 
-    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "photoBase64 must be a valid Base64 encoded string")
+    @Base64(message = "photoBase64 must be null or a valid non-empty Base64 string")
     private String photoBase64;
 
     @NotNull(message = "restaurantId cannot be null")

@@ -1,5 +1,6 @@
 package com.example.foody.dto.request;
 
+import com.example.foody.utils.validator.base64.Base64;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class RestaurantRequestDTO {
     @Size(min = 1, max = 65535, message = "description cannot be less than 1 character or more than 65535 characters long")
     private String description;
 
-    @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$", message = "photoBase64 must be a valid Base64 encoded string")
+    @Base64(message = "photoBase64 must be null or a valid non-empty Base64 string")
     private String photoBase64;
 
     @NotBlank(message = "phoneNumber cannot be blank")
