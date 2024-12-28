@@ -2,12 +2,14 @@ package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
+import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.helper.DishHelper;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Restaurant;
@@ -31,12 +33,14 @@ public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishMapper dishMapper;
+    private final DishHelper dishHelper;
     private final GoogleDriveService googleDriveService;
 
-    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper, GoogleDriveService googleDriveService) {
+    public DishServiceImpl(DishRepository dishRepository, RestaurantRepository restaurantRepository, DishMapper dishMapper, DishHelper dishHelper, GoogleDriveService googleDriveService) {
         this.dishRepository = dishRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishMapper = dishMapper;
+        this.dishHelper = dishHelper;
         this.googleDriveService = googleDriveService;
     }
 
@@ -66,28 +70,28 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public List<DishResponseDTO> findAll() {
+    public List<DetailedDishResponseDTO> findAll() {
         List<Dish> dishes = dishRepository.findAllByDeletedAtIsNull();
-        return dishMapper.dishesToDishResponseDTOs(dishes);
+        return dishHelper.buildDetailedDishResponseDTOs(dishes);
     }
 
     @Override
-    public DishResponseDTO findById(long id) {
+    public DetailedDishResponseDTO findById(long id) {
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-        return dishMapper.dishToDishResponseDTO(dish);
+        return dishHelper.buildDetailedDishResponseDTO(dish);
     }
 
     @Override
-    public List<DishResponseDTO> findAllByRestaurant(long restaurantId) {
+    public List<DetailedDishResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Dish> dishes = dishRepository
                 .findAllByDeletedAtIsNullAndRestaurant_Id(restaurantId);
-        return dishMapper.dishesToDishResponseDTOs(dishes);
+        return dishHelper.buildDetailedDishResponseDTOs(dishes);
     }
 
     @Override
-    public DishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
+    public DetailedDishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
@@ -106,7 +110,7 @@ public class DishServiceImpl implements DishService {
             throw new EntityEditException("dish", "id", id);
         }
 
-        return dishMapper.dishToDishResponseDTO(dish);
+        return dishHelper.buildDetailedDishResponseDTO(dish);
     }
 
     @Override

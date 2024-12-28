@@ -27,6 +27,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     double findAverageRatingByRestaurant_Id(long restaurantId);
 
     @Query("""
+            SELECT COALESCE(AVG(r.rating), 0)
+            FROM Review r
+            WHERE r.deletedAt IS NULL
+            AND r.dish.id = :dishId
+            """)
+    double findAverageRatingByDish_Id(long dishId);
+
+    @Query("""
             SELECT r
             FROM Review r
             WHERE r.deletedAt IS NULL

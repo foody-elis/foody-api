@@ -3,6 +3,7 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.DishBuilder;
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
+import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
@@ -27,15 +28,23 @@ public class DishMapperImpl implements DishMapper {
         }
 
         DishResponseDTO dishResponseDTO = new DishResponseDTO();
-
-        dishResponseDTO.setRestaurantId(dishRestaurantId(dish));
-        dishResponseDTO.setId(dish.getId());
-        dishResponseDTO.setName(dish.getName());
-        dishResponseDTO.setDescription(dish.getDescription());
-        dishResponseDTO.setPrice(dish.getPrice());
-        dishResponseDTO.setPhotoUrl(dish.getPhotoUrl());
+        mapCommonFields(dish, dishResponseDTO);
 
         return dishResponseDTO;
+    }
+
+    @Override
+    public DetailedDishResponseDTO dishToDetailedDishResponseDTO(Dish dish, double averageRating) {
+        if (dish == null) {
+            return null;
+        }
+
+        DetailedDishResponseDTO detailedDishResponseDTO = new DetailedDishResponseDTO();
+
+        mapCommonFields(dish, detailedDishResponseDTO);
+        detailedDishResponseDTO.setAverageRating(averageRating);
+
+        return detailedDishResponseDTO;
     }
 
     @Override
@@ -72,6 +81,15 @@ public class DishMapperImpl implements DishMapper {
         dishes.forEach(dish -> list.add(dishToDishResponseDTO(dish)));
 
         return list;
+    }
+
+    private void mapCommonFields(Dish dish, DishResponseDTO dishResponseDTO) {
+        dishResponseDTO.setId(dish.getId());
+        dishResponseDTO.setName(dish.getName());
+        dishResponseDTO.setDescription(dish.getDescription());
+        dishResponseDTO.setPrice(dish.getPrice());
+        dishResponseDTO.setPhotoUrl(dish.getPhotoUrl());
+        dishResponseDTO.setRestaurantId(dishRestaurantId(dish));
     }
 
     private long dishRestaurantId(Dish dish) {
