@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -59,8 +60,10 @@ public class CustomerUser extends User {
     }
 
     private void deleteChildren() {
-        this.creditCard.delete();
+        Optional.ofNullable(this.creditCard)
+                .ifPresent(CreditCard::delete);
         this.reviews.forEach(Review::delete);
         this.bookings.forEach(Booking::delete);
+        this.buyer.getOrders().forEach(Order::delete);
     }
 }

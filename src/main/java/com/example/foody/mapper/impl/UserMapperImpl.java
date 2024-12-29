@@ -2,6 +2,7 @@ package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.dto.request.UserRequestDTO;
+import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
 import com.example.foody.dto.response.UserResponseDTO;
@@ -77,6 +78,18 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         }
 
         return (U) userBuilder.build();
+    }
+
+    @Override
+    public void updateUserFromUserUpdateRequestDTO(U user, UserUpdateRequestDTO userUpdateRequestDTO) {
+        if (user == null || userUpdateRequestDTO == null) {
+            return;
+        }
+
+        user.setName(userUpdateRequestDTO.getName());
+        user.setSurname(userUpdateRequestDTO.getSurname());
+        user.setBirthDate(userUpdateRequestDTO.getBirthDate());
+        user.setPhoneNumber(userUpdateRequestDTO.getPhoneNumber());
     }
 
     @Override

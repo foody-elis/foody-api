@@ -3,9 +3,7 @@ package com.example.foody.exceptions;
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.email.EmailSendingException;
-import com.example.foody.exceptions.entity.EntityCreationException;
-import com.example.foody.exceptions.entity.EntityDuplicateException;
-import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.entity.*;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileDeleteException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
@@ -17,6 +15,7 @@ import com.example.foody.exceptions.review.ForbiddenReviewAccessException;
 import com.example.foody.exceptions.review.ReviewNotAllowedException;
 import com.example.foody.exceptions.sitting_time.InvalidWeekDayException;
 import com.example.foody.exceptions.sitting_time.SittingTimeOverlappingException;
+import com.example.foody.exceptions.user.InvalidPasswordException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.utils.enums.CustomHttpStatus;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -24,6 +23,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -48,6 +50,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
         Map<String, Object> errorMap = collectErrors(exception);
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDTO> handleConstraintViolationException(ConstraintViolationException exception, WebRequest webRequest) {
+        String message = exception.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("Constraint violation");
+        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, message, ((ServletWebRequest) webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
@@ -76,7 +88,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
+    @ExceptionHandler({
+            InvalidCredentialsException.class,
+            InvalidPasswordException.class
+    })
     public ResponseEntity<ErrorDTO> handleUnauthorizedException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.UNAUTHORIZED, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
         return new ResponseEntity<>(errorDTO, HttpStatus.UNAUTHORIZED);
@@ -125,6 +140,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             EntityCreationException.class,
+            EntityEditException.class,
+            EntityDeletionException.class,
             GoogleDriveFileUploadException.class,
             GoogleDriveFileDeleteException.class,
             EmailSendingException.class

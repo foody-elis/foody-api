@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -90,6 +91,7 @@ public class Restaurant extends DefaultEntity {
         this.orders.forEach(Order::delete);
         this.bookings.forEach(Booking::delete);
         this.employees.forEach(EmployeeUser::delete);
-        this.address.delete();
+        Optional.ofNullable(this.address)
+                .ifPresent(Address::delete);
     }
 }

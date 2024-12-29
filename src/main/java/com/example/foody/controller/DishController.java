@@ -6,7 +6,9 @@ import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.google_drive.GoogleDriveFileDeleteException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.service.DishService;
@@ -50,13 +52,13 @@ public class DishController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<DetailedDishResponseDTO> updateDish(@PathVariable long id, @Valid @RequestBody DishUpdateRequestDTO dishUpdateRequestDTO)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityCreationException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
         return new ResponseEntity<>(dishService.update(id, dishUpdateRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> removeDish(@PathVariable long id)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityDeletionException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileDeleteException, EntityDeletionException {
         dishService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -35,4 +35,10 @@ public class WaiterUser extends EmployeeUser {
     public void setOrders(List<Order> orders) {
         buyer.setOrders(orders);
     }
+
+    @Override
+    public void delete() {
+        super.delete();
+        this.buyer.getOrders().forEach(Order::delete);
+    }
 }

@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +29,7 @@ public class RestaurateurUser extends User {
     @Override
     public void delete() {
         super.delete();
-        restaurant.delete();
+        Optional.ofNullable(restaurant)
+                .ifPresent(Restaurant::delete);
     }
 }

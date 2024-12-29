@@ -118,6 +118,10 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/reviews/customer").access(hasSpecificRole(Role.CUSTOMER))
                         .requestMatchers("/api/v1/reviews/**").authenticated()
 
+                        .requestMatchers(PUT, "/api/v1/users").authenticated()
+                        .requestMatchers(PATCH, "/api/v1/users/change-password").authenticated()
+                        .requestMatchers("/api/v1/users/**").hasRole(Role.Constants.ADMIN_VALUE)
+
                         .anyRequest().permitAll() // todo remove?
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

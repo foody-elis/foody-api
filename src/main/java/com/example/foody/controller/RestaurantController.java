@@ -7,6 +7,7 @@ import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.google_drive.GoogleDriveFileDeleteException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.restaurant.RestaurateurAlreadyHasRestaurantException;
@@ -66,13 +67,13 @@ public class RestaurantController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<DetailedRestaurantResponseDTO> updateRestaurant(@PathVariable long id, @Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, EntityEditException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
         return new ResponseEntity<>(restaurantService.update(id, restaurantRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> removeEvent(@PathVariable long id)
-            throws EntityNotFoundException, GoogleDriveFileUploadException, EntityDeletionException {
+            throws EntityNotFoundException, GoogleDriveFileDeleteException, EntityDeletionException {
         restaurantService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

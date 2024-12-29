@@ -107,7 +107,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public EmployeeUserResponseDTO registerWaiter(long restaurantId, UserRequestDTO userRequestDTO) {
-
         return registerEmployeeUser(restaurantId, userRequestDTO, Role.WAITER, waiterUserMapper);
     }
 

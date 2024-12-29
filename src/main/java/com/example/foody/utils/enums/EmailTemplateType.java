@@ -15,7 +15,8 @@ public enum EmailTemplateType {
     BOOKING_CREATED("booking-created-email"),
     USER_REGISTRATION("user-registration-email"),
     BOOKING_CANCELLED_BY_CUSTOMER("booking-cancelled-by-customer-email"),
-    BOOKING_CANCELLED_BY_RESTAURANT("booking-cancelled-by-restaurant-email");
+    BOOKING_CANCELLED_BY_RESTAURANT("booking-cancelled-by-restaurant-email"),
+    CHANGE_PASSWORD("change-password-email");
 
     private final String templateName;
 }
