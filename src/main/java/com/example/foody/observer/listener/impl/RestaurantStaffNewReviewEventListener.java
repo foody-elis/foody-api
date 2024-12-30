@@ -1,8 +1,8 @@
-package com.example.foody.observer.impl;
+package com.example.foody.observer.listener.impl;
 
 import com.example.foody.model.Review;
 import com.example.foody.model.user.User;
-import com.example.foody.observer.Subscriber;
+import com.example.foody.observer.listener.EventListener;
 import com.example.foody.service.EmailService;
 import com.example.foody.utils.enums.EmailPlaceholder;
 import com.example.foody.utils.enums.EmailTemplateType;
@@ -10,11 +10,11 @@ import com.example.foody.utils.enums.EmailTemplateType;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class RestaurantStaffSubscriber implements Subscriber<Review> {
+public class RestaurantStaffNewReviewEventListener implements EventListener<Review> {
     private final EmailService emailService;
     private final User user; // RestaurateurUser or EmployeeUser
 
-    public RestaurantStaffSubscriber(EmailService emailService, User user) {
+    public RestaurantStaffNewReviewEventListener(EmailService emailService, User user) {
         this.emailService = emailService;
         this.user = user;
     }

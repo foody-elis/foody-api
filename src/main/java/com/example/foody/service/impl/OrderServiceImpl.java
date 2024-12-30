@@ -20,14 +20,16 @@ import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.User;
-import com.example.foody.observer.impl.CookUserSubscriber;
-import com.example.foody.observer.impl.CustomerUserSubscriber;
-import com.example.foody.observer.impl.RestaurateurUserSubscriber;
+import com.example.foody.observer.listener.impl.CookUserOrderCreatedEventListener;
+import com.example.foody.observer.listener.impl.CustomerUserOrderCompletedEventListener;
+import com.example.foody.observer.listener.impl.RestaurateurUserOrderCompletedEventListener;
+import com.example.foody.observer.manager.EventManager;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.service.OrderService;
 import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EventType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,8 +48,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final EmailService emailService;
     private final OrderHelper orderHelper;
+    private final EventManager eventManager;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, OrderHelper orderHelper) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, OrderHelper orderHelper, EventManager eventManager) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
@@ -56,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
         this.emailService = emailService;
         this.orderHelper = orderHelper;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -81,8 +85,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDishes(addDishesToOrder(order, orderDTO.getOrderDishes()));
         order.getBuyer().setUser(principal);
 
-        subscribePrepareOrderObservers(order);
-        order.notifySubscribers();
+        notifyOrderCreatedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -166,8 +169,7 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
-        subscribeCompleteOrderObservers(order);
-        order.notifySubscribers();
+        notifyOrderCompletedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -273,14 +275,41 @@ public class OrderServiceImpl implements OrderService {
         throw new ForbiddenOrderAccessException();
     }
 
-    private void subscribePrepareOrderObservers(Order order) {
-        order.getRestaurant().getEmployees().stream()
-                .filter(UserRoleUtils::isCook)
-                .forEach(cookUser -> order.subscribe(new CookUserSubscriber(emailService, (CookUser) cookUser)));
+    private void notifyOrderCreatedListeners(Order order) {
+        subscribeOrderCreatedListeners(order);
+        eventManager.notifyListeners(EventType.ORDER_CREATED, order);
     }
 
-    private void subscribeCompleteOrderObservers(Order order) {
-        order.subscribe(new CustomerUserSubscriber(emailService));
-        order.subscribe(new RestaurateurUserSubscriber(emailService, orderHelper));
+    private void subscribeOrderCreatedListeners(Order order) {
+        order.getRestaurant().getEmployees().stream()
+                .filter(UserRoleUtils::isCook)
+                .forEach(cookUser -> eventManager.subscribe(
+                        EventType.ORDER_CREATED,
+                        new CookUserOrderCreatedEventListener(emailService, (CookUser) cookUser)
+                ));
+    }
+
+    private void notifyOrderCompletedListeners(Order order) {
+        subscribeOrderCompletedListeners();
+        eventManager.notifyListeners(EventType.ORDER_COMPLETED, order);
+    }
+
+    private void subscribeOrderCompletedListeners() {
+        subscribeCustomerUserOrderCompletedListener();
+        subscribeRestaurateurUserOrderCompletedListener();
+    }
+
+    private void subscribeCustomerUserOrderCompletedListener() {
+        eventManager.subscribe(
+                EventType.ORDER_COMPLETED,
+                new CustomerUserOrderCompletedEventListener(emailService)
+        );
+    }
+
+    private void subscribeRestaurateurUserOrderCompletedListener() {
+        eventManager.subscribe(
+                EventType.ORDER_COMPLETED,
+                new RestaurateurUserOrderCompletedEventListener(emailService, orderHelper)
+        );
     }
 }

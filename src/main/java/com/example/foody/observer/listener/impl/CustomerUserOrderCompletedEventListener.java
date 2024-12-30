@@ -1,17 +1,17 @@
-package com.example.foody.observer.impl;
+package com.example.foody.observer.listener.impl;
 
 import com.example.foody.model.Order;
-import com.example.foody.observer.Subscriber;
+import com.example.foody.observer.listener.EventListener;
 import com.example.foody.service.EmailService;
 import com.example.foody.utils.enums.EmailPlaceholder;
 import com.example.foody.utils.enums.EmailTemplateType;
 
 import java.util.Map;
 
-public class CustomerUserSubscriber implements Subscriber<Order> {
+public class CustomerUserOrderCompletedEventListener implements EventListener<Order> {
     private final EmailService emailService;
 
-    public CustomerUserSubscriber(EmailService emailService) {
+    public CustomerUserOrderCompletedEventListener(EmailService emailService) {
         this.emailService = emailService;
     }
 

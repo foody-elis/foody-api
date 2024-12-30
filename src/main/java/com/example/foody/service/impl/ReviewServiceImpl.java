@@ -13,11 +13,13 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
 import com.example.foody.model.user.CustomerUser;
 import com.example.foody.model.user.User;
-import com.example.foody.observer.impl.RestaurantStaffSubscriber;
+import com.example.foody.observer.listener.impl.RestaurantStaffNewReviewEventListener;
+import com.example.foody.observer.manager.EventManager;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.service.ReviewService;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EventType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,8 +37,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrderRepository orderRepository;
     private final ReviewMapper reviewMapper;
     private final EmailService emailService;
+    private final EventManager eventManager;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, BookingRepository bookingRepository, OrderRepository orderRepository, ReviewMapper reviewMapper, EmailService emailService) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, BookingRepository bookingRepository, OrderRepository orderRepository, ReviewMapper reviewMapper, EmailService emailService, EventManager eventManager) {
         this.reviewRepository = reviewRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
@@ -44,6 +47,7 @@ public class ReviewServiceImpl implements ReviewService {
         this.orderRepository = orderRepository;
         this.reviewMapper = reviewMapper;
         this.emailService = emailService;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -67,8 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
             throw new EntityCreationException("review");
         }
 
-        subscribeReviewObservers(review);
-        review.notifySubscribers();
+        notifyNewReviewListeners(review);
 
         return reviewMapper.reviewToReviewResponseDTO(review);
     }
@@ -180,10 +183,29 @@ public class ReviewServiceImpl implements ReviewService {
         throw new ForbiddenReviewAccessException();
     }
 
-    private void subscribeReviewObservers(Review review) {
-        review.subscribe(new RestaurantStaffSubscriber(emailService, review.getRestaurant().getRestaurateur()));
+    private void notifyNewReviewListeners(Review review) {
+        subscribeNewReviewListeners(review);
+        eventManager.notifyListeners(EventType.NEW_REVIEW, review);
+    }
+
+    private void subscribeNewReviewListeners(Review review) {
+        subscribeRestaurateurUserNewReviewListener(review);
+        subscribeEmployeesNewReviewListeners(review);
+    }
+
+    private void subscribeRestaurateurUserNewReviewListener(Review review) {
+        eventManager.subscribe(
+                EventType.NEW_REVIEW,
+                new RestaurantStaffNewReviewEventListener(emailService, review.getRestaurant().getRestaurateur())
+        );
+    }
+
+    private void subscribeEmployeesNewReviewListeners(Review review) {
         review.getRestaurant().getEmployees().forEach(employee ->
-                review.subscribe(new RestaurantStaffSubscriber(emailService, employee))
+                eventManager.subscribe(
+                        EventType.NEW_REVIEW,
+                        new RestaurantStaffNewReviewEventListener(emailService, employee)
+                )
         );
     }
 }
