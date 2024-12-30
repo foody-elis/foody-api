@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setSittingTime(sittingTime);
         booking.setRestaurant(restaurant);
         booking.setCustomer(principal);
-        booking.setState(new ActiveState(booking));
+        booking.setState(new ActiveState());
 
         checkBookingCreationOrThrow(booking);
 

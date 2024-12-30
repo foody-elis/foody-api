@@ -1,4 +1,4 @@
-package com.example.foody.state.order;
+package com.example.foody.utils.enums;
 
 public enum OrderStatus {
     PREPARING,

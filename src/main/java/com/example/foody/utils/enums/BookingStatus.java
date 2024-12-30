@@ -1,4 +1,4 @@
-package com.example.foody.state.booking;
+package com.example.foody.utils.enums;
 
 public enum BookingStatus {
     ACTIVE,

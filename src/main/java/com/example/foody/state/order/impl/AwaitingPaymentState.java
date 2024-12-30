@@ -2,25 +2,25 @@ package com.example.foody.state.order.impl;
 
 import com.example.foody.model.Order;
 import com.example.foody.state.order.OrderState;
-import com.example.foody.state.order.OrderStatus;
+import com.example.foody.utils.enums.OrderStatus;
 
 public class AwaitingPaymentState extends OrderState {
-    public AwaitingPaymentState(Order order) {
-        super(order, OrderStatus.AWAITING_PAYMENT.name());
+    public AwaitingPaymentState() {
+        super(OrderStatus.AWAITING_PAYMENT);
     }
 
     @Override
-    public void prepare() {
+    public void prepare(Order order) {
         throw new IllegalStateException("Cannot prepare order that is already awaiting payment.");
     }
 
     @Override
-    public void awaitPayment() {
+    public void awaitPayment(Order order) {
         throw new IllegalStateException("Order is already awaiting payment.");
     }
 
     @Override
-    public void complete() {
-        getOrder().setState(new CompletedState(getOrder()));
+    public void complete(Order order) {
+        order.setState(new CompletedState());
     }
 }

@@ -1,9 +1,9 @@
 package com.example.foody.repository.customized;
 
 import com.example.foody.model.Booking;
-import com.example.foody.state.booking.BookingStatus;
 import com.example.foody.state.booking.impl.ActiveState;
 import com.example.foody.state.booking.impl.CancelledState;
+import com.example.foody.utils.enums.BookingStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -31,8 +31,8 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
     private void setBookingState(Booking booking) {
         if (booking.getState() == null && booking.getStatus() != null) {
             switch (booking.getStatus()) {
-                case BookingStatus.ACTIVE -> booking.setState(new ActiveState(booking));
-                case BookingStatus.CANCELLED -> booking.setState(new CancelledState(booking));
+                case BookingStatus.ACTIVE -> booking.setState(new ActiveState());
+                case BookingStatus.CANCELLED -> booking.setState(new CancelledState());
             }
         }
     }

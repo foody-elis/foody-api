@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
         order.setRestaurant(restaurant);
-        order.setState(new PreparingState(order));
+        order.setState(new PreparingState());
 
         checkOrderCreationOrThrow(principal, order);
 

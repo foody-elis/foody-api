@@ -1,21 +1,20 @@
 package com.example.foody.state.order;
 
 import com.example.foody.model.Order;
+import com.example.foody.utils.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public abstract class OrderState {
-    private Order order;
-    private String name;
+    private OrderStatus status;
 
-    public OrderState(Order order, String name) {
-        this.order = order;
-        this.name = name;
+    public OrderState(OrderStatus status) {
+        this.status = status;
     }
 
-    public abstract void prepare();
-    public abstract void awaitPayment();
-    public abstract void complete();
+    public abstract void prepare(Order order);
+    public abstract void awaitPayment(Order order);
+    public abstract void complete(Order order);
 }
