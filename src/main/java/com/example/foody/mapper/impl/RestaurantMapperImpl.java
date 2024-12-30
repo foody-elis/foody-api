@@ -5,7 +5,11 @@ import com.example.foody.builder.RestaurantBuilder;
 import com.example.foody.dto.request.RestaurantRequestDTO;
 import com.example.foody.dto.response.DetailedRestaurantResponseDTO;
 import com.example.foody.dto.response.RestaurantResponseDTO;
-import com.example.foody.mapper.*;
+import com.example.foody.helper.DishHelper;
+import com.example.foody.mapper.CategoryMapper;
+import com.example.foody.mapper.RestaurantMapper;
+import com.example.foody.mapper.ReviewMapper;
+import com.example.foody.mapper.SittingTimeMapper;
 import com.example.foody.model.*;
 import com.example.foody.model.user.RestaurateurUser;
 import org.springframework.stereotype.Component;
@@ -18,16 +22,16 @@ public class RestaurantMapperImpl implements RestaurantMapper {
     private final AddressBuilder addressBuilder;
     private final CategoryMapper categoryMapper;
     private final SittingTimeMapper sittingTimeMapper;
-    private final DishMapper dishMapper;
     private final ReviewMapper reviewMapper;
+    private final DishHelper dishHelper;
 
-    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper, SittingTimeMapper sittingTimeMapper, DishMapper dishMapper, ReviewMapper reviewMapper) {
+    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper, SittingTimeMapper sittingTimeMapper, ReviewMapper reviewMapper, DishHelper dishHelper) {
         this.restaurantBuilder = restaurantBuilder;
         this.addressBuilder = addressBuilder;
         this.categoryMapper = categoryMapper;
         this.sittingTimeMapper = sittingTimeMapper;
-        this.dishMapper = dishMapper;
         this.reviewMapper = reviewMapper;
+        this.dishHelper = dishHelper;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes)
         );
         detailedRestaurantResponseDTO.setDishes(
-                dishMapper.dishesToDishResponseDTOs(dishes)
+                dishHelper.buildDishResponseDTOs(dishes)
         );
         detailedRestaurantResponseDTO.setReviews(
                 reviewMapper.reviewsToReviewResponseDTOs(reviews)

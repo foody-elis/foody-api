@@ -11,7 +11,6 @@ import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
 import com.example.foody.exceptions.order.InvalidOrderStateException;
 import com.example.foody.exceptions.order.OrderNotAllowedException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
-import com.example.foody.helper.OrderHelper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Order;
@@ -47,10 +46,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDishRepository orderDishRepository;
     private final OrderMapper orderMapper;
     private final EmailService emailService;
-    private final OrderHelper orderHelper;
     private final EventManager eventManager;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, OrderHelper orderHelper, EventManager eventManager) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, EventManager eventManager) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
@@ -58,7 +56,6 @@ public class OrderServiceImpl implements OrderService {
         this.orderDishRepository = orderDishRepository;
         this.orderMapper = orderMapper;
         this.emailService = emailService;
-        this.orderHelper = orderHelper;
         this.eventManager = eventManager;
     }
 
@@ -309,7 +306,7 @@ public class OrderServiceImpl implements OrderService {
     private void subscribeRestaurateurUserOrderCompletedListener() {
         eventManager.subscribe(
                 EventType.ORDER_COMPLETED,
-                new RestaurateurUserOrderCompletedEventListener(emailService, orderHelper)
+                new RestaurateurUserOrderCompletedEventListener(emailService, orderRepository)
         );
     }
 }

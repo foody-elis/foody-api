@@ -3,15 +3,11 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.DishBuilder;
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
-import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
 import com.example.foody.model.Restaurant;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class DishMapperImpl implements DishMapper {
@@ -22,29 +18,22 @@ public class DishMapperImpl implements DishMapper {
     }
 
     @Override
-    public DishResponseDTO dishToDishResponseDTO(Dish dish) {
+    public DishResponseDTO dishToDishResponseDTO(Dish dish, double averageRating) {
         if (dish == null) {
             return null;
         }
 
         DishResponseDTO dishResponseDTO = new DishResponseDTO();
-        mapCommonFields(dish, dishResponseDTO);
+
+        dishResponseDTO.setId(dish.getId());
+        dishResponseDTO.setName(dish.getName());
+        dishResponseDTO.setDescription(dish.getDescription());
+        dishResponseDTO.setPrice(dish.getPrice());
+        dishResponseDTO.setPhotoUrl(dish.getPhotoUrl());
+        dishResponseDTO.setRestaurantId(dishRestaurantId(dish));
+        dishResponseDTO.setAverageRating(averageRating);
 
         return dishResponseDTO;
-    }
-
-    @Override
-    public DetailedDishResponseDTO dishToDetailedDishResponseDTO(Dish dish, double averageRating) {
-        if (dish == null) {
-            return null;
-        }
-
-        DetailedDishResponseDTO detailedDishResponseDTO = new DetailedDishResponseDTO();
-
-        mapCommonFields(dish, detailedDishResponseDTO);
-        detailedDishResponseDTO.setAverageRating(averageRating);
-
-        return detailedDishResponseDTO;
     }
 
     @Override
@@ -69,27 +58,6 @@ public class DishMapperImpl implements DishMapper {
         dish.setName(dishUpdateRequestDTO.getName());
         dish.setDescription(dishUpdateRequestDTO.getDescription());
         dish.setPrice(dishUpdateRequestDTO.getPrice());
-    }
-
-    @Override
-    public List<DishResponseDTO> dishesToDishResponseDTOs(List<Dish> dishes) {
-        if (dishes == null) {
-            return null;
-        }
-
-        List<DishResponseDTO> list = new ArrayList<>(dishes.size());
-        dishes.forEach(dish -> list.add(dishToDishResponseDTO(dish)));
-
-        return list;
-    }
-
-    private void mapCommonFields(Dish dish, DishResponseDTO dishResponseDTO) {
-        dishResponseDTO.setId(dish.getId());
-        dishResponseDTO.setName(dish.getName());
-        dishResponseDTO.setDescription(dish.getDescription());
-        dishResponseDTO.setPrice(dish.getPrice());
-        dishResponseDTO.setPhotoUrl(dish.getPhotoUrl());
-        dishResponseDTO.setRestaurantId(dishRestaurantId(dish));
     }
 
     private long dishRestaurantId(Dish dish) {

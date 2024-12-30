@@ -1,5 +1,7 @@
 package com.example.foody.dto.response;
 
+import com.example.foody.utils.serializer.RoundedDoubleSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,4 +18,6 @@ public class DishResponseDTO {
     private BigDecimal price;
     private String photoUrl;
     private long restaurantId;
+    @JsonSerialize(using = RoundedDoubleSerializer.class)
+    private double averageRating;
 }

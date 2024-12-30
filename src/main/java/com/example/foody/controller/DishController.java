@@ -2,7 +2,6 @@ package com.example.foody.controller;
 
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
-import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -35,23 +34,23 @@ public class DishController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DetailedDishResponseDTO>> getDishes() {
+    public ResponseEntity<List<DishResponseDTO>> getDishes() {
         return new ResponseEntity<>(dishService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DetailedDishResponseDTO> getDishById(@PathVariable long id)
+    public ResponseEntity<DishResponseDTO> getDishById(@PathVariable long id)
             throws EntityNotFoundException {
         return new ResponseEntity<>(dishService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}")
-    public ResponseEntity<List<DetailedDishResponseDTO>> getDishesByRestaurant(@PathVariable("restaurant-id") long restaurantId) {
+    public ResponseEntity<List<DishResponseDTO>> getDishesByRestaurant(@PathVariable("restaurant-id") long restaurantId) {
         return new ResponseEntity<>(dishService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<DetailedDishResponseDTO> updateDish(@PathVariable long id, @Valid @RequestBody DishUpdateRequestDTO dishUpdateRequestDTO)
+    public ResponseEntity<DishResponseDTO> updateDish(@PathVariable long id, @Valid @RequestBody DishUpdateRequestDTO dishUpdateRequestDTO)
             throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
         return new ResponseEntity<>(dishService.update(id, dishUpdateRequestDTO), HttpStatus.OK);
     }

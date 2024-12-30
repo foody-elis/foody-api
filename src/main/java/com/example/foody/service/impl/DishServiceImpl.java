@@ -2,7 +2,6 @@ package com.example.foody.service.impl;
 
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
-import com.example.foody.dto.response.DetailedDishResponseDTO;
 import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -66,32 +65,32 @@ public class DishServiceImpl implements DishService {
             throw new EntityCreationException("dish");
         }
 
-        return dishMapper.dishToDishResponseDTO(dish);
+        return dishHelper.buildDishResponseDTO(dish);
     }
 
     @Override
-    public List<DetailedDishResponseDTO> findAll() {
+    public List<DishResponseDTO> findAll() {
         List<Dish> dishes = dishRepository.findAllByDeletedAtIsNull();
-        return dishHelper.buildDetailedDishResponseDTOs(dishes);
+        return dishHelper.buildDishResponseDTOs(dishes);
     }
 
     @Override
-    public DetailedDishResponseDTO findById(long id) {
+    public DishResponseDTO findById(long id) {
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
-        return dishHelper.buildDetailedDishResponseDTO(dish);
+        return dishHelper.buildDishResponseDTO(dish);
     }
 
     @Override
-    public List<DetailedDishResponseDTO> findAllByRestaurant(long restaurantId) {
+    public List<DishResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Dish> dishes = dishRepository
                 .findAllByDeletedAtIsNullAndRestaurant_Id(restaurantId);
-        return dishHelper.buildDetailedDishResponseDTOs(dishes);
+        return dishHelper.buildDishResponseDTOs(dishes);
     }
 
     @Override
-    public DetailedDishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
+    public DishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
                 .findByIdAndDeletedAtIsNull(id)
@@ -110,7 +109,7 @@ public class DishServiceImpl implements DishService {
             throw new EntityEditException("dish", "id", id);
         }
 
-        return dishHelper.buildDetailedDishResponseDTO(dish);
+        return dishHelper.buildDishResponseDTO(dish);
     }
 
     @Override

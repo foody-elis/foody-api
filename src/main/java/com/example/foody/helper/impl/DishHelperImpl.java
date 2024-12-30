@@ -1,6 +1,6 @@
 package com.example.foody.helper.impl;
 
-import com.example.foody.dto.response.DetailedDishResponseDTO;
+import com.example.foody.dto.response.DishResponseDTO;
 import com.example.foody.helper.DishHelper;
 import com.example.foody.mapper.DishMapper;
 import com.example.foody.model.Dish;
@@ -20,15 +20,15 @@ public class DishHelperImpl implements DishHelper {
     }
 
     @Override
-    public DetailedDishResponseDTO buildDetailedDishResponseDTO(Dish dish) {
+    public DishResponseDTO buildDishResponseDTO(Dish dish) {
         double averageRating = reviewRepository.findAverageRatingByDish_Id(dish.getId());
-        return dishMapper.dishToDetailedDishResponseDTO(dish, averageRating);
+        return dishMapper.dishToDishResponseDTO(dish, averageRating);
     }
 
     @Override
-    public List<DetailedDishResponseDTO> buildDetailedDishResponseDTOs(List<Dish> dishes) {
+    public List<DishResponseDTO> buildDishResponseDTOs(List<Dish> dishes) {
         return dishes.stream()
-                .map(this::buildDetailedDishResponseDTO)
+                .map(this::buildDishResponseDTO)
                 .toList();
     }
 }

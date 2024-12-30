@@ -1,8 +1,8 @@
 package com.example.foody.observer.listener.impl;
 
-import com.example.foody.helper.OrderHelper;
 import com.example.foody.model.Order;
 import com.example.foody.observer.listener.EventListener;
+import com.example.foody.repository.OrderRepository;
 import com.example.foody.service.EmailService;
 import com.example.foody.utils.enums.EmailPlaceholder;
 import com.example.foody.utils.enums.EmailTemplateType;
@@ -11,11 +11,11 @@ import java.util.Map;
 
 public class RestaurateurUserOrderCompletedEventListener implements EventListener<Order> {
     private final EmailService emailService;
-    private final OrderHelper orderHelper;
+    private final OrderRepository orderRepository;
 
-    public RestaurateurUserOrderCompletedEventListener(EmailService emailService, OrderHelper orderHelper) {
+    public RestaurateurUserOrderCompletedEventListener(EmailService emailService, OrderRepository orderRepository) {
         this.emailService = emailService;
-        this.orderHelper = orderHelper;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RestaurateurUserOrderCompletedEventListener implements EventListene
     }
 
     private double getOrderedAmount(Order order) {
-        double orderAmount = orderHelper.findAmountByOrderId(order.getId());
+        double orderAmount = orderRepository.findAmountByOrder_Id(order.getId());
         return Math.round(orderAmount * 100.0) / 100.0;
     }
 }
