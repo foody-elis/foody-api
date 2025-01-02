@@ -10,13 +10,18 @@ public class CompletedState extends OrderState {
     }
 
     @Override
-    public void prepare(Order order) {
-        throw new IllegalStateException("Cannot prepare order that is already completed.");
+    public void create(Order order) {
+        throw new IllegalStateException("Cannot create order that is already completed.");
     }
 
     @Override
-    public void awaitPayment(Order order) {
-        throw new IllegalStateException("Cannot await payment for order that is already completed.");
+    public void pay(Order order) {
+        throw new IllegalStateException("Cannot pay for order that is already completed.");
+    }
+
+    @Override
+    public void prepare(Order order) {
+        throw new IllegalStateException("Cannot prepare order that is already completed.");
     }
 
     @Override

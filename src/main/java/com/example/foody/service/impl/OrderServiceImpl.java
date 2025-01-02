@@ -26,7 +26,9 @@ import com.example.foody.observer.manager.EventManager;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.service.OrderService;
-import com.example.foody.state.order.impl.PreparingState;
+import com.example.foody.state.order.OrderState;
+import com.example.foody.state.order.impl.CreatedState;
+import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.EventType;
 import jakarta.transaction.Transactional;
@@ -69,9 +71,10 @@ public class OrderServiceImpl implements OrderService {
 
         order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
         order.setRestaurant(restaurant);
-        order.setState(new PreparingState());
+        order.setState(getInitialOrderState(principal));
 
-        checkOrderCreationOrThrow(principal, order);
+        // todo uncomment
+//        checkOrderCreationOrThrow(principal, order);
 
         try {
             order = orderRepository.save(order);
@@ -82,7 +85,8 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDishes(addDishesToOrder(order, orderDTO.getOrderDishes()));
         order.getBuyer().setUser(principal);
 
-        notifyOrderCreatedListeners(order);
+        // todo uncomment
+//        notifyOrderCreatedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -128,16 +132,37 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO awaitPaymentById(long id) {
+    public OrderResponseDTO payById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderRepository
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
-        checkAwaitPaymentAccess(principal, order);
+        checkPayAccessOrThrow(principal, order);
 
         try {
-            order.awaitPayment();
+            order.pay();
+            order = orderRepository.save(order);
+        } catch (IllegalStateException e) {
+            throw new InvalidOrderStateException(e.getMessage());
+        } catch (Exception e) {
+            throw new EntityEditException("order", "id", id);
+        }
+
+        return orderMapper.orderToOrderResponseDTO(order);
+    }
+
+    @Override
+    public OrderResponseDTO prepareById(long id) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Order order = orderRepository
+                .findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
+
+        checkPrepareAccessOrThrow(principal, order);
+
+        try {
+            order.prepare();
             order = orderRepository.save(order);
         } catch (IllegalStateException e) {
             throw new InvalidOrderStateException(e.getMessage());
@@ -155,7 +180,7 @@ public class OrderServiceImpl implements OrderService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
-        checkCompleteAccess(principal, order);
+        checkCompleteAccessOrThrow(principal, order);
 
         try {
             order.complete();
@@ -166,7 +191,8 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
-        notifyOrderCompletedListeners(order);
+        // todo uncomment
+//        notifyOrderCompletedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -204,6 +230,12 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             throw new EntityCreationException("order dish");
         }
+    }
+
+    private OrderState getInitialOrderState(User user) {
+        return UserRoleUtils.isWaiter(user)
+                ? new PaidState()
+                : new CreatedState();
     }
 
     private void checkOrderCreationOrThrow(User user, Order order) {
@@ -258,18 +290,29 @@ public class OrderServiceImpl implements OrderService {
         throw new ForbiddenRestaurantAccessException();
     }
 
-    private void checkAwaitPaymentAccess(User user, Order order) {
+    private void checkPayAccessOrThrow(User user, Order order) {
         if (UserRoleUtils.isAdmin(user)) return;
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (order.getBuyer().getId() == user.getId()) return;
 
         throw new ForbiddenOrderAccessException();
     }
 
-    private void checkCompleteAccess(User user, Order order) {
+    private void checkPrepareAccessOrThrow(User user, Order order) {
         if (UserRoleUtils.isAdmin(user)) return;
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (isEmployeeOfRestaurant(user, order.getRestaurant())) return;
 
         throw new ForbiddenOrderAccessException();
+    }
+
+    private void checkCompleteAccessOrThrow(User user, Order order) {
+        if (UserRoleUtils.isAdmin(user)) return;
+        if (isEmployeeOfRestaurant(user, order.getRestaurant())) return;
+
+        throw new ForbiddenOrderAccessException();
+    }
+
+    private boolean isEmployeeOfRestaurant(User user, Restaurant restaurant) {
+        return restaurant.getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId());
     }
 
     private void notifyOrderCreatedListeners(Order order) {

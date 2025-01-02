@@ -11,7 +11,8 @@ public interface OrderService {
     OrderResponseDTO findById(long id);
     List<OrderResponseDTO> findAllByBuyer(long buyerId);
     List<OrderResponseDTO> findAllByRestaurant(long restaurantId);
-    OrderResponseDTO awaitPaymentById(long id);
+    OrderResponseDTO payById(long id);
+    OrderResponseDTO prepareById(long id);
     OrderResponseDTO completeById(long id);
     boolean remove(long id);
 }

@@ -10,17 +10,22 @@ public class PreparingState extends OrderState {
     }
 
     @Override
+    public void create(Order order) {
+        throw new IllegalStateException("Cannot create order that is already being prepared.");
+    }
+
+    @Override
+    public void pay(Order order) {
+        throw new IllegalStateException("Cannot pay for order that is already being prepared.");
+    }
+
+    @Override
     public void prepare(Order order) {
         throw new IllegalStateException("Order is already being prepared.");
     }
 
     @Override
-    public void awaitPayment(Order order) {
-        order.setState(new AwaitingPaymentState());
-    }
-
-    @Override
     public void complete(Order order) {
-        throw new IllegalStateException("Cannot complete order that hasn't awaited payment yet.");
+        order.setState(new CompletedState());
     }
 }

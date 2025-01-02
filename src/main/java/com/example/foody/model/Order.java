@@ -3,8 +3,9 @@ package com.example.foody.model;
 import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.state.order.OrderState;
-import com.example.foody.state.order.impl.AwaitingPaymentState;
 import com.example.foody.state.order.impl.CompletedState;
+import com.example.foody.state.order.impl.CreatedState;
+import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.enums.OrderStatus;
 import jakarta.persistence.*;
@@ -61,8 +62,9 @@ public class Order extends DefaultEntity {
     public OrderState getState() {
         if (state == null && status != null) {
             switch (status) {
+                case OrderStatus.CREATED -> state = new CreatedState();
+                case OrderStatus.PAID -> state = new PaidState();
                 case OrderStatus.PREPARING -> state = new PreparingState();
-                case OrderStatus.AWAITING_PAYMENT -> state = new AwaitingPaymentState();
                 case OrderStatus.COMPLETED -> state = new CompletedState();
             }
         }
@@ -74,12 +76,16 @@ public class Order extends DefaultEntity {
         setStatus(state);
     }
 
-    public void prepare() {
-        state.prepare(this);
+    public void create() {
+        state.create(this);
     }
 
-    public void awaitPayment() {
-        state.awaitPayment(this);
+    public void pay() {
+        state.pay(this);
+    }
+
+    public void prepare() {
+        state.prepare(this);
     }
 
     public void complete() {

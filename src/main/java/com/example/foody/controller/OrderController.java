@@ -58,15 +58,21 @@ public class OrderController {
         return new ResponseEntity<>(orderService.findAllByRestaurant(restaurantId), HttpStatus.OK);
     }
 
-    @PatchMapping(path = "/await-payment/{id}")
-    public ResponseEntity<OrderResponseDTO> awaitPayment(@PathVariable long id)
+    @PatchMapping(path = "/pay/{id}")
+    public ResponseEntity<OrderResponseDTO> payOrder(@PathVariable long id)
             throws EntityNotFoundException, ForbiddenOrderAccessException, InvalidOrderStateException, EntityEditException {
-        return new ResponseEntity<>(orderService.awaitPaymentById(id), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.payById(id), HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/prepare/{id}")
+    public ResponseEntity<OrderResponseDTO> prepareOrder(@PathVariable long id)
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, ForbiddenOrderAccessException, InvalidOrderStateException, EntityEditException {
+        return new ResponseEntity<>(orderService.prepareById(id), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/complete/{id}")
     public ResponseEntity<OrderResponseDTO> completeOrder(@PathVariable long id)
-            throws EntityNotFoundException, ForbiddenOrderAccessException, InvalidOrderStateException, EntityEditException {
+            throws EntityNotFoundException, ForbiddenRestaurantAccessException, ForbiddenOrderAccessException, InvalidOrderStateException, EntityEditException {
         return new ResponseEntity<>(orderService.completeById(id), HttpStatus.OK);
     }
 

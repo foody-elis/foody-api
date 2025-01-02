@@ -3,8 +3,9 @@ package com.example.foody.repository.customized;
 import com.example.foody.model.Order;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
-import com.example.foody.state.order.impl.AwaitingPaymentState;
 import com.example.foody.state.order.impl.CompletedState;
+import com.example.foody.state.order.impl.CreatedState;
+import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.enums.OrderStatus;
 import jakarta.persistence.EntityManager;
@@ -37,8 +38,9 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     private void setOrderState(Order order) {
         if (order.getState() == null && order.getStatus() != null) {
             switch (order.getStatus()) {
+                case OrderStatus.CREATED -> order.setState(new CreatedState());
+                case OrderStatus.PAID -> order.setState(new PaidState());
                 case OrderStatus.PREPARING -> order.setState(new PreparingState());
-                case OrderStatus.AWAITING_PAYMENT -> order.setState(new AwaitingPaymentState());
                 case OrderStatus.COMPLETED -> order.setState(new CompletedState());
             }
         }
