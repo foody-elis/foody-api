@@ -21,7 +21,6 @@ import com.example.foody.model.user.CookUser;
 import com.example.foody.model.user.User;
 import com.example.foody.observer.listener.impl.CookUserOrderCreatedEventListener;
 import com.example.foody.observer.listener.impl.CustomerUserOrderCompletedEventListener;
-import com.example.foody.observer.listener.impl.RestaurateurUserOrderCompletedEventListener;
 import com.example.foody.observer.manager.EventManager;
 import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
@@ -30,6 +29,8 @@ import com.example.foody.state.order.OrderState;
 import com.example.foody.state.order.impl.CreatedState;
 import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.utils.UserRoleUtils;
+import com.example.foody.utils.enums.EmailPlaceholder;
+import com.example.foody.utils.enums.EmailTemplateType;
 import com.example.foody.utils.enums.EventType;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -73,8 +75,7 @@ public class OrderServiceImpl implements OrderService {
         order.setRestaurant(restaurant);
         order.setState(getInitialOrderState(principal));
 
-        // todo uncomment
-//        checkOrderCreationOrThrow(principal, order);
+        checkOrderCreationOrThrow(principal, order);
 
         try {
             order = orderRepository.save(order);
@@ -85,8 +86,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDishes(addDishesToOrder(order, orderDTO.getOrderDishes()));
         order.getBuyer().setUser(principal);
 
-        // todo uncomment
-//        notifyOrderCreatedListeners(order);
+        notifyOrderCreatedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -149,6 +149,8 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
+        sendPaymentReceivedEmail(order);
+
         return orderMapper.orderToOrderResponseDTO(order);
     }
 
@@ -191,8 +193,7 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
-        // todo uncomment
-//        notifyOrderCompletedListeners(order);
+        notifyOrderCompletedListeners(order);
 
         return orderMapper.orderToOrderResponseDTO(order);
     }
@@ -297,6 +298,20 @@ public class OrderServiceImpl implements OrderService {
         throw new ForbiddenOrderAccessException();
     }
 
+    private void sendPaymentReceivedEmail(Order order) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.ORDER_ID, order.getId(),
+                EmailPlaceholder.RESTAURATEUR_NAME, order.getRestaurant().getRestaurateur().getName(),
+                EmailPlaceholder.RESTAURATEUR_SURNAME, order.getRestaurant().getRestaurateur().getSurname(),
+                EmailPlaceholder.AMOUNT, orderRepository.findAmountByOrder_Id(order.getId())
+        );
+        emailService.sendTemplatedEmail(
+                order.getBuyer().getUser().getEmail(),
+                EmailTemplateType.PAYMENT_RECEIVED,
+                variables
+        );
+    }
+
     private void checkPrepareAccessOrThrow(User user, Order order) {
         if (UserRoleUtils.isAdmin(user)) return;
         if (isEmployeeOfRestaurant(user, order.getRestaurant())) return;
@@ -330,26 +345,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void notifyOrderCompletedListeners(Order order) {
-        subscribeOrderCompletedListeners();
+        subscribeOrderCompletedListeners(order);
         eventManager.notifyListeners(EventType.ORDER_COMPLETED, order);
     }
 
-    private void subscribeOrderCompletedListeners() {
-        subscribeCustomerUserOrderCompletedListener();
-        subscribeRestaurateurUserOrderCompletedListener();
-    }
-
-    private void subscribeCustomerUserOrderCompletedListener() {
-        eventManager.subscribe(
-                EventType.ORDER_COMPLETED,
-                new CustomerUserOrderCompletedEventListener(emailService)
-        );
-    }
-
-    private void subscribeRestaurateurUserOrderCompletedListener() {
-        eventManager.subscribe(
-                EventType.ORDER_COMPLETED,
-                new RestaurateurUserOrderCompletedEventListener(emailService, orderRepository)
-        );
+    private void subscribeOrderCompletedListeners(Order order) {
+        if (UserRoleUtils.isCustomer(order.getBuyer().getUser())) {
+            eventManager.subscribe(
+                    EventType.ORDER_COMPLETED,
+                    new CustomerUserOrderCompletedEventListener(emailService)
+            );
+        }
     }
 }
