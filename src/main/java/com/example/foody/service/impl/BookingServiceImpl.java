@@ -126,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
-        checkBookingEditOrThrow(principal, booking);
+        checkBookingCancelOrThrow(principal, booking);
 
         try {
             booking.cancel();
@@ -185,7 +185,7 @@ public class BookingServiceImpl implements BookingService {
         );
     }
 
-    private void checkBookingEditOrThrow(User user, Booking booking) {
+    private void checkBookingCancelOrThrow(User user, Booking booking) {
         if (UserRoleUtils.isCustomer(user)) checkBookingAccessOrThrow(user, booking);
         if (UserRoleUtils.isRestaurateur(user)) checkRestaurantAccessOrThrow(user, booking.getRestaurant());
     }
@@ -245,11 +245,13 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookingAccessOrThrow(User user, Booking booking) {
         if (booking.getCustomer().getId() == user.getId()) return;
+        if (booking.getRestaurant().getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenBookingAccessException();
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
+        if (!UserRoleUtils.isRestaurateur(user)) return;
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();

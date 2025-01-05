@@ -3,11 +3,14 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.OrderBuilder;
 import com.example.foody.dto.request.OrderRequestDTO;
 import com.example.foody.dto.response.OrderResponseDTO;
+import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.mapper.OrderDishMapper;
 import com.example.foody.mapper.OrderMapper;
+import com.example.foody.mapper.RestaurantMapper;
+import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Order;
-import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.BuyerUser;
+import com.example.foody.model.user.CustomerUser;
+import com.example.foody.model.user.WaiterUser;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,10 +20,16 @@ import java.util.List;
 public class OrderMapperImpl implements OrderMapper {
     private final OrderBuilder orderBuilder;
     private final OrderDishMapper orderDishMapper;
+    private final UserMapper<CustomerUser> customerUserMapper;
+    private final UserMapper<WaiterUser> waiterUserMapper;
+    private final RestaurantMapper restaurantMapper;
 
-    public OrderMapperImpl(OrderBuilder orderBuilder, OrderDishMapper orderDishMapper) {
+    public OrderMapperImpl(OrderBuilder orderBuilder, OrderDishMapper orderDishMapper, UserMapper<CustomerUser> customerUserMapper, UserMapper<WaiterUser> waiterUserMapper, RestaurantMapper restaurantMapper) {
         this.orderBuilder = orderBuilder;
         this.orderDishMapper = orderDishMapper;
+        this.customerUserMapper = customerUserMapper;
+        this.waiterUserMapper = waiterUserMapper;
+        this.restaurantMapper = restaurantMapper;
     }
 
     @Override
@@ -34,8 +43,10 @@ public class OrderMapperImpl implements OrderMapper {
         orderResponseDTO.setOrderDishes(
                 orderDishMapper.orderDishesToOrderDishResponseDTOs(order.getOrderDishes())
         );
-        orderResponseDTO.setBuyerId(orderBuyerId(order));
-        orderResponseDTO.setRestaurantId(orderRestaurantId(order));
+        orderResponseDTO.setBuyer(orderBuyerUserResponseDTO(order));
+        orderResponseDTO.setRestaurant(
+                restaurantMapper.restaurantToRestaurantResponseDTO(order.getRestaurant())
+        );
         orderResponseDTO.setId(order.getId());
         orderResponseDTO.setTableCode(order.getTableCode());
         if (order.getStatus() != null) {
@@ -68,25 +79,11 @@ public class OrderMapperImpl implements OrderMapper {
         return list;
     }
 
-    private long orderBuyerId(Order order) {
-        if (order == null) {
-            return 0L;
-        }
-        BuyerUser buyer = order.getBuyer();
-        if (buyer == null) {
-            return 0L;
-        }
-        return buyer.getId();
-    }
-
-    private long orderRestaurantId(Order order) {
-        if (order == null) {
-            return 0L;
-        }
-        Restaurant restaurant = order.getRestaurant();
-        if (restaurant == null) {
-            return 0L;
-        }
-        return restaurant.getId();
+    private UserResponseDTO orderBuyerUserResponseDTO(Order order) {
+        return switch (order.getBuyer().getUser()) {
+            case CustomerUser customerUser -> customerUserMapper.userToUserResponseDTO(customerUser);
+            case WaiterUser waiterUser -> waiterUserMapper.userToUserResponseDTO(waiterUser);
+            default -> null;
+        };
     }
 }

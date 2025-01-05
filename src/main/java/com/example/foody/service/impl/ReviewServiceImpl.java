@@ -168,7 +168,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void checkReviewAccessOrThrow(User user, Review review) {
-        if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) return;
+        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isEmployee(user)) return;
         if (review.getCustomer().getId() == user.getId()) return;
         if (review.getRestaurant().getRestaurateur().getId() == user.getId()) return;
         if (review.getRestaurant().getEmployees().stream().anyMatch(employee -> employee.getId() == user.getId())) return;
@@ -177,7 +177,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void checkReviewDeletionOrThrow(User user, Review review) {
-        if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) return;
+        if (!UserRoleUtils.isCustomer(user)) return;
         if (review.getCustomer().getId() == user.getId()) return;
 
         throw new ForbiddenReviewAccessException();

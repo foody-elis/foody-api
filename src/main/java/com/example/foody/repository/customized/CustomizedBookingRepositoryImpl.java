@@ -1,11 +1,7 @@
 package com.example.foody.repository.customized;
 
 import com.example.foody.model.Booking;
-import com.example.foody.state.booking.impl.ActiveState;
-import com.example.foody.state.booking.impl.CancelledState;
-import com.example.foody.utils.enums.BookingStatus;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 import java.util.Optional;
 
@@ -18,22 +14,21 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
 
     @Override
     public Optional<Booking> findByIdAndDeletedAtIsNull(long id) {
-        TypedQuery<Booking> query = entityManager.createQuery(
-                "select b from Booking b where b.id = :id and b.deletedAt is null", Booking.class);
-        query.setParameter("id", id);
-
-        Optional<Booking> booking = query.getResultList().stream().findFirst();
-        booking.ifPresent(this::setBookingState);
-
-        return booking;
+        return entityManager
+                .createQuery("SELECT b FROM Booking b WHERE b.id = :id AND b.deletedAt IS NULL", Booking.class)
+                .setParameter("id", id)
+                .getResultList()
+                .stream()
+                .findFirst()
+                .map(b -> {
+                    setBookingState(b);
+                    return b;
+                });
     }
 
     private void setBookingState(Booking booking) {
         if (booking.getState() == null && booking.getStatus() != null) {
-            switch (booking.getStatus()) {
-                case BookingStatus.ACTIVE -> booking.setState(new ActiveState());
-                case BookingStatus.CANCELLED -> booking.setState(new CancelledState());
-            }
+            booking.setState(booking.getState());
         }
     }
 }

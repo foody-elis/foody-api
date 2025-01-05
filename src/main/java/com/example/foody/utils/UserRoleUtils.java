@@ -28,4 +28,12 @@ public class UserRoleUtils {
     public static boolean isCustomer(User user) {
         return user.getRole().equals(Role.CUSTOMER);
     }
+
+    public static boolean isEmployee(User user) {
+        return isCook(user) || isWaiter(user);
+    }
+
+    public static boolean isBuyer(User user) {
+        return isCustomer(user) || isWaiter(user);
+    }
 }

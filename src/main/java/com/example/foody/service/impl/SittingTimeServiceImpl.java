@@ -45,37 +45,6 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         return sittingTimes;
     }
 
-    private List<SittingTime> generateSittingTimes(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
-        if (start == null || end == null) return new ArrayList<>();
-
-        List<SittingTime> sittingTimes = new ArrayList<>();
-        LocalTime currentStart = start;
-
-        while (!currentStart.isAfter(end.minusMinutes(minutes))) {
-            LocalTime currentEnd = currentStart.plusMinutes(minutes);
-
-            SittingTime sittingTime = sittingTimeBuilder
-                    .start(currentStart)
-                    .end(currentEnd)
-                    .weekDayInfo(weekDayInfo)
-                    .build();
-
-            sittingTimes.add(saveSittingTime(sittingTime));
-
-            currentStart = currentEnd;
-        }
-
-        return sittingTimes;
-    }
-
-    private SittingTime saveSittingTime(SittingTime sittingTime) {
-        try {
-            return sittingTimeRepository.save(sittingTime);
-        } catch (Exception e) {
-            throw new EntityCreationException("sitting time");
-        }
-    }
-
     @Override
     public List<SittingTimeResponseDTO> findAll() {
         List<SittingTime> sittingTimes = sittingTimeRepository.findAllByDeletedAtIsNull();
@@ -121,6 +90,37 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         }
 
         return true;
+    }
+
+    private List<SittingTime> generateSittingTimes(WeekDayInfo weekDayInfo, LocalTime start, LocalTime end, int minutes) {
+        if (start == null || end == null) return new ArrayList<>();
+
+        List<SittingTime> sittingTimes = new ArrayList<>();
+        LocalTime currentStart = start;
+
+        while (!currentStart.isAfter(end.minusMinutes(minutes))) {
+            LocalTime currentEnd = currentStart.plusMinutes(minutes);
+
+            SittingTime sittingTime = sittingTimeBuilder
+                    .start(currentStart)
+                    .end(currentEnd)
+                    .weekDayInfo(weekDayInfo)
+                    .build();
+
+            sittingTimes.add(saveSittingTime(sittingTime));
+
+            currentStart = currentEnd;
+        }
+
+        return sittingTimes;
+    }
+
+    private SittingTime saveSittingTime(SittingTime sittingTime) {
+        try {
+            return sittingTimeRepository.save(sittingTime);
+        } catch (Exception e) {
+            throw new EntityCreationException("sitting time");
+        }
     }
 
     private void checkWeekDay(int weekDay) {

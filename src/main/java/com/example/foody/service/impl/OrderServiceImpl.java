@@ -242,7 +242,6 @@ public class OrderServiceImpl implements OrderService {
     private void checkOrderCreationOrThrow(User user, Order order) {
         if (UserRoleUtils.isWaiter(user)) checkIsWaiterOfRestaurant(user, order);
         if (UserRoleUtils.isCustomer(user)) checkActiveBookingOrThrow(order);
-
         checkDishesBelongToRestaurantOrThrow(order);
     }
 
@@ -275,7 +274,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderAccessOrThrow(User user, Order order) {
-        if (UserRoleUtils.isAdmin(user)) return;
+        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isWaiter(user)) return;
         if (order.getBuyer().getId() == user.getId()) return;
         if (order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
         if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
@@ -284,7 +283,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {
-        if (UserRoleUtils.isAdmin(user)) return;
+        if (!UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isEmployee(user)) return;
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
         if (restaurant.getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
 
@@ -292,7 +291,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkPayAccessOrThrow(User user, Order order) {
-        if (UserRoleUtils.isAdmin(user)) return;
+        if (!UserRoleUtils.isBuyer(user)) return;
         if (order.getBuyer().getId() == user.getId()) return;
 
         throw new ForbiddenOrderAccessException();
@@ -313,14 +312,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkPrepareAccessOrThrow(User user, Order order) {
-        if (UserRoleUtils.isAdmin(user)) return;
+        if (!UserRoleUtils.isCook(user)) return;
         if (isEmployeeOfRestaurant(user, order.getRestaurant())) return;
 
         throw new ForbiddenOrderAccessException();
     }
 
     private void checkCompleteAccessOrThrow(User user, Order order) {
-        if (UserRoleUtils.isAdmin(user)) return;
+        if (!UserRoleUtils.isCook(user)) return;
         if (isEmployeeOfRestaurant(user, order.getRestaurant())) return;
 
         throw new ForbiddenOrderAccessException();

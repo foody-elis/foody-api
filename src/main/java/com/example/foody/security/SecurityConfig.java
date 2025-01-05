@@ -92,7 +92,9 @@ public class SecurityConfig {
 
                         .requestMatchers(POST, "/api/v1/bookings").access(hasSpecificRole(Role.CUSTOMER))
                         .requestMatchers(DELETE, "/api/v1/bookings/*").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/bookings/cancel/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/bookings/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(GET, "/api/v1/bookings/customer").access(hasSpecificRole(Role.CUSTOMER))
                         .requestMatchers(GET, "/api/v1/bookings/restaurant/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers("/api/v1/bookings/**").authenticated()
@@ -105,17 +107,19 @@ public class SecurityConfig {
 
                         .requestMatchers(POST, "/api/v1/orders").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
                         .requestMatchers(DELETE, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
-                        .requestMatchers(PATCH, "/api/v1/orders/pay/*").access(hasSpecificRole(Role.ADMIN, Role.CUSTOMER, Role.WAITER))
+                        .requestMatchers(PATCH, "/api/v1/orders/pay/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.WAITER_VALUE)
                         .requestMatchers(PATCH, "/api/v1/orders/prepare/*").hasRole(Role.Constants.COOK_VALUE)
                         .requestMatchers(PATCH, "/api/v1/orders/complete/*").hasRole(Role.Constants.COOK_VALUE)
                         .requestMatchers(GET, "/api/v1/orders").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.WAITER_VALUE)
                         .requestMatchers(GET, "/api/v1/orders/buyer").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
-                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").access(hasSpecificRole(Role.ADMIN, Role.RESTAURATEUR, Role.COOK, Role.WAITER))
+                        .requestMatchers(GET, "/api/v1/orders/restaurant/*").hasAnyRole(Role.Constants.RESTAURATEUR_VALUE, Role.Constants.COOK_VALUE, Role.Constants.WAITER_VALUE)
                         .requestMatchers("/api/v1/orders/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/reviews").access(hasSpecificRole(Role.CUSTOMER))
-                        .requestMatchers(DELETE, "/api/v1/reviews/*").access(hasSpecificRole(Role.ADMIN, Role.MODERATOR, Role.CUSTOMER))
+                        .requestMatchers(DELETE, "/api/v1/reviews/*").hasAnyRole(Role.Constants.MODERATOR_VALUE, Role.Constants.CUSTOMER_VALUE)
                         .requestMatchers(GET, "/api/v1/reviews").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(GET, "/api/v1/reviews/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.COOK_VALUE, Role.Constants.WAITER_VALUE)
                         .requestMatchers(GET, "/api/v1/reviews/customer").access(hasSpecificRole(Role.CUSTOMER))
                         .requestMatchers("/api/v1/reviews/**").authenticated()
 
