@@ -3,11 +3,8 @@ package com.example.foody.model;
 import com.example.foody.model.order_dish.OrderDish;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.state.order.OrderState;
-import com.example.foody.state.order.impl.CompletedState;
-import com.example.foody.state.order.impl.CreatedState;
-import com.example.foody.state.order.impl.PaidState;
-import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.enums.OrderStatus;
+import com.example.foody.utils.state.OrderStateUtils;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -61,12 +58,7 @@ public class Order extends DefaultEntity {
 
     public OrderState getState() {
         if (state == null && status != null) {
-            switch (status) {
-                case OrderStatus.CREATED -> state = new CreatedState();
-                case OrderStatus.PAID -> state = new PaidState();
-                case OrderStatus.PREPARING -> state = new PreparingState();
-                case OrderStatus.COMPLETED -> state = new CompletedState();
-            }
+            state = OrderStateUtils.getState(status);
         }
         return state;
     }
@@ -93,8 +85,6 @@ public class Order extends DefaultEntity {
     }
 
     private void setStatus(OrderState state) {
-        if (state != null) {
-            this.status = state.getStatus();
-        }
+        this.status = state != null ? state.getStatus() : null;
     }
 }

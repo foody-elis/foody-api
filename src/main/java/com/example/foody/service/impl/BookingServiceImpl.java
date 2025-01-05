@@ -244,6 +244,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkBookingAccessOrThrow(User user, Booking booking) {
+        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user)) return;
         if (booking.getCustomer().getId() == user.getId()) return;
         if (booking.getRestaurant().getRestaurateur().getId() == user.getId()) return;
 

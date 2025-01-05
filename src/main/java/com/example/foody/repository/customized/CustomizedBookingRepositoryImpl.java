@@ -1,6 +1,7 @@
 package com.example.foody.repository.customized;
 
 import com.example.foody.model.Booking;
+import com.example.foody.utils.state.BookingStateUtils;
 import jakarta.persistence.EntityManager;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
 
     private void setBookingState(Booking booking) {
         if (booking.getState() == null && booking.getStatus() != null) {
-            booking.setState(booking.getState());
+            booking.setState(BookingStateUtils.getState(booking.getStatus()));
         }
     }
 }

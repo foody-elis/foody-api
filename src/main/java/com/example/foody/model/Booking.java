@@ -2,9 +2,8 @@ package com.example.foody.model;
 
 import com.example.foody.model.user.CustomerUser;
 import com.example.foody.state.booking.BookingState;
-import com.example.foody.state.booking.impl.ActiveState;
-import com.example.foody.state.booking.impl.CancelledState;
 import com.example.foody.utils.enums.BookingStatus;
+import com.example.foody.utils.state.BookingStateUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
@@ -62,10 +61,7 @@ public class Booking extends DefaultEntity {
 
     public BookingState getState() {
         if (state == null && status != null) {
-            switch (status) {
-                case BookingStatus.ACTIVE -> state = new ActiveState();
-                case BookingStatus.CANCELLED -> state = new CancelledState();
-            }
+            state = BookingStateUtils.getState(status);
         }
         return state;
     }

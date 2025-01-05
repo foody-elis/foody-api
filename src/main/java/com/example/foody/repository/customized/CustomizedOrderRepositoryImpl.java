@@ -3,6 +3,7 @@ package com.example.foody.repository.customized;
 import com.example.foody.model.Order;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
+import com.example.foody.utils.state.OrderStateUtils;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -68,7 +69,7 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
 
     private void setOrderState(Order order) {
         if (order.getState() == null && order.getStatus() != null) {
-            order.setState(order.getState());
+            order.setState(OrderStateUtils.getState(order.getStatus()));
         }
     }
 
