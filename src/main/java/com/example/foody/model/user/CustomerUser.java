@@ -37,8 +37,8 @@ public class CustomerUser extends User {
     })
     private BuyerUser buyer;
 
-    public CustomerUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, CreditCard creditCard, List<Review> reviews, List<Booking> bookings, List<Order> orders) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active);
+    public CustomerUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Long chatId, CreditCard creditCard, List<Review> reviews, List<Booking> bookings, List<Order> orders) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, chatId);
         this.creditCard = creditCard;
         this.reviews = reviews;
         this.bookings = bookings;

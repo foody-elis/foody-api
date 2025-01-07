@@ -55,6 +55,7 @@ public class CustomerUserBuilderImpl extends UserBuilderImpl<CustomerUser> imple
                 avatarUrl,
                 role,
                 active,
+                chatId,
                 creditCard,
                 reviews,
                 bookings,

@@ -17,7 +17,7 @@ public class CookUser extends EmployeeUser {
     public CookUser() {
     }
 
-    public CookUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Restaurant employerRestaurant) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, employerRestaurant);
+    public CookUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Long chatId, Restaurant employerRestaurant) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, chatId, employerRestaurant);
     }
 }

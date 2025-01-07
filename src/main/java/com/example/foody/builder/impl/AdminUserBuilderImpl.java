@@ -18,7 +18,8 @@ public class AdminUserBuilderImpl extends UserBuilderImpl<AdminUser> implements 
                 phoneNumber,
                 avatarUrl,
                 role,
-                active
+                active,
+                chatId
         );
     }
 }

@@ -56,6 +56,9 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "active", nullable = false)
     protected boolean active = true;
 
+    @Column(name = "chat_id")
+    protected Long chatId;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.getRole()));

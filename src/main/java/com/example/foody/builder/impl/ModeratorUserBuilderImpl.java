@@ -18,7 +18,8 @@ public class ModeratorUserBuilderImpl extends UserBuilderImpl<ModeratorUser> imp
                 phoneNumber,
                 avatarUrl,
                 role,
-                active
+                active,
+                chatId
         );
     }
 }

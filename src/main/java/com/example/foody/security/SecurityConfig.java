@@ -68,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/v1/auth/moderators").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers(POST, "/api/v1/auth/restaurant/*/cooks").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(POST, "/api/v1/auth/restaurant/*/waiters").hasRole(Role.Constants.RESTAURATEUR_VALUE)
+                        .requestMatchers(PATCH, "/api/v1/auth/change-password").authenticated()
                         .requestMatchers(GET, "/api/v1/auth/user").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
@@ -124,7 +125,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reviews/**").authenticated()
 
                         .requestMatchers(PUT, "/api/v1/users").authenticated()
-                        .requestMatchers(PATCH, "/api/v1/users/change-password").authenticated()
+                        .requestMatchers(PATCH, "/api/v1/users/chat-id").authenticated()
                         .requestMatchers("/api/v1/users/**").hasRole(Role.Constants.ADMIN_VALUE)
 
                         .anyRequest().permitAll() // todo remove?

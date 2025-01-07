@@ -1,5 +1,6 @@
 package com.example.foody.service.impl;
 
+import com.example.foody.dto.request.UserChangePasswordRequestDTO;
 import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
@@ -9,8 +10,10 @@ import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.exceptions.user.InvalidPasswordException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Restaurant;
@@ -145,6 +148,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userMapper.userToUserResponseDTO(principal);
     }
 
+    @Override
+    public void changePassword(UserChangePasswordRequestDTO userChangePasswordRequestDTO) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!passwordEncoder.matches(userChangePasswordRequestDTO.getCurrentPassword(), principal.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        principal.setPassword(passwordEncoder.encode(userChangePasswordRequestDTO.getNewPassword()));
+
+        try {
+            userRepository.save(principal);
+        } catch (Exception e) {
+            throw new EntityEditException("user", "id", principal.getId());
+        }
+
+        sendChangePasswordEmail(principal);
+    }
+
     private <T extends User> UserResponseDTO registerUserWithRole(UserRequestDTO userRequestDTO, Role role, UserMapper<T> mapper) {
         userRequestDTO.setRole(role.name());
 
@@ -226,6 +248,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (restaurant.getRestaurateur().getId() == user.getId()) return;
 
         throw new ForbiddenRestaurantAccessException();
+    }
+
+    private void sendChangePasswordEmail(User user) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.NAME, user.getName(),
+                EmailPlaceholder.SURNAME, user.getSurname()
+        );
+        emailService.sendTemplatedEmail(
+                user.getEmail(),
+                EmailTemplateType.CHANGE_PASSWORD,
+                variables
+        );
     }
 
     // todo implement the refresh token mechanism

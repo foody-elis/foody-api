@@ -17,6 +17,7 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     protected String avatarUrl;
     protected Role role;
     protected boolean active = true;
+    protected Long chatId;
 
     @Override
     public UserBuilder<U> id(long id) {
@@ -75,6 +76,12 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     @Override
     public UserBuilder<U> active(boolean active) {
         this.active = active;
+        return this;
+    }
+
+    @Override
+    public UserBuilder<U> chatId(Long chatId) {
+        this.chatId = chatId;
         return this;
     }
 

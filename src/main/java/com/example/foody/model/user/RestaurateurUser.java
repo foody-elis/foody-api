@@ -21,8 +21,8 @@ public class RestaurateurUser extends User {
     @OneToOne(mappedBy = "restaurateur")
     private Restaurant restaurant;
 
-    public RestaurateurUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Restaurant restaurant) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active);
+    public RestaurateurUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Long chatId, Restaurant restaurant) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, chatId);
         this.restaurant = restaurant;
     }
 

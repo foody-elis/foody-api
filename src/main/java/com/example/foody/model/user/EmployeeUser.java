@@ -20,8 +20,8 @@ public abstract class EmployeeUser extends User {
     @JoinColumn(name = "employer_restaurant_id")
     private Restaurant employerRestaurant;
 
-    public EmployeeUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Restaurant employerRestaurant) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active);
+    public EmployeeUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Long chatId, Restaurant employerRestaurant) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, chatId);
         this.employerRestaurant = employerRestaurant;
     }
 }

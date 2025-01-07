@@ -1,5 +1,6 @@
 package com.example.foody.service;
 
+import com.example.foody.dto.request.UserChangePasswordRequestDTO;
 import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
@@ -22,4 +23,6 @@ public interface AuthenticationService {
     TokenResponseDTO authenticate(String email, String password);
 
     UserResponseDTO getAuthenticatedUser();
+
+    void changePassword(UserChangePasswordRequestDTO userChangePasswordRequestDTO);
 }

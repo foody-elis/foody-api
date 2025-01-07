@@ -20,4 +20,5 @@ public class UserResponseDTO {
     private String avatarUrl;
     private Role role;
     private boolean active;
+    private Long chatId; // may be null
 }

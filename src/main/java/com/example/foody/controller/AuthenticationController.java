@@ -1,5 +1,6 @@
 package com.example.foody.controller;
 
+import com.example.foody.dto.request.UserChangePasswordRequestDTO;
 import com.example.foody.dto.request.UserLoginRequestDTO;
 import com.example.foody.dto.request.UserRequestDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
@@ -8,9 +9,11 @@ import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDuplicateException;
+import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
+import com.example.foody.exceptions.user.InvalidPasswordException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.service.AuthenticationService;
 import jakarta.validation.Valid;
@@ -72,5 +75,12 @@ public class AuthenticationController {
     @GetMapping("/user")
     public ResponseEntity<UserResponseDTO> getAuthenticatedUser() {
         return new ResponseEntity<>(authenticationService.getAuthenticatedUser(), HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody UserChangePasswordRequestDTO userChangePasswordRequestDTO)
+            throws InvalidPasswordException, EntityEditException {
+        authenticationService.changePassword(userChangePasswordRequestDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

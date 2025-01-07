@@ -2,6 +2,7 @@ package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.dto.request.UserRequestDTO;
+import com.example.foody.dto.request.UserUpdateChatIdRequestDTO;
 import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
@@ -93,6 +94,15 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
     }
 
     @Override
+    public void updateUserFromUserUpdateChatIdRequestDTO(U user, UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO) {
+        if (user == null || userUpdateChatIdRequestDTO == null) {
+            return;
+        }
+
+        user.setChatId(userUpdateChatIdRequestDTO.getChatId());
+    }
+
+    @Override
     public List<UserResponseDTO> usersToUserResponseDTOs(List<U> users) {
         if (users == null) {
             return null;
@@ -137,6 +147,7 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         userResponseDTO.setAvatarUrl(user.getAvatarUrl());
         userResponseDTO.setRole(user.getRole());
         userResponseDTO.setActive(user.isActive());
+        userResponseDTO.setChatId(user.getChatId());
 
         return userResponseDTO;
     }
