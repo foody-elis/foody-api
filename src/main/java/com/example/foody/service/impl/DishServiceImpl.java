@@ -48,7 +48,7 @@ public class DishServiceImpl implements DishService {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishMapper.dishRequestDTOToDish(dishDTO);
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(dishDTO.getRestaurantId()) // Dishes can also be saved if the restaurant is not approved
+                .findById(dishDTO.getRestaurantId()) // Dishes can also be saved if the restaurant is not approved
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", dishDTO.getRestaurantId()));
 
         checkDishCreationOrThrow(principal, restaurant);
@@ -70,14 +70,14 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishResponseDTO> findAll() {
-        List<Dish> dishes = dishRepository.findAllByDeletedAtIsNull();
+        List<Dish> dishes = dishRepository.findAll();
         return dishHelper.buildDishResponseDTOs(dishes);
     }
 
     @Override
     public DishResponseDTO findById(long id) {
         Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
         return dishHelper.buildDishResponseDTO(dish);
     }
@@ -85,7 +85,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<DishResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Dish> dishes = dishRepository
-                .findAllByDeletedAtIsNullAndRestaurant_Id(restaurantId);
+                .findAllByRestaurant_Id(restaurantId);
         return dishHelper.buildDishResponseDTOs(dishes);
     }
 
@@ -93,7 +93,7 @@ public class DishServiceImpl implements DishService {
     public DishResponseDTO update(long id, DishUpdateRequestDTO dishDTO) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
 
         checkDishAccessOrThrow(principal, dish);
@@ -116,7 +116,7 @@ public class DishServiceImpl implements DishService {
     public boolean remove(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", id));
         dish.delete();
 

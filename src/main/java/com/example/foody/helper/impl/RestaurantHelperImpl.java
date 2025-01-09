@@ -33,11 +33,11 @@ public class RestaurantHelperImpl implements RestaurantHelper {
     public DetailedRestaurantResponseDTO buildDetailedRestaurantResponseDTO(Restaurant restaurant) {
         double averageRating = reviewRepository.findAverageRatingByRestaurant_Id(restaurant.getId());
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdAndWeekDayAndStartAfterNowOrderByStartLimit(restaurant.getId(), LocalDateTime.now().getDayOfWeek().getValue(), DetailedRestaurantResponseDTO.QueryResultLimits.SITTING_TIMES_LIMIT);
+                .findAllByRestaurant_IdAndWeekDayAndStartAfterNowOrderByStartLimit(restaurant.getId(), LocalDateTime.now().getDayOfWeek().getValue(), DetailedRestaurantResponseDTO.QueryResultLimits.SITTING_TIMES_LIMIT);
         List<Dish> dishes = dishRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdOrderByAverageRatingDescLimit(restaurant.getId(), DetailedRestaurantResponseDTO.QueryResultLimits.DISHES_LIMIT);
+                .findAllByRestaurant_IdOrderByAverageRatingDescLimit(restaurant.getId(), DetailedRestaurantResponseDTO.QueryResultLimits.DISHES_LIMIT);
         List<Review> reviews = reviewRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreated_AtDescLimit(restaurant.getId(), DetailedRestaurantResponseDTO.QueryResultLimits.REVIEWS_LIMIT);
+                .findAllByRestaurant_IdOrderByCreated_AtDescLimit(restaurant.getId(), DetailedRestaurantResponseDTO.QueryResultLimits.REVIEWS_LIMIT);
 
         return restaurantMapper
                 .restaurantToDetailedRestaurantResponseDTO(restaurant, averageRating, sittingTimes, dishes, reviews);

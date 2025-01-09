@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "sitting_times")
+@SQLRestriction("deleted_at IS NULL")
 public class SittingTime extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +33,7 @@ public class SittingTime extends DefaultEntity {
     @JoinColumn(name = "week_day_info_id", nullable = false)
     private WeekDayInfo weekDayInfo;
 
-    // The CascadeType.REMOVE is not used for bookings because when a sitting time is deleted, the associated bookings are canceled (BookingStatus.CANCELLED)
-    @OneToMany(mappedBy = "sittingTime")
+    // When a sitting time is deleted, all bookings associated with it are also deleted and booking owner is notified
+    @OneToMany(mappedBy = "sittingTime", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 }

@@ -100,7 +100,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public DetailedRestaurantResponseDTO findByRestaurateur(long restaurateurId) {
         Restaurant restaurant = restaurantRepository
-                .findAllByDeletedAtIsNullAndRestaurateur_Id(restaurateurId)
+                .findAllByRestaurateur_Id(restaurateurId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
         return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }
@@ -115,7 +115,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public DetailedRestaurantResponseDTO approveById(long id) {
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         restaurant.setApproved(true);
 
@@ -134,7 +134,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public DetailedRestaurantResponseDTO update(long id, RestaurantRequestDTO restaurantDTO) {
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
 
         checkRestaurantAccessOrThrow(principal, restaurant);
@@ -160,7 +160,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public boolean remove(long id) {
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         restaurant.delete();
 
@@ -177,7 +177,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     private void checkRestaurantCreationOrThrow(User user) {
-        if (!restaurantRepository.existsByDeletedAtIsNullAndRestaurateur_Id(user.getId())) return;
+        if (!restaurantRepository.existsByRestaurateur_Id(user.getId())) return;
 
         throw new RestaurateurAlreadyHasRestaurantException(user.getId());
     }
@@ -230,20 +230,20 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private List<Restaurant> getRestaurantsBasedOnUserRole(User user) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
-            return restaurantRepository.findAllByDeletedAtIsNull();
+            return restaurantRepository.findAll();
         } else {
-            return restaurantRepository.findAllByDeletedAtIsNullAndApproved(true);
+            return restaurantRepository.findAllByApproved(true);
         }
     }
 
     private Restaurant getRestaurantByIdBasedOnUserRole(User user, long id) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
             return restaurantRepository
-                    .findByIdAndDeletedAtIsNull(id)
+                    .findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         } else {
             return restaurantRepository
-                    .findByIdAndDeletedAtIsNullAndApproved(id, true)
+                    .findByIdAndApproved(id, true)
                     .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", id));
         }
     }
@@ -251,10 +251,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     private List<Restaurant> getRestaurantByCategoryBasedOnUserRole(User user, long categoryId) {
         if (UserRoleUtils.isAdmin(user) || UserRoleUtils.isModerator(user)) {
             return restaurantRepository
-                    .findAllByDeletedAtIsNullAndCategory_Id(categoryId);
+                    .findAllByCategory_Id(categoryId);
         } else {
             return restaurantRepository
-                    .findAllByDeletedAtIsNullAndCategory_IdAndApproved(categoryId, true);
+                    .findAllByCategory_IdAndApproved(categoryId, true);
         }
     }
 

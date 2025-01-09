@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderMapper.orderRequestDTOToOrder(orderDTO);
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(orderDTO.getRestaurantId(), true)
+                .findByIdAndApproved(orderDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", orderDTO.getRestaurantId()));
 
         order.setBuyer(new BuyerUser(principal.getId(), new ArrayList<>()));
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponseDTO> findAll() {
-        List<Order> orders = orderRepository.findAllByDeletedAtIsNull();
+        List<Order> orders = orderRepository.findAll();
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }
 
@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO findById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkOrderAccessOrThrow(principal, order);
@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponseDTO> findAllByBuyer(long buyerId) {
         List<Order> orders = orderRepository
-                .findAllByDeletedAtIsNullAndBuyer_IdOrderByCreatedAtDesc(buyerId);
+                .findAllByBuyer_IdOrderByCreatedAtDesc(buyerId);
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }
 
@@ -120,13 +120,13 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponseDTO> findAllByRestaurant(long restaurantId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(restaurantId, true)
+                .findByIdAndApproved(restaurantId, true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
         checkRestaurantAccessOrThrow(principal, restaurant);
 
         List<Order> orders = orderRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreatedAtDesc(restaurantId);
+                .findAllByRestaurant_IdOrderByCreatedAtDesc(restaurantId);
 
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }
@@ -135,7 +135,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO payById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkPayAccessOrThrow(principal, order);
@@ -158,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO prepareById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkPrepareAccessOrThrow(principal, order);
@@ -179,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO completeById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Order order = orderRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
 
         checkCompleteAccessOrThrow(principal, order);
@@ -201,7 +201,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean remove(long id) {
         Order order = orderRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("order", "id", id));
         order.delete();
 
@@ -222,7 +222,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDish addDishToOrder(Order order, OrderDishRequestDTO orderDishDTO) {
         Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(orderDishDTO.getDishId())
+                .findById(orderDishDTO.getDishId())
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", orderDishDTO.getDishId()));
         OrderDish orderDish = new OrderDish(order, dish, orderDishDTO.getQuantity());
 

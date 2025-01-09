@@ -52,7 +52,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public boolean remove(long id) {
         Address address = addressRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("address", "id", id));
         address.delete();
 

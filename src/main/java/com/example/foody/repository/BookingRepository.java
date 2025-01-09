@@ -9,19 +9,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long>, CustomizedBookingRepository {
-    List<Booking> findAllByDeletedAtIsNull();
+    List<Booking> findAllByCustomer_IdOrderByDateDesc(long customerId);
 
-    List<Booking> findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(long customerId);
-
-    List<Booking> findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(long restaurantId);
+    List<Booking> findAllByRestaurant_IdOrderByDateDesc(long restaurantId);
 
     // todo remove 'ACTIVE' string from these queries
     // colaesce() returns the first non-null argument (case: empty table so sum() returns null)
     @Query("""
             SELECT COALESCE(SUM(b.seats), 0)
             FROM Booking b
-            WHERE b.deletedAt IS NULL
-            AND b.status = 'ACTIVE'
+            WHERE b.status = 'ACTIVE'
             AND b.date = :date
             AND b.sittingTime.id = :sittingTimeId
             AND b.restaurant.id = :restaurantId
@@ -32,8 +29,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
     @Query("""
             SELECT COUNT(b) > 0
             FROM Booking b
-            WHERE b.deletedAt IS NULL
-            AND b.status = 'ACTIVE'
+            WHERE b.status = 'ACTIVE'
             AND b.customer.id = :customerId
             AND b.restaurant.id = :restaurantId
             AND b.date = :date
@@ -45,8 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
     @Query("""
             SELECT COUNT(b) > 0
             FROM Booking b
-            WHERE b.deletedAt IS NULL
-            AND b.status = 'ACTIVE'
+            WHERE b.status = 'ACTIVE'
             AND b.customer.id = :customerId
             AND b.restaurant.id = :restaurantId
             AND b.date >= CURRENT_DATE
@@ -59,8 +54,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
     @Query("""
             SELECT COUNT(b) > 0
             FROM Booking b
-            WHERE b.deletedAt IS NULL
-            AND b.status = 'ACTIVE'
+            WHERE b.status = 'ACTIVE'
             AND b.customer.id = :customerId
             AND b.restaurant.id = :restaurantId
             AND b.date <= CURRENT_DATE

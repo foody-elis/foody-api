@@ -55,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
         CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Review review = reviewMapper.reviewRequestDTOToReview(reviewDTO);
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(reviewDTO.getRestaurantId(), true)
+                .findByIdAndApproved(reviewDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", reviewDTO.getRestaurantId()));
 
         Optional.ofNullable(reviewDTO.getDishId()).ifPresent(dishId -> setReviewDishOrThrow(review, dishId));
@@ -78,7 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<ReviewResponseDTO> findAll() {
-        List<Review> reviews = reviewRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+        List<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc();
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
@@ -86,7 +86,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponseDTO findById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Review review = reviewRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("review", "id", id));
 
         checkReviewAccessOrThrow(principal, review);
@@ -97,21 +97,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewResponseDTO> findAllByCustomer(long customerId) {
         List<Review> reviews = reviewRepository
-                .findAllByDeletedAtIsNullAndCustomer_IdOrderByCreatedAtDesc(customerId);
+                .findAllByCustomer_IdOrderByCreatedAtDesc(customerId);
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
     @Override
     public List<ReviewResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Review> reviews = reviewRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreatedAtDesc(restaurantId);
+                .findAllByRestaurant_IdOrderByCreatedAtDesc(restaurantId);
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
     @Override
     public List<ReviewResponseDTO> findAllByDish(long dishId) {
         List<Review> reviews = reviewRepository
-                .findAllByDeletedAtIsNullAndDish_IdOrderByCreatedAtDesc(dishId);
+                .findAllByDish_IdOrderByCreatedAtDesc(dishId);
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
@@ -119,7 +119,7 @@ public class ReviewServiceImpl implements ReviewService {
     public boolean remove(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Review review = reviewRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("review", "id", id));
         review.delete();
 
@@ -136,7 +136,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void setReviewDishOrThrow(Review review, long dishId) {
         Dish dish = dishRepository
-                .findByIdAndDeletedAtIsNull(dishId)
+                .findById(dishId)
                 .orElseThrow(() -> new EntityNotFoundException("dish", "id", dishId));
         review.setDish(dish);
     }

@@ -7,12 +7,14 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "reviews")
+@SQLRestriction("deleted_at IS NULL")
 public class Review extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

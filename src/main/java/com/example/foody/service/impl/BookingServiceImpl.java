@@ -55,10 +55,10 @@ public class BookingServiceImpl implements BookingService {
         CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingMapper.bookingRequestDTOToBooking(bookingDTO);
         SittingTime sittingTime = sittingTimeRepository
-                .findByIdAndDeletedAtIsNull(bookingDTO.getSittingTimeId())
+                .findById(bookingDTO.getSittingTimeId())
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", bookingDTO.getSittingTimeId()));
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNullAndApproved(bookingDTO.getRestaurantId(), true)
+                .findByIdAndApproved(bookingDTO.getRestaurantId(), true)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", bookingDTO.getRestaurantId()));
 
         booking.setSittingTime(sittingTime);
@@ -81,7 +81,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingResponseDTO> findAll() {
-        List<Booking> bookings = bookingRepository.findAllByDeletedAtIsNull();
+        List<Booking> bookings = bookingRepository.findAll();
         return bookingMapper.bookingsToBookingResponseDTOs(bookings);
     }
 
@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDTO findById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
         checkBookingAccessOrThrow(principal, booking);
@@ -100,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingResponseDTO> findAllByCustomer(long customerId) {
         List<Booking> bookings = bookingRepository
-                .findAllByDeletedAtIsNullAndCustomer_IdOrderByDateDesc(customerId);
+                .findAllByCustomer_IdOrderByDateDesc(customerId);
         return bookingMapper.bookingsToBookingResponseDTOs(bookings);
     }
 
@@ -108,13 +108,13 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDTO> findAllByRestaurant(long restaurantId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(restaurantId)
+                .findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
         checkRestaurantAccessOrThrow(principal, restaurant);
 
         List<Booking> bookings = bookingRepository
-                .findAllByDeletedAtIsNullAndRestaurant_IdOrderByDateDesc(restaurantId);
+                .findAllByRestaurant_IdOrderByDateDesc(restaurantId);
 
         return bookingMapper.bookingsToBookingResponseDTOs(bookings);
     }
@@ -123,7 +123,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDTO cancelById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Booking booking = bookingRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
 
         checkBookingCancelOrThrow(principal, booking);
@@ -137,8 +137,7 @@ public class BookingServiceImpl implements BookingService {
             throw new EntityEditException("booking", "id", id);
         }
 
-        // Booking is deleted by the user (if it is the booking's customer) or when the associated SittingTime is deleted.
-        sendBookingCancelledEmailBasedOnUserRole(principal, booking);
+        sendBookingCancelledByCustomerEmail(booking);
 
         return bookingMapper.bookingToBookingResponseDTO(booking);
     }
@@ -146,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public boolean remove(long id) {
         Booking booking = bookingRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("booking", "id", id));
         booking.delete();
 
@@ -155,6 +154,9 @@ public class BookingServiceImpl implements BookingService {
         } catch (Exception e) {
             throw new EntityDeletionException("booking", "id", id);
         }
+
+        // When a sitting time is deleted, all bookings related to it are deleted
+        sendBookingCancelledByRestaurantEmail(booking);
 
         return true;
     }
@@ -190,10 +192,7 @@ public class BookingServiceImpl implements BookingService {
         if (UserRoleUtils.isRestaurateur(user)) checkRestaurantAccessOrThrow(user, booking.getRestaurant());
     }
 
-    private void sendBookingCancelledEmailBasedOnUserRole(User user, Booking booking) {
-        EmailTemplateType emailTemplateType = UserRoleUtils.isCustomer(user)
-                ? EmailTemplateType.BOOKING_CANCELLED_BY_CUSTOMER
-                : EmailTemplateType.BOOKING_CANCELLED_BY_RESTAURANT;
+    private void sendBookingCancelledByCustomerEmail(Booking booking) {
         Map<EmailPlaceholder, Object> variables = Map.of(
                 EmailPlaceholder.RESTAURANT_NAME, booking.getRestaurant().getName(),
                 EmailPlaceholder.CUSTOMER_NAME, booking.getCustomer().getName(),
@@ -204,7 +203,23 @@ public class BookingServiceImpl implements BookingService {
         );
         emailService.sendTemplatedEmail(
                 booking.getCustomer().getEmail(),
-                emailTemplateType,
+                EmailTemplateType.BOOKING_CANCELLED_BY_CUSTOMER,
+                variables
+        );
+    }
+
+    private void sendBookingCancelledByRestaurantEmail(Booking booking) {
+        Map<EmailPlaceholder, Object> variables = Map.of(
+                EmailPlaceholder.RESTAURANT_NAME, booking.getRestaurant().getName(),
+                EmailPlaceholder.CUSTOMER_NAME, booking.getCustomer().getName(),
+                EmailPlaceholder.CUSTOMER_SURNAME, booking.getCustomer().getSurname(),
+                EmailPlaceholder.BOOKING_ID, booking.getId(),
+                EmailPlaceholder.DATE, booking.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                EmailPlaceholder.TIME, booking.getSittingTime().getStart().format(DateTimeFormatter.ofPattern("HH:mm"))
+        );
+        emailService.sendTemplatedEmail(
+                booking.getCustomer().getEmail(),
+                EmailTemplateType.BOOKING_CANCELLED_BY_RESTAURANT,
                 variables
         );
     }

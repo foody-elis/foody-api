@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
                 @UniqueConstraint(name = "week_day_restaurant_id_unique", columnNames = {"week_day", "restaurant_id"})
         }
 )
+@SQLRestriction("deleted_at IS NULL")
 public class WeekDayInfo extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "restaurants")
+@SQLRestriction("deleted_at IS NULL")
 public class Restaurant extends DefaultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

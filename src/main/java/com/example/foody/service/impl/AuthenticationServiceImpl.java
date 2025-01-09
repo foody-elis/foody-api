@@ -132,7 +132,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InvalidCredentialsException();
         }
 
-        User user = userRepository.findByEmailAndDeletedAtIsNull(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", password));
 
         if (!user.isActive()) throw new UserNotActiveException(user.getEmail());
@@ -188,7 +188,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private <E extends EmployeeUser> E saveEmployeeUser(long restaurantId, E employeeUser, String avatarBase64) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(restaurantId)
+                .findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
 
         checkRestaurantAccessOrThrow(principal, restaurant);

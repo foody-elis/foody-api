@@ -47,14 +47,14 @@ public class SittingTimeServiceImpl implements SittingTimeService {
 
     @Override
     public List<SittingTimeResponseDTO> findAll() {
-        List<SittingTime> sittingTimes = sittingTimeRepository.findAllByDeletedAtIsNull();
+        List<SittingTime> sittingTimes = sittingTimeRepository.findAll();
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId) {
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndWeekDayInfoRestaurantId(restaurantId);
+                .findAllByWeekDayInfoRestaurantId(restaurantId);
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
@@ -62,7 +62,7 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay) {
         checkWeekDay(weekDay);
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndWeekDayInfo_Restaurant_IdAndWeekDayInfo_WeekDayOrderByStart(restaurantId, weekDay);
+                .findAllByWeekDayInfo_Restaurant_IdAndWeekDayInfo_WeekDayOrderByStart(restaurantId, weekDay);
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
@@ -70,18 +70,18 @@ public class SittingTimeServiceImpl implements SittingTimeService {
     public List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartAfterNow(long restaurantId, int weekDay) {
         checkWeekDay(weekDay);
         List<SittingTime> sittingTimes = sittingTimeRepository
-                .findAllByDeletedAtIsNullAndRestaurantIdAndWeekDayAndStartAfterNowOrderByStart(restaurantId, weekDay);
+                .findAllByRestaurantIdAndWeekDayAndStartAfterNowOrderByStart(restaurantId, weekDay);
         return sittingTimeMapper.sittingTimesToSittingTimeResponseDTOs(sittingTimes);
     }
 
     @Override
     public boolean remove(long id) {
         SittingTime sittingTime = sittingTimeRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("sitting time", "id", id));
         sittingTime.delete();
 
-        cancelBookings(sittingTime);
+        removeBookings(sittingTime);
 
         try {
             sittingTimeRepository.save(sittingTime);
@@ -129,9 +129,10 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         throw new InvalidWeekDayException(weekDay);
     }
 
-    private void cancelBookings(SittingTime sittingTime) {
+    private void removeBookings(SittingTime sittingTime) {
         sittingTime.getBookings().forEach(booking ->
-                bookingService.cancelById(booking.getId())
+                // Booking owner is notified by email about the deletion. This is why I don't delete bookings in SittingTime
+                bookingService.remove(booking.getId())
         );
     }
 }

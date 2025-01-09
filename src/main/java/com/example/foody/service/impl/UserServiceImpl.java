@@ -34,14 +34,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDTO> findAll() {
-        List<User> users = userRepository.findAllByDeletedAtIsNull();
+        List<User> users = userRepository.findAll();
         return userMapper.usersToUserResponseDTOs(users);
     }
 
     @Override
     public UserResponseDTO findById(long id) {
         User user = userRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
         return userMapper.userToUserResponseDTO(user);
     }
@@ -49,21 +49,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO findByEmail(String email) {
         User user = userRepository
-                .findByEmailAndDeletedAtIsNull(email)
+                .findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", email));
         return userMapper.userToUserResponseDTO(user);
     }
 
     @Override
     public List<UserResponseDTO> findByRole(Role role) {
-        List<User> users = userRepository.findByRoleAndDeletedAtIsNull(role);
+        List<User> users = userRepository.findByRole(role);
         return userMapper.usersToUserResponseDTOs(users);
     }
 
     @Override
     public UserResponseDTO update(long id, UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = userRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
 
         String updatedAvatarUrl = updateUserAvatar(user, userUpdateRequestDTO.getAvatarBase64());
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO updateChatId(long id, UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO) {
         User user = userRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
 
         userMapper.updateUserFromUserUpdateChatIdRequestDTO(user, userUpdateChatIdRequestDTO);
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean remove(long id) {
         User user = userRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
         user.delete();
 

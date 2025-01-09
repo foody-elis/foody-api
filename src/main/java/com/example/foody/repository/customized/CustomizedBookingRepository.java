@@ -5,5 +5,5 @@ import com.example.foody.model.Booking;
 import java.util.Optional;
 
 public interface CustomizedBookingRepository {
-    Optional<Booking> findByIdAndDeletedAtIsNull(long id);
+    Optional<Booking> findById(long id);
 }

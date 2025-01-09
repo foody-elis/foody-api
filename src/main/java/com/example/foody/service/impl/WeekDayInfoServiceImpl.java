@@ -41,7 +41,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         WeekDayInfo weekDayInfo = weekDayInfoMapper.weekDayInfoRequestDTOToWeekDayInfo(weekDayInfoRequestDTO);
         Restaurant restaurant = restaurantRepository
-                .findByIdAndDeletedAtIsNull(weekDayInfoRequestDTO.getRestaurantId())
+                .findById(weekDayInfoRequestDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", weekDayInfoRequestDTO.getRestaurantId()));
 
         weekDayInfo.setRestaurant(restaurant);
@@ -63,13 +63,13 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
     @Override
     public List<WeekDayInfoResponseDTO> findAll() {
-        List<WeekDayInfo> weekDayInfos = weekDayInfoRepository.findAllByDeletedAtIsNull();
+        List<WeekDayInfo> weekDayInfos = weekDayInfoRepository.findAll();
         return weekDayInfoMapper.weekDayInfosToWeekDayInfoResponseDTOs(weekDayInfos);
     }
 
     @Override
     public List<WeekDayInfoResponseDTO> findAllByRestaurant(long restaurantId) {
-        List<WeekDayInfo> weekDayInfos = weekDayInfoRepository.findAllByDeletedAtIsNullAndRestaurantIdOrderByWeekDay(restaurantId);
+        List<WeekDayInfo> weekDayInfos = weekDayInfoRepository.findAllByRestaurantIdOrderByWeekDay(restaurantId);
         return weekDayInfoMapper.weekDayInfosToWeekDayInfoResponseDTOs(weekDayInfos);
     }
 
@@ -77,7 +77,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     public WeekDayInfoResponseDTO update(long id, WeekDayInfoUpdateRequestDTO weekDayInfoUpdateRequestDTO) {
         RestaurateurUser principal = (RestaurateurUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         WeekDayInfo weekDayInfo = weekDayInfoRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
 
         checkRestaurantAccessOrThrow(principal, weekDayInfo.getRestaurant());
@@ -98,7 +98,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
     @Override
     public boolean remove(long id) {
         WeekDayInfo weekDayInfo = weekDayInfoRepository
-                .findByIdAndDeletedAtIsNull(id)
+                .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
         weekDayInfo.delete();
 

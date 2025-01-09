@@ -17,9 +17,9 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     }
 
     @Override
-    public List<Order> findAllByDeletedAtIsNull() {
+    public List<Order> findAll() {
         return entityManager
-                .createQuery("SELECT o FROM Order o WHERE o.deletedAt IS NULL", Order.class)
+                .createQuery("SELECT o FROM Order o", Order.class)
                 .getResultList()
                 .stream()
                 .peek(this::processOrder)
@@ -27,9 +27,9 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     }
 
     @Override
-    public Optional<Order> findByIdAndDeletedAtIsNull(long id) {
+    public Optional<Order> findById(long id) {
         return entityManager
-                .createQuery("SELECT o FROM Order o WHERE o.id = :id AND o.deletedAt IS NULL", Order.class)
+                .createQuery("SELECT o FROM Order o WHERE o.id = :id", Order.class)
                 .setParameter("id", id)
                 .getResultList()
                 .stream()
@@ -41,9 +41,9 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     }
 
     @Override
-    public List<Order> findAllByDeletedAtIsNullAndBuyer_IdOrderByCreatedAtDesc(long buyerId) {
+    public List<Order> findAllByBuyer_IdOrderByCreatedAtDesc(long buyerId) {
         return entityManager
-                .createQuery("SELECT o FROM Order o WHERE o.deletedAt IS NULL AND o.buyer.id = :buyerId ORDER BY o.createdAt DESC", Order.class)
+                .createQuery("SELECT o FROM Order o WHERE o.buyer.id = :buyerId ORDER BY o.createdAt DESC", Order.class)
                 .setParameter("buyerId", buyerId)
                 .getResultList()
                 .stream()
@@ -52,9 +52,9 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     }
 
     @Override
-    public List<Order> findAllByDeletedAtIsNullAndRestaurant_IdOrderByCreatedAtDesc(long restaurantId) {
+    public List<Order> findAllByRestaurant_IdOrderByCreatedAtDesc(long restaurantId) {
         return entityManager
-                .createQuery("SELECT o FROM Order o WHERE o.deletedAt IS NULL AND o.restaurant.id = :restaurantId ORDER BY o.createdAt DESC", Order.class)
+                .createQuery("SELECT o FROM Order o WHERE o.restaurant.id = :restaurantId ORDER BY o.createdAt DESC", Order.class)
                 .setParameter("restaurantId", restaurantId)
                 .getResultList()
                 .stream()
@@ -77,7 +77,7 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
         if (buyer == null || buyer.getId() == null) return;
 
         entityManager
-                .createQuery("SELECT u FROM User u WHERE u.id = :id AND u.deletedAt IS NULL", User.class)
+                .createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
                 .setParameter("id", buyer.getId())
                 .getResultList()
                 .stream()

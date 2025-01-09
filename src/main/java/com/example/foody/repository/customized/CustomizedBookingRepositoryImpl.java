@@ -14,9 +14,9 @@ public class CustomizedBookingRepositoryImpl implements CustomizedBookingReposit
     }
 
     @Override
-    public Optional<Booking> findByIdAndDeletedAtIsNull(long id) {
+    public Optional<Booking> findById(long id) {
         return entityManager
-                .createQuery("SELECT b FROM Booking b WHERE b.id = :id AND b.deletedAt IS NULL", Booking.class)
+                .createQuery("SELECT b FROM Booking b WHERE b.id = :id", Booking.class)
                 .setParameter("id", id)
                 .getResultList()
                 .stream()
