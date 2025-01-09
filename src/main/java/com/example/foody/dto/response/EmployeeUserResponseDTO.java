@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeUserResponseDTO extends UserResponseDTO {
-    private Long employerRestaurantId; // may be null
+    private Long employerRestaurantId;
 }

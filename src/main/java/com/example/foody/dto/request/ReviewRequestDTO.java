@@ -26,6 +26,6 @@ public class ReviewRequestDTO {
     @Positive(message = "restaurantId cannot be a negative number or zero")
     private Long restaurantId;
 
-    @Positive(message = "restaurantId cannot be a negative number or zero")
+    @Positive(message = "dishId cannot be a negative number or zero")
     private Long dishId; // may be null
 }

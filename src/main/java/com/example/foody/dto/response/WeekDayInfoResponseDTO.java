@@ -29,5 +29,5 @@ public class WeekDayInfoResponseDTO {
 
     private String sittingTimeStep;
 
-    private long restaurantId;
+    private Long restaurantId;
 }

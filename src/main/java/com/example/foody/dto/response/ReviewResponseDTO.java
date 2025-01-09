@@ -17,9 +17,9 @@ public class ReviewResponseDTO {
     private String title;
     private String description;
     private int rating;
-    private long restaurantId;
+    private Long restaurantId;
     private Long dishId; // may be null
-    private long customerId;
+    private Long customerId;
     private String customerName;
     private String customerSurname;
     private String customerAvatarUrl;

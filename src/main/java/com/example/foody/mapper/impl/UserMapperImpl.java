@@ -152,24 +152,24 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         return userResponseDTO;
     }
 
-    private long employerRestaurantId(EmployeeUser employee) {
+    private Long employerRestaurantId(EmployeeUser employee) {
         if (employee == null) {
-            return 0L;
+            return null;
         }
         Restaurant employerRestaurant = employee.getEmployerRestaurant();
         if (employerRestaurant == null) {
-            return 0L;
+            return null;
         }
         return employerRestaurant.getId();
     }
 
-    private long creditCardId(CustomerUser customerUser) {
+    private Long creditCardId(CustomerUser customerUser) {
         if (customerUser == null) {
-            return 0L;
+            return null;
         }
         CreditCard creditCard = customerUser.getCreditCard();
         if (creditCard == null) {
-            return 0L;
+            return null;
         }
         return creditCard.getId();
     }

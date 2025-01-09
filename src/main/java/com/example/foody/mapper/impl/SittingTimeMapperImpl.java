@@ -40,13 +40,13 @@ public class SittingTimeMapperImpl implements SittingTimeMapper {
         return list;
     }
 
-    private long sittingTimeWeekDayInfoId(SittingTime sittingTime) {
+    private Long sittingTimeWeekDayInfoId(SittingTime sittingTime) {
         if (sittingTime == null) {
-            return 0L;
+            return null;
         }
         WeekDayInfo weekDayInfo = sittingTime.getWeekDayInfo();
         if (weekDayInfo == null) {
-            return 0L;
+            return null;
         }
         return weekDayInfo.getId();
     }

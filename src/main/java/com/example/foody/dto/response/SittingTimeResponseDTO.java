@@ -19,5 +19,5 @@ public class SittingTimeResponseDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime end;
 
-    private long weekDayInfoId;
+    private Long weekDayInfoId;
 }

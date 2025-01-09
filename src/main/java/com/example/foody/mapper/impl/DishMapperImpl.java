@@ -60,13 +60,13 @@ public class DishMapperImpl implements DishMapper {
         dish.setPrice(dishUpdateRequestDTO.getPrice());
     }
 
-    private long dishRestaurantId(Dish dish) {
+    private Long dishRestaurantId(Dish dish) {
         if (dish == null) {
-            return 0L;
+            return null;
         }
         Restaurant restaurant = dish.getRestaurant();
         if (restaurant == null) {
-            return 0L;
+            return null;
         }
         return restaurant.getId();
     }

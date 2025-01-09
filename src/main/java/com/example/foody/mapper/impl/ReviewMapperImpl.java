@@ -69,35 +69,35 @@ public class ReviewMapperImpl implements ReviewMapper {
         return list;
     }
 
-    private long reviewRestaurantId(Review review) {
+    private Long reviewRestaurantId(Review review) {
         if (review == null) {
-            return 0L;
+            return null;
         }
         Restaurant restaurant = review.getRestaurant();
         if (restaurant == null) {
-            return 0L;
+            return null;
         }
         return restaurant.getId();
     }
 
-    private long reviewDishId(Review review) {
+    private Long reviewDishId(Review review) {
         if (review == null) {
-            return 0L;
+            return null;
         }
         Dish dish = review.getDish();
         if (dish == null) {
-            return 0L;
+            return null;
         }
         return dish.getId();
     }
 
-    private long reviewCustomerId(Review review) {
+    private Long reviewCustomerId(Review review) {
         if (review == null) {
-            return 0L;
+            return null;
         }
         CustomerUser customerUser = review.getCustomer();
         if (customerUser == null) {
-            return 0L;
+            return null;
         }
         return customerUser.getId();
     }

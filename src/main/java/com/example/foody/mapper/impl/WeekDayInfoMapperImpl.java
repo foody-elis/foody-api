@@ -93,13 +93,13 @@ public class WeekDayInfoMapperImpl implements WeekDayInfoMapper {
         return list;
     }
 
-    private long weekDayInfoRestaurantId(WeekDayInfo weekDayInfo) {
+    private Long weekDayInfoRestaurantId(WeekDayInfo weekDayInfo) {
         if (weekDayInfo == null) {
-            return 0L;
+            return null;
         }
         Restaurant restaurant = weekDayInfo.getRestaurant();
         if (restaurant == null) {
-            return 0L;
+            return null;
         }
         return restaurant.getId();
     }

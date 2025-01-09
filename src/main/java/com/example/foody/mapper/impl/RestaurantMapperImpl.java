@@ -132,13 +132,13 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setPostalCode(restaurantAddressPostalCode(restaurant));
     }
 
-    private long restaurantRestaurateurId(Restaurant restaurant) {
+    private Long restaurantRestaurateurId(Restaurant restaurant) {
         if (restaurant == null) {
-            return 0L;
+            return null;
         }
         RestaurateurUser restaurateur = restaurant.getRestaurateur();
         if (restaurateur == null) {
-            return 0L;
+            return null;
         }
         return restaurateur.getId();
     }

@@ -56,13 +56,13 @@ public class OrderDishMapperImpl implements OrderDishMapper {
         return list;
     }
 
-    private long orderDishDishId(OrderDish orderDish) {
+    private Long orderDishDishId(OrderDish orderDish) {
         if (orderDish == null) {
-            return 0L;
+            return null;
         }
         Dish dish = orderDish.getDish();
         if (dish == null) {
-            return 0L;
+            return null;
         }
         return dish.getId();
     }

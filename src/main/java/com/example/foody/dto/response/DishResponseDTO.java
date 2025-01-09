@@ -17,7 +17,7 @@ public class DishResponseDTO {
     private String description;
     private BigDecimal price;
     private String photoUrl;
-    private long restaurantId;
+    private Long restaurantId;
     @JsonSerialize(using = RoundedDoubleSerializer.class)
     private double averageRating;
 }
