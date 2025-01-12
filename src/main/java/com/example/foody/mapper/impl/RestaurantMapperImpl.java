@@ -125,6 +125,7 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 categoryMapper.categoriesToCategoryResponseDTOs(restaurant.getCategories())
         );
         restaurantResponseDTO.setRestaurateurId(restaurantRestaurateurId(restaurant));
+        restaurantResponseDTO.setRestaurateurEmail(resrestaurantRestaurateurEmail(restaurant));
         restaurantResponseDTO.setCity(restaurantAddressCity(restaurant));
         restaurantResponseDTO.setProvince(restaurantAddressProvince(restaurant));
         restaurantResponseDTO.setStreet(restaurantAddressStreet(restaurant));
@@ -141,6 +142,17 @@ public class RestaurantMapperImpl implements RestaurantMapper {
             return null;
         }
         return restaurateur.getId();
+    }
+
+    private String resrestaurantRestaurateurEmail(Restaurant restaurant) {
+        if (restaurant == null) {
+            return null;
+        }
+        RestaurateurUser restaurateur = restaurant.getRestaurateur();
+        if (restaurateur == null) {
+            return null;
+        }
+        return restaurateur.getEmail();
     }
 
     private String restaurantAddressCity(Restaurant restaurant) {

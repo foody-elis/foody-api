@@ -25,4 +25,5 @@ public class RestaurantResponseDTO {
     private String civicNumber;
     private String postalCode;
     private Long restaurateurId;
+    private String restaurateurEmail;
 }

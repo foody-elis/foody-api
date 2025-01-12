@@ -126,6 +126,7 @@ public class SecurityConfig {
 
                         .requestMatchers(PUT, "/api/v1/users").authenticated()
                         .requestMatchers(PATCH, "/api/v1/users/chat-id").authenticated()
+                        .requestMatchers(GET, "/api/v1/users/*").authenticated()
                         .requestMatchers("/api/v1/users/**").hasRole(Role.Constants.ADMIN_VALUE)
 
                         .anyRequest().permitAll() // todo remove?
