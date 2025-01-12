@@ -199,7 +199,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         user.setAvatarUrl(avatarUrl);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setFirebaseCustomToken(firebaseService.createCustomToken(String.valueOf(user.getId())));
+        user.setFirebaseCustomToken(firebaseService.createCustomToken(user.getEmail()));
 
         try {
             user = userRepository.save(user);
