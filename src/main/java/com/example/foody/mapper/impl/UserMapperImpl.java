@@ -2,7 +2,6 @@ package com.example.foody.mapper.impl;
 
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.dto.request.UserRequestDTO;
-import com.example.foody.dto.request.UserUpdateChatIdRequestDTO;
 import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
 import com.example.foody.dto.response.EmployeeUserResponseDTO;
@@ -14,11 +13,8 @@ import com.example.foody.model.user.*;
 import com.example.foody.utils.enums.Role;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
-public class UserMapperImpl<U extends User> implements UserMapper<U> {
+public class UserMapperImpl implements UserMapper {
     private final UserBuilder<AdminUser> adminUserBuilder;
     private final UserBuilder<ModeratorUser> moderatorUserBuilder;
     private final UserBuilder<RestaurateurUser> restaurateurUserBuilder;
@@ -42,17 +38,17 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
     }
 
     @Override
-    public UserResponseDTO userToUserResponseDTO(U user) {
+    public UserResponseDTO userToUserResponseDTO(User user, String firebaseCustomToken) {
         return switch (user) {
             case null -> null;
-            case EmployeeUser employeeUser -> buildEmployeeUserResponseDTO(employeeUser);
-            case CustomerUser customerUser -> buildCustomerUserResponseDTO(customerUser);
-            default -> buildUserResponseDTO(user);
+            case EmployeeUser employeeUser -> buildEmployeeUserResponseDTO(employeeUser, firebaseCustomToken);
+            case CustomerUser customerUser -> buildCustomerUserResponseDTO(customerUser, firebaseCustomToken);
+            default -> buildUserResponseDTO(user, firebaseCustomToken);
         };
     }
 
     @Override
-    public U userRequestDTOToUser(UserRequestDTO userRequestDTO) {
+    public User userRequestDTOToUser(UserRequestDTO userRequestDTO) {
         if (userRequestDTO == null) {
             return null;
         }
@@ -78,11 +74,11 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
             userBuilder.role(Enum.valueOf(Role.class, userRequestDTO.getRole()));
         }
 
-        return (U) userBuilder.build();
+        return userBuilder.build();
     }
 
     @Override
-    public void updateUserFromUserUpdateRequestDTO(U user, UserUpdateRequestDTO userUpdateRequestDTO) {
+    public void updateUserFromUserUpdateRequestDTO(User user, UserUpdateRequestDTO userUpdateRequestDTO) {
         if (user == null || userUpdateRequestDTO == null) {
             return;
         }
@@ -93,51 +89,34 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         user.setPhoneNumber(userUpdateRequestDTO.getPhoneNumber());
     }
 
-    @Override
-    public void updateUserFromUserUpdateChatIdRequestDTO(U user, UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO) {
-        if (user == null || userUpdateChatIdRequestDTO == null) {
-            return;
-        }
-
-        user.setChatId(userUpdateChatIdRequestDTO.getChatId());
-    }
-
-    @Override
-    public List<UserResponseDTO> usersToUserResponseDTOs(List<U> users) {
-        if (users == null) {
-            return null;
-        }
-
-        List<UserResponseDTO> list = new ArrayList<>(users.size());
-        users.forEach(user -> list.add(userToUserResponseDTO(user)));
-
-        return list;
-    }
-
-    private UserResponseDTO buildUserResponseDTO(U user) {
+    private UserResponseDTO buildUserResponseDTO(User user, String firebaseCustomToken) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
-        return mapCommonFields(user, userResponseDTO);
+
+        mapCommonFields(user, firebaseCustomToken, userResponseDTO);
+        userResponseDTO.setFirebaseCustomToken(firebaseCustomToken);
+
+        return userResponseDTO;
     }
 
-    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser) {
+    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser, String firebaseCustomToken) {
         EmployeeUserResponseDTO employeeUserResponseDTO = new EmployeeUserResponseDTO();
 
-        mapCommonFields(employeeUser, employeeUserResponseDTO);
+        mapCommonFields(employeeUser, firebaseCustomToken, employeeUserResponseDTO);
         employeeUserResponseDTO.setEmployerRestaurantId(employerRestaurantId(employeeUser));
 
         return employeeUserResponseDTO;
     }
 
-    private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser) {
+    private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser, String firebaseCustomToken) {
         CustomerUserResponseDTO customerUserResponseDTO = new CustomerUserResponseDTO();
 
-        mapCommonFields(customerUser, customerUserResponseDTO);
+        mapCommonFields(customerUser, firebaseCustomToken, customerUserResponseDTO);
         customerUserResponseDTO.setCreditCardId(creditCardId(customerUser));
 
         return customerUserResponseDTO;
     }
 
-    private <T extends UserResponseDTO> T mapCommonFields(User user, T userResponseDTO) {
+    private <T extends UserResponseDTO> void mapCommonFields(User user, String firebaseCustomToken, T userResponseDTO) {
         userResponseDTO.setId(user.getId());
         userResponseDTO.setEmail(user.getEmail());
         userResponseDTO.setName(user.getName());
@@ -147,9 +126,8 @@ public class UserMapperImpl<U extends User> implements UserMapper<U> {
         userResponseDTO.setAvatarUrl(user.getAvatarUrl());
         userResponseDTO.setRole(user.getRole());
         userResponseDTO.setActive(user.isActive());
-        userResponseDTO.setChatId(user.getChatId());
-
-        return userResponseDTO;
+        userResponseDTO.setFirebaseCustomToken(user.getFirebaseCustomToken());
+        userResponseDTO.setFirebaseCustomToken(firebaseCustomToken);
     }
 
     private Long employerRestaurantId(EmployeeUser employee) {

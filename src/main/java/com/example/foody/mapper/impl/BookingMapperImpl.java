@@ -4,12 +4,11 @@ import com.example.foody.builder.BookingBuilder;
 import com.example.foody.dto.request.BookingRequestDTO;
 import com.example.foody.dto.response.BookingResponseDTO;
 import com.example.foody.dto.response.CustomerUserResponseDTO;
+import com.example.foody.helper.UserHelper;
 import com.example.foody.mapper.BookingMapper;
 import com.example.foody.mapper.RestaurantMapper;
 import com.example.foody.mapper.SittingTimeMapper;
-import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Booking;
-import com.example.foody.model.user.CustomerUser;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,13 +18,13 @@ import java.util.List;
 public class BookingMapperImpl implements BookingMapper {
     private final BookingBuilder bookingBuilder;
     private final SittingTimeMapper sittingTimeMapper;
-    private final UserMapper<CustomerUser> userMapper;
+    private final UserHelper userHelper;
     private final RestaurantMapper restaurantMapper;
 
-    public BookingMapperImpl(BookingBuilder bookingBuilder, SittingTimeMapper sittingTimeMapper, UserMapper<CustomerUser> userMapper, RestaurantMapper restaurantMapper) {
+    public BookingMapperImpl(BookingBuilder bookingBuilder, SittingTimeMapper sittingTimeMapper, UserHelper userHelper, RestaurantMapper restaurantMapper) {
         this.bookingBuilder = bookingBuilder;
         this.sittingTimeMapper = sittingTimeMapper;
-        this.userMapper = userMapper;
+        this.userHelper = userHelper;
         this.restaurantMapper = restaurantMapper;
     }
 
@@ -41,7 +40,7 @@ public class BookingMapperImpl implements BookingMapper {
                 sittingTimeMapper.sittingTimeToSittingTimeResponseDTO(booking.getSittingTime())
         );
         bookingResponseDTO.setCustomer(
-                (CustomerUserResponseDTO) userMapper.userToUserResponseDTO(booking.getCustomer())
+                (CustomerUserResponseDTO) userHelper.buildUserResponseDTO(booking.getCustomer())
         );
         bookingResponseDTO.setRestaurant(
                 restaurantMapper.restaurantToRestaurantResponseDTO(booking.getRestaurant())

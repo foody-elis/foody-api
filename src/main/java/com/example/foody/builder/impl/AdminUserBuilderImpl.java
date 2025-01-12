@@ -19,7 +19,7 @@ public class AdminUserBuilderImpl extends UserBuilderImpl<AdminUser> implements 
                 avatarUrl,
                 role,
                 active,
-                chatId
+                firebaseCustomToken
         );
     }
 }

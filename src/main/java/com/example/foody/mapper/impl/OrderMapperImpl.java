@@ -3,14 +3,11 @@ package com.example.foody.mapper.impl;
 import com.example.foody.builder.OrderBuilder;
 import com.example.foody.dto.request.OrderRequestDTO;
 import com.example.foody.dto.response.OrderResponseDTO;
-import com.example.foody.dto.response.UserResponseDTO;
+import com.example.foody.helper.UserHelper;
 import com.example.foody.mapper.OrderDishMapper;
 import com.example.foody.mapper.OrderMapper;
 import com.example.foody.mapper.RestaurantMapper;
-import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Order;
-import com.example.foody.model.user.CustomerUser;
-import com.example.foody.model.user.WaiterUser;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,15 +17,13 @@ import java.util.List;
 public class OrderMapperImpl implements OrderMapper {
     private final OrderBuilder orderBuilder;
     private final OrderDishMapper orderDishMapper;
-    private final UserMapper<CustomerUser> customerUserMapper;
-    private final UserMapper<WaiterUser> waiterUserMapper;
+    private final UserHelper userHelper;
     private final RestaurantMapper restaurantMapper;
 
-    public OrderMapperImpl(OrderBuilder orderBuilder, OrderDishMapper orderDishMapper, UserMapper<CustomerUser> customerUserMapper, UserMapper<WaiterUser> waiterUserMapper, RestaurantMapper restaurantMapper) {
+    public OrderMapperImpl(OrderBuilder orderBuilder, OrderDishMapper orderDishMapper, UserHelper userHelper, RestaurantMapper restaurantMapper) {
         this.orderBuilder = orderBuilder;
         this.orderDishMapper = orderDishMapper;
-        this.customerUserMapper = customerUserMapper;
-        this.waiterUserMapper = waiterUserMapper;
+        this.userHelper = userHelper;
         this.restaurantMapper = restaurantMapper;
     }
 
@@ -43,7 +38,9 @@ public class OrderMapperImpl implements OrderMapper {
         orderResponseDTO.setOrderDishes(
                 orderDishMapper.orderDishesToOrderDishResponseDTOs(order.getOrderDishes())
         );
-        orderResponseDTO.setBuyer(orderBuyerUserResponseDTO(order));
+        orderResponseDTO.setBuyer(
+                userHelper.buildUserResponseDTO(order.getBuyer().getUser())
+        );
         orderResponseDTO.setRestaurant(
                 restaurantMapper.restaurantToRestaurantResponseDTO(order.getRestaurant())
         );
@@ -77,13 +74,5 @@ public class OrderMapperImpl implements OrderMapper {
         orders.forEach(order -> list.add(orderToOrderResponseDTO(order)));
 
         return list;
-    }
-
-    private UserResponseDTO orderBuyerUserResponseDTO(Order order) {
-        return switch (order.getBuyer().getUser()) {
-            case CustomerUser customerUser -> customerUserMapper.userToUserResponseDTO(customerUser);
-            case WaiterUser waiterUser -> waiterUserMapper.userToUserResponseDTO(waiterUser);
-            default -> null;
-        };
     }
 }

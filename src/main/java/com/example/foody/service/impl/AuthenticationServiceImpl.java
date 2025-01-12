@@ -15,14 +15,17 @@ import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.exceptions.user.InvalidPasswordException;
 import com.example.foody.exceptions.user.UserNotActiveException;
+import com.example.foody.helper.UserHelper;
 import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.Restaurant;
-import com.example.foody.model.user.*;
+import com.example.foody.model.user.EmployeeUser;
+import com.example.foody.model.user.User;
 import com.example.foody.repository.RestaurantRepository;
 import com.example.foody.repository.UserRepository;
 import com.example.foody.security.JwtService;
 import com.example.foody.service.AuthenticationService;
 import com.example.foody.service.EmailService;
+import com.example.foody.service.FirebaseService;
 import com.example.foody.service.GoogleDriveService;
 import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.EmailPlaceholder;
@@ -46,32 +49,24 @@ import java.util.Optional;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
-    private final UserMapper<User> userMapper;
-    private final UserMapper<AdminUser> adminUserMapper;
-    private final UserMapper<ModeratorUser> moderatorUserMapper;
-    private final UserMapper<RestaurateurUser> restaurateurUserMapper;
-    private final UserMapper<CookUser> cookUserMapper;
-    private final UserMapper<WaiterUser> waiterUserMapper;
-    private final UserMapper<CustomerUser> customerUserMapper;
+    private final UserMapper userMapper;
+    private final UserHelper userHelper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final GoogleDriveService googleDriveService;
+    private final FirebaseService firebaseService;
     private final JwtService jwtService;
     private final EmailService emailService;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper<User> userMapper, UserMapper<AdminUser> adminUserMapper, UserMapper<ModeratorUser> moderatorUserMapper, UserMapper<RestaurateurUser> restaurateurUserMapper, UserMapper<CookUser> cookUserMapper, UserMapper<WaiterUser> waiterUserMapper, UserMapper<CustomerUser> customerUserMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, JwtService jwtService, EmailService emailService) {
+    public AuthenticationServiceImpl(UserRepository userRepository, RestaurantRepository restaurantRepository, UserMapper userMapper, UserHelper userHelper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, GoogleDriveService googleDriveService, FirebaseService firebaseService, JwtService jwtService, EmailService emailService) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.userMapper = userMapper;
-        this.adminUserMapper = adminUserMapper;
-        this.moderatorUserMapper = moderatorUserMapper;
-        this.restaurateurUserMapper = restaurateurUserMapper;
-        this.cookUserMapper = cookUserMapper;
-        this.waiterUserMapper = waiterUserMapper;
-        this.customerUserMapper = customerUserMapper;
+        this.userHelper = userHelper;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.googleDriveService = googleDriveService;
+        this.firebaseService = firebaseService;
         this.jwtService = jwtService;
         this.emailService = emailService;
     }
@@ -90,32 +85,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) {
-        return registerUserWithRole(userRequestDTO, Role.ADMIN, adminUserMapper);
+        return registerUserWithRole(userRequestDTO, Role.ADMIN);
     }
 
     @Override
     public UserResponseDTO registerModerator(UserRequestDTO userRequestDTO) {
-        return registerUserWithRole(userRequestDTO, Role.MODERATOR, moderatorUserMapper);
+        return registerUserWithRole(userRequestDTO, Role.MODERATOR);
     }
 
     @Override
     public UserResponseDTO registerRestaurateur(UserRequestDTO userRequestDTO) {
-        return registerUserWithRole(userRequestDTO, Role.RESTAURATEUR, restaurateurUserMapper);
+        return registerUserWithRole(userRequestDTO, Role.RESTAURATEUR);
     }
 
     @Override
     public EmployeeUserResponseDTO registerCook(long restaurantId, UserRequestDTO userRequestDTO) {
-        return registerEmployeeUser(restaurantId, userRequestDTO, Role.COOK, cookUserMapper);
+        return registerEmployeeUser(restaurantId, userRequestDTO, Role.COOK);
     }
 
     @Override
     public EmployeeUserResponseDTO registerWaiter(long restaurantId, UserRequestDTO userRequestDTO) {
-        return registerEmployeeUser(restaurantId, userRequestDTO, Role.WAITER, waiterUserMapper);
+        return registerEmployeeUser(restaurantId, userRequestDTO, Role.WAITER);
     }
 
     @Override
     public CustomerUserResponseDTO registerCustomer(UserRequestDTO userRequestDTO) {
-        return (CustomerUserResponseDTO) registerUserWithRole(userRequestDTO, Role.CUSTOMER, customerUserMapper);
+        return (CustomerUserResponseDTO) registerUserWithRole(userRequestDTO, Role.CUSTOMER);
     }
 
     @Override
@@ -145,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public UserResponseDTO getAuthenticatedUser() {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userMapper.userToUserResponseDTO(principal);
+        return userHelper.buildUserResponseDTO(principal);
     }
 
     @Override
@@ -167,22 +162,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         sendChangePasswordEmail(principal);
     }
 
-    private <T extends User> UserResponseDTO registerUserWithRole(UserRequestDTO userRequestDTO, Role role, UserMapper<T> mapper) {
+    private <T extends User> UserResponseDTO registerUserWithRole(UserRequestDTO userRequestDTO, Role role) {
         userRequestDTO.setRole(role.name());
 
-        T user = mapper.userRequestDTOToUser(userRequestDTO);
+        T user = (T) userMapper.userRequestDTOToUser(userRequestDTO);
         user = saveUser(user, userRequestDTO.getAvatarBase64());
 
-        return mapper.userToUserResponseDTO(user);
+        return userHelper.buildUserResponseDTO(user);
     }
 
-    private <E extends EmployeeUser> EmployeeUserResponseDTO registerEmployeeUser(long restaurantId, UserRequestDTO userRequestDTO, Role role, UserMapper<E> mapper) {
+    private <E extends EmployeeUser> EmployeeUserResponseDTO registerEmployeeUser(long restaurantId, UserRequestDTO userRequestDTO, Role role) {
         userRequestDTO.setRole(role.name());
 
-        E employee = mapper.userRequestDTOToUser(userRequestDTO);
+        E employee = (E) userMapper.userRequestDTOToUser(userRequestDTO);
         employee = saveEmployeeUser(restaurantId, employee, userRequestDTO.getAvatarBase64());
 
-        return (EmployeeUserResponseDTO) mapper.userToUserResponseDTO(employee);
+        return (EmployeeUserResponseDTO) userHelper.buildUserResponseDTO(employee);
     }
 
     private <E extends EmployeeUser> E saveEmployeeUser(long restaurantId, E employeeUser, String avatarBase64) {
@@ -204,6 +199,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         user.setAvatarUrl(avatarUrl);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setFirebaseCustomToken(firebaseService.createCustomToken(String.valueOf(user.getId())));
 
         try {
             user = userRepository.save(user);

@@ -16,6 +16,6 @@ public interface UserBuilder<U extends User> {
     UserBuilder<U> avatarUrl(String avatarUrl);
     UserBuilder<U> role(Role role);
     UserBuilder<U> active(boolean active);
-    UserBuilder<U> chatId(Long chatId);
+    UserBuilder<U> firebaseCustomToken(String firebaseCustomToken);
     U build();
 }

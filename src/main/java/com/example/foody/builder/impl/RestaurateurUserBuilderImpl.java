@@ -28,7 +28,7 @@ public class RestaurateurUserBuilderImpl extends UserBuilderImpl<RestaurateurUse
                 avatarUrl,
                 role,
                 active,
-                chatId,
+                firebaseCustomToken,
                 restaurant
         );
     }

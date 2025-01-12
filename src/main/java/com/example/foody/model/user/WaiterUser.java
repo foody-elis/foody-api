@@ -23,8 +23,8 @@ public class WaiterUser extends EmployeeUser {
     })
     private BuyerUser buyer;
 
-    public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarGoogleDriveFileId, Role role, boolean active, Long chatId, Restaurant employerRestaurant, List<Order> orders) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatarGoogleDriveFileId, role, active, chatId, employerRestaurant);
+    public WaiterUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatarGoogleDriveFileId, Role role, boolean active, String firebaseCustomToken, Restaurant employerRestaurant, List<Order> orders) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatarGoogleDriveFileId, role, active, firebaseCustomToken, employerRestaurant);
         this.buyer = new BuyerUser(id, orders);
     }
 

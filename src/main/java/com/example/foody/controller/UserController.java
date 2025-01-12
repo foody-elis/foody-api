@@ -1,6 +1,5 @@
 package com.example.foody.controller;
 
-import com.example.foody.dto.request.UserUpdateChatIdRequestDTO;
 import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.exceptions.entity.EntityDeletionException;
@@ -57,12 +56,6 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> updateUser(@AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO)
             throws GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
         return new ResponseEntity<>(userService.update(user.getId(), userUpdateRequestDTO), HttpStatus.OK);
-    }
-
-    @PatchMapping(path = "/chat-id")
-    public ResponseEntity<UserResponseDTO> updateUserChatId(@AuthenticationPrincipal User user, @Valid @RequestBody UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO)
-            throws EntityNotFoundException, EntityEditException {
-        return new ResponseEntity<>(userService.updateChatId(user.getId(), userUpdateChatIdRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")

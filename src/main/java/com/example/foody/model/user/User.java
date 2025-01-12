@@ -58,8 +58,8 @@ public class User extends DefaultEntity implements UserDetails {
     @Column(name = "active", nullable = false)
     protected boolean active = true;
 
-    @Column(name = "chat_id")
-    protected Long chatId;
+    @Column(name = "firebase_custom_token", columnDefinition = "TEXT", unique = true)
+    protected String firebaseCustomToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

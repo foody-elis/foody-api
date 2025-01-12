@@ -17,7 +17,7 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     protected String avatarUrl;
     protected Role role;
     protected boolean active = true;
-    protected Long chatId;
+    protected String firebaseCustomToken;
 
     @Override
     public UserBuilder<U> id(long id) {
@@ -80,8 +80,8 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
     }
 
     @Override
-    public UserBuilder<U> chatId(Long chatId) {
-        this.chatId = chatId;
+    public UserBuilder<U> firebaseCustomToken(String firebaseCustomToken) {
+        this.firebaseCustomToken = firebaseCustomToken;
         return this;
     }
 

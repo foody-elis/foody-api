@@ -4,6 +4,7 @@ import com.example.foody.exceptions.auth.InvalidCredentialsException;
 import com.example.foody.exceptions.booking.*;
 import com.example.foody.exceptions.email.EmailSendingException;
 import com.example.foody.exceptions.entity.*;
+import com.example.foody.exceptions.firebase.FirebaseCustomTokenCreationException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileDeleteException;
 import com.example.foody.exceptions.google_drive.GoogleDriveFileUploadException;
 import com.example.foody.exceptions.order.ForbiddenOrderAccessException;
@@ -143,7 +144,8 @@ public class GlobalExceptionHandler {
             EntityDeletionException.class,
             GoogleDriveFileUploadException.class,
             GoogleDriveFileDeleteException.class,
-            EmailSendingException.class
+            EmailSendingException.class,
+            FirebaseCustomTokenCreationException.class
     })
     public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
         ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());

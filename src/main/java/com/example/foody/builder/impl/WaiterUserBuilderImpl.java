@@ -38,7 +38,7 @@ public class WaiterUserBuilderImpl extends UserBuilderImpl<WaiterUser> implement
                 avatarUrl,
                 role,
                 active,
-                chatId,
+                firebaseCustomToken,
                 employerRestaurant,
                 orders
         );

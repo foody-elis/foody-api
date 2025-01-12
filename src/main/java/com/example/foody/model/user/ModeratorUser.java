@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 @DiscriminatorValue(Role.Constants.MODERATOR_VALUE)
 public class ModeratorUser extends User {
-    public ModeratorUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, Long chatId) {
-        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, chatId);
+    public ModeratorUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, String firebaseCustomToken) {
+        super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, firebaseCustomToken);
     }
 }

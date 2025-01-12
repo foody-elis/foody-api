@@ -12,7 +12,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     Optional<Restaurant> findByIdAndApproved(long id, boolean approved);
 
-    Optional<Restaurant> findAllByRestaurateur_Id(long restaurateurId);
+    Optional<Restaurant> findByRestaurateur_Id(long restaurateurId);
 
     @Query("""
             SELECT r

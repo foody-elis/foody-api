@@ -100,7 +100,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public DetailedRestaurantResponseDTO findByRestaurateur(long restaurateurId) {
         Restaurant restaurant = restaurantRepository
-                .findAllByRestaurateur_Id(restaurateurId)
+                .findByRestaurateur_Id(restaurateurId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant", "restaurateurId", restaurateurId));
         return restaurantHelper.buildDetailedRestaurantResponseDTO(restaurant);
     }

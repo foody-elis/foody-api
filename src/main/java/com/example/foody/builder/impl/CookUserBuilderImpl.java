@@ -28,7 +28,7 @@ public class CookUserBuilderImpl extends UserBuilderImpl<CookUser> implements Co
                 avatarUrl,
                 role,
                 active,
-                chatId,
+                firebaseCustomToken,
                 employerRestaurant
         );
     }

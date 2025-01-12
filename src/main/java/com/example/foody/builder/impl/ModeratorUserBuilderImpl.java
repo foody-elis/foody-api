@@ -19,7 +19,7 @@ public class ModeratorUserBuilderImpl extends UserBuilderImpl<ModeratorUser> imp
                 avatarUrl,
                 role,
                 active,
-                chatId
+                firebaseCustomToken
         );
     }
 }

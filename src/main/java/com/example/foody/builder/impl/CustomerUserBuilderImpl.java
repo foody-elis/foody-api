@@ -55,7 +55,7 @@ public class CustomerUserBuilderImpl extends UserBuilderImpl<CustomerUser> imple
                 avatarUrl,
                 role,
                 active,
-                chatId,
+                firebaseCustomToken,
                 creditCard,
                 reviews,
                 bookings,

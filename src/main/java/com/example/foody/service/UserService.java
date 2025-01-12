@@ -1,6 +1,5 @@
 package com.example.foody.service;
 
-import com.example.foody.dto.request.UserUpdateChatIdRequestDTO;
 import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.utils.enums.Role;
@@ -13,6 +12,5 @@ public interface UserService {
     UserResponseDTO findByEmail(String email);
     List<UserResponseDTO> findByRole(Role role);
     UserResponseDTO update(long id, UserUpdateRequestDTO userUpdateRequestDTO);
-    UserResponseDTO updateChatId(long id, UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO);
     boolean remove(long id);
 }

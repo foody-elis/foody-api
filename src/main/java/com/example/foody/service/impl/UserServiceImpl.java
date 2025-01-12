@@ -1,11 +1,11 @@
 package com.example.foody.service.impl;
 
-import com.example.foody.dto.request.UserUpdateChatIdRequestDTO;
 import com.example.foody.dto.request.UserUpdateRequestDTO;
 import com.example.foody.dto.response.UserResponseDTO;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
 import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.helper.UserHelper;
 import com.example.foody.mapper.UserMapper;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.UserRepository;
@@ -23,19 +23,21 @@ import java.util.Optional;
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper<User> userMapper;
+    private final UserMapper userMapper;
+    private final UserHelper userHelper;
     private final GoogleDriveService googleDriveService;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper<User> userMapper, GoogleDriveService googleDriveService) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, UserHelper userHelper, GoogleDriveService googleDriveService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.userHelper = userHelper;
         this.googleDriveService = googleDriveService;
     }
 
     @Override
     public List<UserResponseDTO> findAll() {
         List<User> users = userRepository.findAll();
-        return userMapper.usersToUserResponseDTOs(users);
+        return userHelper.buildUserResponseDTOs(users);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
-        return userMapper.userToUserResponseDTO(user);
+        return userHelper.buildUserResponseDTO(user);
     }
 
     @Override
@@ -51,13 +53,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("user", "email", email));
-        return userMapper.userToUserResponseDTO(user);
+        return userHelper.buildUserResponseDTO(user);
     }
 
     @Override
     public List<UserResponseDTO> findByRole(Role role) {
         List<User> users = userRepository.findByRole(role);
-        return userMapper.usersToUserResponseDTOs(users);
+        return userHelper.buildUserResponseDTOs(users);
     }
 
     @Override
@@ -77,24 +79,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityEditException("user", "id", user.getId());
         }
 
-        return userMapper.userToUserResponseDTO(user);
-    }
-
-    @Override
-    public UserResponseDTO updateChatId(long id, UserUpdateChatIdRequestDTO userUpdateChatIdRequestDTO) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("user", "id", id));
-
-        userMapper.updateUserFromUserUpdateChatIdRequestDTO(user, userUpdateChatIdRequestDTO);
-
-        try {
-            user = userRepository.save(user);
-        } catch (Exception e) {
-            throw new EntityEditException("user", "id", user.getId());
-        }
-
-        return userMapper.userToUserResponseDTO(user);
+        return userHelper.buildUserResponseDTO(user);
     }
 
     @Override
