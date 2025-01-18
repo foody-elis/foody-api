@@ -2,6 +2,7 @@ package com.example.foody.service.impl;
 
 import com.example.foody.exceptions.firebase.FirebaseCustomTokenCreationException;
 import com.example.foody.service.FirebaseService;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,19 @@ public class FirebaseServiceImpl implements FirebaseService {
     public String createCustomToken(String uid) {
         try {
             return FirebaseAuth.getInstance().createCustomToken(uid);
-        } catch (FirebaseAuthException e) {
+        } catch (FirebaseAuthException | IllegalArgumentException e) {
             throw new FirebaseCustomTokenCreationException(uid);
         }
+    }
+
+    @Override
+    public boolean verifyToken(String token) {
+        try {
+            FirebaseAuth.getInstance().verifyIdToken(token);
+        } catch (FirebaseAuthException | IllegalArgumentException e) {
+            return false;
+        }
+
+        return true;
     }
 }

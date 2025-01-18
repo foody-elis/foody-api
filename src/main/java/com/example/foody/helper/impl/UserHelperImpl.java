@@ -46,9 +46,14 @@ public class UserHelperImpl implements UserHelper {
         if (user == null) {
             return null;
         }
-        return user.getFirebaseCustomToken() == null
-                ? updateUserFirebaseCustomToken(user)
-                : user.getFirebaseCustomToken();
+
+        String customToken = user.getFirebaseCustomToken();
+
+        if (customToken == null || !firebaseService.verifyToken(customToken)) {
+            return updateUserFirebaseCustomToken(user);
+        }
+
+        return customToken;
     }
 
     private String updateUserFirebaseCustomToken(User user) {
