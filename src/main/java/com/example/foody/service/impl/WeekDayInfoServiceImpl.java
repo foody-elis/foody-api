@@ -3,9 +3,7 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
 import com.example.foody.dto.request.WeekDayInfoUpdateRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
-import com.example.foody.exceptions.entity.EntityCreationException;
-import com.example.foody.exceptions.entity.EntityDuplicateException;
-import com.example.foody.exceptions.entity.EntityNotFoundException;
+import com.example.foody.exceptions.entity.*;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
@@ -87,28 +85,12 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
         try {
             weekDayInfo = weekDayInfoRepository.save(weekDayInfo);
         } catch (Exception e) {
-            throw new EntityNotFoundException("week day info", "id", id);
+            throw new EntityEditException("week day info", "id", id);
         }
 
         updateWeekDayInfoSittingTimes(weekDayInfo);
 
         return weekDayInfoMapper.weekDayInfoToWeekDayInfoResponseDTO(weekDayInfo);
-    }
-
-    @Override
-    public boolean remove(long id) {
-        WeekDayInfo weekDayInfo = weekDayInfoRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("week day info", "id", id));
-        weekDayInfo.delete();
-
-        try {
-            weekDayInfoRepository.save(weekDayInfo);
-        } catch (Exception e) {
-            throw new EntityNotFoundException("week day info", "id", id);
-        }
-
-        return true;
     }
 
     private void checkRestaurantAccessOrThrow(User user, Restaurant restaurant) {

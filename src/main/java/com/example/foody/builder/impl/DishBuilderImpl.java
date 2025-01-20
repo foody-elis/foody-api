@@ -8,6 +8,7 @@ import com.example.foody.model.order_dish.OrderDish;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,8 +19,8 @@ public class DishBuilderImpl implements DishBuilder {
     private BigDecimal price;
     private String photoUrl;
     private Restaurant restaurant;
-    private List<Review> reviews;
-    private List<OrderDish> orderDishes;
+    private List<Review> reviews = new ArrayList<>();
+    private List<OrderDish> orderDishes = new ArrayList<>();
 
     @Override
     public DishBuilder id(long id) {

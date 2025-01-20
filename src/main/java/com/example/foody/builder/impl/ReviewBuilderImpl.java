@@ -13,7 +13,7 @@ public class ReviewBuilderImpl implements ReviewBuilder {
     private String title;
     private String description;
     private int rating;
-    private CustomerUser customerUser;
+    private CustomerUser customer;
     private Restaurant restaurant;
     private Dish dish;
 
@@ -42,8 +42,8 @@ public class ReviewBuilderImpl implements ReviewBuilder {
     }
 
     @Override
-    public ReviewBuilder customerUser(CustomerUser customerUser) {
-        this.customerUser = customerUser;
+    public ReviewBuilder customer(CustomerUser customer) {
+        this.customer = customer;
         return this;
     }
 
@@ -61,6 +61,6 @@ public class ReviewBuilderImpl implements ReviewBuilder {
 
     @Override
     public Review build() {
-        return new Review(id, title, description, rating, customerUser, restaurant, dish);
+        return new Review(id, title, description, rating, customer, restaurant, dish);
     }
 }

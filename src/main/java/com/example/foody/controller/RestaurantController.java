@@ -31,8 +31,9 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public ResponseEntity<RestaurantResponseDTO> saveRestaurant(@Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
-            throws RestaurateurAlreadyHasRestaurantException, GoogleDriveFileUploadException, EntityCreationException {
+    public ResponseEntity<RestaurantResponseDTO> saveRestaurant(
+            @Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO
+    ) throws RestaurateurAlreadyHasRestaurantException, GoogleDriveFileUploadException, EntityCreationException {
         return new ResponseEntity<>(restaurantService.save(restaurantRequestDTO), HttpStatus.CREATED);
     }
 
@@ -48,14 +49,16 @@ public class RestaurantController {
     }
 
     @GetMapping(path = "/restaurateur")
-    public ResponseEntity<DetailedRestaurantResponseDTO> getRestaurantByRestaurateur(@AuthenticationPrincipal RestaurateurUser restaurateur)
-            throws EntityNotFoundException {
+    public ResponseEntity<DetailedRestaurantResponseDTO> getRestaurantByRestaurateur(
+            @AuthenticationPrincipal RestaurateurUser restaurateur
+    ) throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findByRestaurateur(restaurateur.getId()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/category/{category-id}")
-    public ResponseEntity<List<DetailedRestaurantResponseDTO>> getRestaurantsByCategory(@PathVariable("category-id") long categoryId)
-            throws EntityNotFoundException {
+    public ResponseEntity<List<DetailedRestaurantResponseDTO>> getRestaurantsByCategory(
+            @PathVariable("category-id") long categoryId
+    ) throws EntityNotFoundException {
         return new ResponseEntity<>(restaurantService.findAllByCategory(categoryId), HttpStatus.OK);
     }
 
@@ -66,13 +69,15 @@ public class RestaurantController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<DetailedRestaurantResponseDTO> updateRestaurant(@PathVariable long id, @Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO)
-            throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
+    public ResponseEntity<DetailedRestaurantResponseDTO> updateRestaurant(
+            @PathVariable long id,
+            @Valid @RequestBody RestaurantRequestDTO restaurantRequestDTO
+    ) throws EntityNotFoundException, ForbiddenRestaurantAccessException, GoogleDriveFileUploadException, GoogleDriveFileDeleteException, EntityEditException {
         return new ResponseEntity<>(restaurantService.update(id, restaurantRequestDTO), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> removeEvent(@PathVariable long id)
+    public ResponseEntity<Void> removeRestaurant(@PathVariable long id)
             throws EntityNotFoundException, GoogleDriveFileDeleteException, EntityDeletionException {
         restaurantService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);

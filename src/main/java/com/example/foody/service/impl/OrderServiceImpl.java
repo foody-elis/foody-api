@@ -63,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
         this.eventManager = eventManager;
     }
 
+
     @Override
     public OrderResponseDTO save(OrderRequestDTO orderDTO) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -274,7 +275,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderAccessOrThrow(User user, Order order) {
-        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isWaiter(user)) return;
+        if (!UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isBuyer(user)) return;
         if (order.getBuyer().getId() == user.getId()) return;
         if (order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
         if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;

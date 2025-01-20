@@ -6,12 +6,13 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.WaiterUser;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class WaiterUserBuilderImpl extends UserBuilderImpl<WaiterUser> implements WaiterUserBuilder {
     private Restaurant employerRestaurant;
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     @Override
     public WaiterUserBuilder employerRestaurant(Restaurant employerRestaurant) {

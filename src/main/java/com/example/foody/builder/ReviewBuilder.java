@@ -10,7 +10,7 @@ public interface ReviewBuilder {
     ReviewBuilder title(String title);
     ReviewBuilder description(String description);
     ReviewBuilder rating(int rating);
-    ReviewBuilder customerUser(CustomerUser customer);
+    ReviewBuilder customer(CustomerUser customer);
     ReviewBuilder restaurant(Restaurant restaurant);
     ReviewBuilder dish(Dish dish);
     Review build();

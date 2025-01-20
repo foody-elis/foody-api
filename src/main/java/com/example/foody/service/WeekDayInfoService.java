@@ -11,5 +11,4 @@ public interface WeekDayInfoService {
     List<WeekDayInfoResponseDTO> findAll();
     List<WeekDayInfoResponseDTO> findAllByRestaurant(long restaurantId);
     WeekDayInfoResponseDTO update(long id, WeekDayInfoUpdateRequestDTO weekDayInfoUpdateRequestDTO);
-    boolean remove(long id);
 }

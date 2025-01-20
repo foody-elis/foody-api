@@ -128,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("user", "email", password));
+                .orElseThrow(() -> new EntityNotFoundException("user", "email", email));
 
         if (!user.isActive()) throw new UserNotActiveException(user.getEmail());
 

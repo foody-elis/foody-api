@@ -39,8 +39,12 @@ public class SittingTimeServiceImpl implements SittingTimeService {
         List<SittingTime> sittingTimes = new ArrayList<>();
 
         int minutes = weekDayInfo.getSittingTimeStep().getMinutes();
-        sittingTimes.addAll(generateSittingTimes(weekDayInfo, weekDayInfo.getStartLaunch(), weekDayInfo.getEndLaunch(), minutes));
-        sittingTimes.addAll(generateSittingTimes(weekDayInfo, weekDayInfo.getStartDinner(), weekDayInfo.getEndDinner(), minutes));
+        sittingTimes.addAll(
+                generateSittingTimes(weekDayInfo, weekDayInfo.getStartLaunch(), weekDayInfo.getEndLaunch(), minutes)
+        );
+        sittingTimes.addAll(
+                generateSittingTimes(weekDayInfo, weekDayInfo.getStartDinner(), weekDayInfo.getEndDinner(), minutes)
+        );
 
         return sittingTimes;
     }

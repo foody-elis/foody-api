@@ -7,6 +7,7 @@ import com.example.foody.model.WeekDayInfo;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -15,7 +16,7 @@ public class SittingTimeBuilderImpl implements SittingTimeBuilder {
     private LocalTime start;
     private LocalTime end;
     private WeekDayInfo weekDayInfo;
-    private List<Booking> bookings;
+    private List<Booking> bookings = new ArrayList<>();
 
     @Override
     public SittingTimeBuilder id(long id) {
