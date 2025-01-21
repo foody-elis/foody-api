@@ -66,21 +66,17 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
     }
 
     @Override
-    public List<Order> findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
-            long restaurantId, List<String> statuses, LocalDate date
-    ) {
+    public List<Order> findAllByRestaurant_IdAndStatusInOrderByCreatedAtDesc(long restaurantId, List<String> statuses) {
         return entityManager
                 .createQuery("""
                         SELECT o
                         FROM Order o
                         WHERE o.restaurant.id = :restaurantId
                         AND o.status IN :statuses
-                        AND DATE(o.createdAt) = DATE(:date)
                         ORDER BY o.createdAt DESC
                         """, Order.class)
                 .setParameter("restaurantId", restaurantId)
                 .setParameter("statuses", statuses)
-                .setParameter("date", date)
                 .getResultList()
                 .stream()
                 .peek(this::processOrder)

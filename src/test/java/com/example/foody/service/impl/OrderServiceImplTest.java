@@ -567,7 +567,7 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void findCurrentDayInProgressOrdersByRestaurantWhenUserIsCookReturnsOrderResponseDTOs() {
+    void findAllByRestaurantAndInProgressWhenUserIsCookReturnsOrderResponseDTOs() {
         // Arrange
         CookUser cook = TestDataUtil.createTestCookUser();
         List<Order> orders = List.of(TestDataUtil.createTestOrder());
@@ -577,15 +577,14 @@ public class OrderServiceImplTest {
         mockSecurityContext(cook);
 
         when(restaurantRepository.findByIdAndApproved(restaurant.getId(), true)).thenReturn(Optional.of(restaurant));
-        when(orderRepository.findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+        when(orderRepository.findAllByRestaurant_IdAndStatusInOrderByCreatedAtDesc(
                 restaurant.getId(),
-                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
-                LocalDate.now())
+                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()))
         ).thenReturn(orders);
         when(orderMapper.ordersToOrderResponseDTOs(orders)).thenReturn(List.of(TestDataUtil.createTestOrderResponseDTO()));
 
         // Act
-        List<OrderResponseDTO> responseDTOs = orderService.findCurrentDayInProgressOrdersByRestaurant(restaurant.getId());
+        List<OrderResponseDTO> responseDTOs = orderService.findAllByRestaurantAndInProgress(restaurant.getId());
 
         // Assert
         assertNotNull(responseDTOs);

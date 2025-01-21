@@ -60,10 +60,10 @@ public class OrderController {
     }
 
     @GetMapping(path = "/restaurant/{restaurant-id}/in-progress")
-    public ResponseEntity<List<OrderResponseDTO>> getCurrentDayInProgressOrdersByRestaurant(
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersByRestaurantAndInProgress(
             @PathVariable("restaurant-id") long restaurantId
     ) throws EntityNotFoundException, ForbiddenRestaurantAccessException {
-        return new ResponseEntity<>(orderService.findCurrentDayInProgressOrdersByRestaurant(restaurantId), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.findAllByRestaurantAndInProgress(restaurantId), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/pay/{id}")

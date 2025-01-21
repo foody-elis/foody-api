@@ -11,6 +11,5 @@ public interface CustomizedOrderRepository {
     Optional<Order> findById(long id);
     List<Order> findAllByBuyer_IdOrderByCreatedAtDesc(long buyerId);
     List<Order> findAllByRestaurant_IdOrderByCreatedAtDesc(long restaurantId);
-    List<Order> findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
-            long restaurantId, List<String> statuses, LocalDate date);
+    List<Order> findAllByRestaurant_IdAndStatusInOrderByCreatedAtDesc(long restaurantId, List<String> statuses);
 }

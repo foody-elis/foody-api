@@ -135,7 +135,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> findCurrentDayInProgressOrdersByRestaurant(long restaurantId) {
+    public List<OrderResponseDTO> findAllByRestaurantAndInProgress(long restaurantId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Restaurant restaurant = restaurantRepository
                 .findByIdAndApproved(restaurantId, true)
@@ -143,10 +143,9 @@ public class OrderServiceImpl implements OrderService {
 
         checkRestaurantAccessOrThrow(principal, restaurant);
 
-        List<Order> orders = orderRepository.findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+        List<Order> orders = orderRepository.findAllByRestaurant_IdAndStatusInOrderByCreatedAtDesc(
                 restaurantId,
-                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
-                LocalDate.now()
+                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name())
         );
 
         return orderMapper.ordersToOrderResponseDTOs(orders);
