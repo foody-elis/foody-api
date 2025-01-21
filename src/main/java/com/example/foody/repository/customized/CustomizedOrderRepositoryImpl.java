@@ -3,9 +3,12 @@ package com.example.foody.repository.customized;
 import com.example.foody.model.Order;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
+import com.example.foody.utils.enums.OrderStatus;
 import com.example.foody.utils.state.OrderStateUtils;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +59,28 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
         return entityManager
                 .createQuery("SELECT o FROM Order o WHERE o.restaurant.id = :restaurantId ORDER BY o.createdAt DESC", Order.class)
                 .setParameter("restaurantId", restaurantId)
+                .getResultList()
+                .stream()
+                .peek(this::processOrder)
+                .toList();
+    }
+
+    @Override
+    public List<Order> findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+            long restaurantId, List<String> statuses, LocalDate date
+    ) {
+        return entityManager
+                .createQuery("""
+                        SELECT o
+                        FROM Order o
+                        WHERE o.restaurant.id = :restaurantId
+                        AND o.status IN :statuses
+                        AND DATE(o.createdAt) = DATE(:date)
+                        ORDER BY o.createdAt DESC
+                        """, Order.class)
+                .setParameter("restaurantId", restaurantId)
+                .setParameter("statuses", statuses)
+                .setParameter("date", date)
                 .getResultList()
                 .stream()
                 .peek(this::processOrder)

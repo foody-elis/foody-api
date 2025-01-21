@@ -32,10 +32,12 @@ import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.EmailPlaceholder;
 import com.example.foody.utils.enums.EmailTemplateType;
 import com.example.foody.utils.enums.EventType;
+import com.example.foody.utils.enums.OrderStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +130,25 @@ public class OrderServiceImpl implements OrderService {
 
         List<Order> orders = orderRepository
                 .findAllByRestaurant_IdOrderByCreatedAtDesc(restaurantId);
+
+        return orderMapper.ordersToOrderResponseDTOs(orders);
+    }
+
+    @Override
+    public List<OrderResponseDTO> findCurrentDayInProgressOrdersByRestaurant(long restaurantId) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Restaurant restaurant = restaurantRepository
+                .findByIdAndApproved(restaurantId, true)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant", "id", restaurantId));
+
+        checkRestaurantAccessOrThrow(principal, restaurant);
+
+        List<Order> orders = orderRepository
+                .findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+                        restaurantId,
+                        List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
+                        LocalDate.now()
+                );
 
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }

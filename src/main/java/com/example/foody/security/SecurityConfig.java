@@ -115,6 +115,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/orders/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.WAITER_VALUE)
                         .requestMatchers(GET, "/api/v1/orders/buyer").access(hasSpecificRole(Role.CUSTOMER, Role.WAITER))
                         .requestMatchers(GET, "/api/v1/orders/restaurant/*").hasAnyRole(Role.Constants.RESTAURATEUR_VALUE, Role.Constants.COOK_VALUE, Role.Constants.WAITER_VALUE)
+                        .requestMatchers(GET, "/api/v1/orders/restaurant/*/in-progress").hasAnyRole(Role.Constants.RESTAURATEUR_VALUE, Role.Constants.COOK_VALUE)
                         .requestMatchers("/api/v1/orders/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/reviews").access(hasSpecificRole(Role.CUSTOMER))
