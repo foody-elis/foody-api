@@ -520,6 +520,8 @@ public class TestDataUtil {
     public static OrderDishResponseDTO createTestOrderDishResponseDTO() {
         OrderDishResponseDTO responseDTO = new OrderDishResponseDTO();
         responseDTO.setDishId(1L);
+        responseDTO.setDishName("Test Dish");
+        responseDTO.setPrice(BigDecimal.valueOf(10.0));
         responseDTO.setQuantity(2);
         return responseDTO;
     }
@@ -535,6 +537,7 @@ public class TestDataUtil {
     public static OrderResponseDTO createTestOrderResponseDTO() {
         OrderResponseDTO responseDTO = new OrderResponseDTO();
         responseDTO.setId(1L);
+        responseDTO.setCreatedAt(LocalDateTime.of(2021, 1, 1, 12, 0, 0));
         responseDTO.setTableCode("A1");
         responseDTO.setOrderDishes(List.of(createTestOrderDishResponseDTO()));
         responseDTO.setBuyer(TestDataUtil.createTestCustomerUserResponseDTO());

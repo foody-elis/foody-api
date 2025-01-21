@@ -88,7 +88,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
         when(bookingRepository.save(booking)).thenReturn(booking);
         when(bookingMapper.bookingToBookingResponseDTO(booking)).thenReturn(new BookingResponseDTO());
@@ -126,7 +127,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.empty());
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> bookingService.save(bookingRequestDTO));
@@ -143,7 +145,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
         doThrow(new RuntimeException()).when(bookingRepository).save(booking);
 
@@ -164,7 +167,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
 
         // Act & Assert
@@ -186,7 +190,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
         when(bookingRepository.save(booking)).thenReturn(booking);
         when(bookingMapper.bookingToBookingResponseDTO(booking)).thenReturn(new BookingResponseDTO());
@@ -214,7 +219,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
 
         // Act & Assert
@@ -236,7 +242,8 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
 
         // Act & Assert
@@ -254,10 +261,15 @@ public class BookingServiceImplTest {
         mockSecurityContext(customer);
 
         when(sittingTimeRepository.findById(bookingRequestDTO.getSittingTimeId())).thenReturn(Optional.of(sittingTime));
-        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true)).thenReturn(Optional.of(restaurant));
+        when(restaurantRepository.findByIdAndApproved(bookingRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.of(restaurant));
         when(bookingMapper.bookingRequestDTOToBooking(bookingRequestDTO)).thenReturn(booking);
-        when(bookingRepository.existsActiveFutureBookingByCustomer_IdAndRestaurant_IdAndDate(
-                customer.getId(), restaurant.getId(), booking.getDate())).thenReturn(true);
+        when(bookingRepository
+                .existsActiveFutureBookingByCustomer_IdAndRestaurant_IdAndDate(
+                        customer.getId(),
+                        restaurant.getId(),
+                        booking.getDate())
+        ).thenReturn(true);
 
         // Act & Assert
         assertThrows(DuplicateActiveFutureBookingException.class, () -> bookingService.save(bookingRequestDTO));

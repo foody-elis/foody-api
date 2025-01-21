@@ -143,12 +143,11 @@ public class OrderServiceImpl implements OrderService {
 
         checkRestaurantAccessOrThrow(principal, restaurant);
 
-        List<Order> orders = orderRepository
-                .findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
-                        restaurantId,
-                        List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
-                        LocalDate.now()
-                );
+        List<Order> orders = orderRepository.findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+                restaurantId,
+                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
+                LocalDate.now()
+        );
 
         return orderMapper.ordersToOrderResponseDTOs(orders);
     }

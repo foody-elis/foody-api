@@ -21,6 +21,7 @@ import com.example.foody.repository.*;
 import com.example.foody.service.EmailService;
 import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.state.order.impl.PreparingState;
+import com.example.foody.utils.enums.OrderStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,7 +174,8 @@ public class OrderServiceImplTest {
     void saveWhenRestaurantNotFoundThrowsEntityNotFoundException() {
         // Arrange
         OrderRequestDTO orderRequestDTO = TestDataUtil.createTestOrderRequestDTO();
-        when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true)).thenReturn(Optional.empty());
+        when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true))
+                .thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> orderService.save(orderRequestDTO));
@@ -561,6 +564,32 @@ public class OrderServiceImplTest {
         assertThrows(ForbiddenRestaurantAccessException.class, () -> orderService.findAllByRestaurant(restaurant.getId()));
         verify(restaurantRepository, times(1)).findByIdAndApproved(restaurant.getId(), true);
         verify(orderRepository, never()).findAllByRestaurant_IdOrderByCreatedAtDesc(restaurant.getId());
+    }
+
+    @Test
+    void findCurrentDayInProgressOrdersByRestaurantWhenUserIsCookReturnsOrderResponseDTOs() {
+        // Arrange
+        CookUser cook = TestDataUtil.createTestCookUser();
+        List<Order> orders = List.of(TestDataUtil.createTestOrder());
+        Restaurant restaurant = TestDataUtil.createTestRestaurant();
+        cook.setId(2L);
+        restaurant.setEmployees(List.of(cook));
+        mockSecurityContext(cook);
+
+        when(restaurantRepository.findByIdAndApproved(restaurant.getId(), true)).thenReturn(Optional.of(restaurant));
+        when(orderRepository.findAllByRestaurant_IdAndStatusInAndCreatedAt_DateOrderByCreatedAtDesc(
+                restaurant.getId(),
+                List.of(OrderStatus.PAID.name(), OrderStatus.PREPARING.name()),
+                LocalDate.now())
+        ).thenReturn(orders);
+        when(orderMapper.ordersToOrderResponseDTOs(orders)).thenReturn(List.of(TestDataUtil.createTestOrderResponseDTO()));
+
+        // Act
+        List<OrderResponseDTO> responseDTOs = orderService.findCurrentDayInProgressOrdersByRestaurant(restaurant.getId());
+
+        // Assert
+        assertNotNull(responseDTOs);
+        assertEquals(1, responseDTOs.size());
     }
 
     @Test

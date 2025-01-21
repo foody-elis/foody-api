@@ -45,6 +45,7 @@ public class OrderMapperImpl implements OrderMapper {
                 restaurantMapper.restaurantToRestaurantResponseDTO(order.getRestaurant())
         );
         orderResponseDTO.setId(order.getId());
+        orderResponseDTO.setCreatedAt(order.getCreatedAt());
         orderResponseDTO.setTableCode(order.getTableCode());
         if (order.getStatus() != null) {
             orderResponseDTO.setStatus(order.getStatus().name());
