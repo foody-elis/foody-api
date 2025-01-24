@@ -32,14 +32,9 @@ public class UserHelperImpl implements UserHelper {
 
     @Override
     public List<UserResponseDTO> buildUserResponseDTOs(List<? extends User> users) {
-        if (users == null) {
-            return null;
-        }
-
-        List<UserResponseDTO> list = new ArrayList<>(users.size());
-        users.forEach(user -> list.add(buildUserResponseDTO(user)));
-
-        return list;
+        return users.stream()
+                .map(this::buildUserResponseDTO)
+                .toList();
     }
 
     private String getFirebaseCustomToken(User user) {
