@@ -130,6 +130,8 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/users/*").authenticated()
                         .requestMatchers("/api/v1/users/**").hasRole(Role.Constants.ADMIN_VALUE)
 
+                        .requestMatchers("/ws").hasRole(Role.Constants.COOK_VALUE)
+
                         .anyRequest().permitAll() // todo remove?
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

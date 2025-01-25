@@ -29,15 +29,12 @@ import com.example.foody.state.order.OrderState;
 import com.example.foody.state.order.impl.CreatedState;
 import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.utils.UserRoleUtils;
-import com.example.foody.utils.enums.EmailPlaceholder;
-import com.example.foody.utils.enums.EmailTemplateType;
-import com.example.foody.utils.enums.EventType;
-import com.example.foody.utils.enums.OrderStatus;
+import com.example.foody.utils.enums.*;
 import jakarta.transaction.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +50,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final EmailService emailService;
     private final EventManager eventManager;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, EventManager eventManager) {
+    public OrderServiceImpl(OrderRepository orderRepository, RestaurantRepository restaurantRepository, BookingRepository bookingRepository, DishRepository dishRepository, OrderDishRepository orderDishRepository, OrderMapper orderMapper, EmailService emailService, EventManager eventManager, SimpMessagingTemplate messagingTemplate) {
         this.orderRepository = orderRepository;
         this.restaurantRepository = restaurantRepository;
         this.bookingRepository = bookingRepository;
@@ -63,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderMapper = orderMapper;
         this.emailService = emailService;
         this.eventManager = eventManager;
+        this.messagingTemplate = messagingTemplate;
     }
 
 
@@ -91,7 +90,13 @@ public class OrderServiceImpl implements OrderService {
 
         notifyOrderCreatedListeners(order);
 
-        return orderMapper.orderToOrderResponseDTO(order);
+        OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
+
+        if (order.getStatus() == OrderStatus.PAID) {
+            messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+        }
+
+        return orderResponseDTO;
     }
 
     @Override
@@ -171,7 +176,11 @@ public class OrderServiceImpl implements OrderService {
 
         sendPaymentReceivedEmail(order);
 
-        return orderMapper.orderToOrderResponseDTO(order);
+        OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
+
+        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+
+        return orderResponseDTO;
     }
 
     @Override
@@ -192,7 +201,12 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityEditException("order", "id", id);
         }
 
-        return orderMapper.orderToOrderResponseDTO(order);
+        OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
+
+        System.out.println("send prepare order to websocket");
+        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PREPARING.getName() + order.getRestaurant().getId(), orderResponseDTO);
+
+        return orderResponseDTO;
     }
 
     @Override
@@ -215,7 +229,11 @@ public class OrderServiceImpl implements OrderService {
 
         notifyOrderCompletedListeners(order);
 
-        return orderMapper.orderToOrderResponseDTO(order);
+        OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
+
+        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_COMPLETED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+
+        return orderResponseDTO;
     }
 
     @Override
@@ -266,7 +284,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkIsWaiterOfRestaurant(User user, Order order) {
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId()))
+            return;
 
         throw new ForbiddenOrderAccessException();
     }
@@ -282,13 +301,15 @@ public class OrderServiceImpl implements OrderService {
             - start <= order time <= end
      */
     private void checkActiveBookingOrThrow(Order order) {
-        if (bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId())) return;
+        if (bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId()))
+            return;
 
         throw new OrderNotAllowedException(order.getRestaurant().getId(), "there are no active bookings for the buyer");
     }
 
     private void checkDishesBelongToRestaurantOrThrow(Order order) {
-        if (order.getOrderDishes().stream().allMatch(orderDish -> orderDish.getDish().getRestaurant().getId() == order.getRestaurant().getId())) return;
+        if (order.getOrderDishes().stream().allMatch(orderDish -> orderDish.getDish().getRestaurant().getId() == order.getRestaurant().getId()))
+            return;
 
         throw new OrderNotAllowedException(order.getRestaurant().getId(), "some dishes do not belong to the restaurant");
     }
@@ -297,7 +318,8 @@ public class OrderServiceImpl implements OrderService {
         if (!UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isBuyer(user)) return;
         if (order.getBuyer().getId() == user.getId()) return;
         if (order.getRestaurant().getRestaurateur().getId() == user.getId()) return;
-        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId())) return;
+        if (order.getRestaurant().getEmployees().stream().anyMatch(employeeUser -> employeeUser.getId() == user.getId()))
+            return;
 
         throw new ForbiddenOrderAccessException();
     }
