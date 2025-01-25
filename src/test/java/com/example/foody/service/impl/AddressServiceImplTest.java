@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AddressServiceImplTest {
+
     @InjectMocks
     private AddressServiceImpl addressService;
 
