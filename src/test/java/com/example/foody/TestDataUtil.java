@@ -350,6 +350,23 @@ public class TestDataUtil {
         return responseDTO;
     }
 
+    public static UserUpdateRequestDTO createTestUserUpdateRequestDTO() {
+        UserUpdateRequestDTO requestDTO = new UserUpdateRequestDTO();
+        requestDTO.setName("User");
+        requestDTO.setSurname("Test");
+        requestDTO.setBirthDate(LocalDate.of(2000, 1, 1));
+        requestDTO.setPhoneNumber("0123456789");
+        requestDTO.setAvatarBase64("aW1hZ2U6Ly9leGFtcGxlLmNvbS9hdmF0YXItYmFzZTY0LmpwZw==");
+        return requestDTO;
+    }
+
+    public static UserChangePasswordRequestDTO createTestUserChangePasswordRequestDTO() {
+        UserChangePasswordRequestDTO requestDTO = new UserChangePasswordRequestDTO();
+        requestDTO.setCurrentPassword("password");
+        requestDTO.setNewPassword("new-password");
+        return requestDTO;
+    }
+
     public static RestaurantRequestDTO createTestRestaurantRequestDTO() {
         RestaurantRequestDTO requestDTO = new RestaurantRequestDTO();
         requestDTO.setName("Test Restaurant");
@@ -572,12 +589,9 @@ public class TestDataUtil {
         return responseDTO;
     }
 
-    public static String toJson(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error while converting object to JSON", e);
-        }
+    public static TokenResponseDTO createTestTokenResponseDTO() {
+        TokenResponseDTO responseDTO = new TokenResponseDTO();
+        responseDTO.setAccessToken("access-token");
+        return responseDTO;
     }
 }
