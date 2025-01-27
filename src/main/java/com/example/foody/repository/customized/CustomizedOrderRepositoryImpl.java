@@ -3,12 +3,9 @@ package com.example.foody.repository.customized;
 import com.example.foody.model.Order;
 import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
-import com.example.foody.utils.enums.OrderStatus;
 import com.example.foody.utils.state.OrderStateUtils;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

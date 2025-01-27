@@ -64,7 +64,6 @@ public class OrderServiceImpl implements OrderService {
         this.messagingTemplate = messagingTemplate;
     }
 
-
     @Override
     public OrderResponseDTO save(OrderRequestDTO orderDTO) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -93,7 +92,10 @@ public class OrderServiceImpl implements OrderService {
         OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
 
         if (order.getStatus() == OrderStatus.PAID) {
-            messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+            messagingTemplate.convertAndSend(
+                    WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(),
+                    orderResponseDTO
+            );
         }
 
         return orderResponseDTO;
@@ -178,7 +180,10 @@ public class OrderServiceImpl implements OrderService {
 
         OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
 
-        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+        messagingTemplate.convertAndSend(
+                WebSocketTopics.TOPIC_ORDERS_PAYED.getName() + order.getRestaurant().getId(),
+                orderResponseDTO
+        );
 
         return orderResponseDTO;
     }
@@ -203,8 +208,10 @@ public class OrderServiceImpl implements OrderService {
 
         OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
 
-        System.out.println("send prepare order to websocket");
-        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_PREPARING.getName() + order.getRestaurant().getId(), orderResponseDTO);
+        messagingTemplate.convertAndSend(
+                WebSocketTopics.TOPIC_ORDERS_PREPARING.getName() + order.getRestaurant().getId(),
+                orderResponseDTO
+        );
 
         return orderResponseDTO;
     }
@@ -231,7 +238,10 @@ public class OrderServiceImpl implements OrderService {
 
         OrderResponseDTO orderResponseDTO = orderMapper.orderToOrderResponseDTO(order);
 
-        messagingTemplate.convertAndSend(WebSocketTopics.TOPIC_ORDERS_COMPLETED.getName() + order.getRestaurant().getId(), orderResponseDTO);
+        messagingTemplate.convertAndSend(
+                WebSocketTopics.TOPIC_ORDERS_COMPLETED.getName() + order.getRestaurant().getId(),
+                orderResponseDTO
+        );
 
         return orderResponseDTO;
     }

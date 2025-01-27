@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,17 +20,8 @@ public class CreditCard extends DefaultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "number", length = 16, nullable = false)
-    private String number;
-
-    @Column(name = "holder_name", length = 100, nullable = false)
-    private String holderName;
-
-    @Column(name = "cvv", length = 3, nullable = false)
-    private String cvv;
-
-    @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
+    @Column(name = "token", columnDefinition = "TEXT", unique = true)
+    private String token;
 
     @OneToOne(mappedBy = "creditCard")
     private CustomerUser customer;

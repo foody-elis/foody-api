@@ -257,7 +257,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 variables
         );
     }
-
-    // todo implement the refresh token mechanism
-    // todo implement the logout mechanism
 }

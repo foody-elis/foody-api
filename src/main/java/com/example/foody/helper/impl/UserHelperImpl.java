@@ -9,7 +9,6 @@ import com.example.foody.repository.UserRepository;
 import com.example.foody.service.FirebaseService;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

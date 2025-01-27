@@ -2,10 +2,14 @@ package com.example.foody.observer.manager;
 
 import com.example.foody.observer.listener.EventListener;
 import com.example.foody.utils.enums.EventType;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Getter
+@Setter
 @Component
 public class EventManager {
     private final Map<EventType, List<EventListener<?>>> listeners = new EnumMap<>(EventType.class);

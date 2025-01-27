@@ -13,8 +13,6 @@ import com.example.foody.utils.enums.BookingStatus;
 import com.example.foody.utils.enums.OrderStatus;
 import com.example.foody.utils.enums.Role;
 import com.example.foody.utils.enums.SittingTimeStep;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
