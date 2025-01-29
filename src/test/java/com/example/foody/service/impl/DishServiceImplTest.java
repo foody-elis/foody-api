@@ -4,6 +4,7 @@ import com.example.foody.TestDataUtil;
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
 import com.example.foody.dto.response.DishResponseDTO;
+import com.example.foody.exceptions.dish.ForbiddenDishAccessException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
@@ -320,7 +321,7 @@ public class DishServiceImplTest {
         when(dishRepository.findById(dish.getId())).thenReturn(Optional.of(dish));
 
         // Act & Assert
-        assertThrows(ForbiddenRestaurantAccessException.class, () -> dishService.update(dish.getId(), updateRequestDTO));
+        assertThrows(ForbiddenDishAccessException.class, () -> dishService.update(dish.getId(), updateRequestDTO));
         verify(dishRepository, never()).save(any(Dish.class));
     }
 
