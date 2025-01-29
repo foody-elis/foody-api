@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface DishService {
     DishResponseDTO save(DishRequestDTO dishDTO);
+
     List<DishResponseDTO> findAll();
+
     DishResponseDTO findById(long id);
+
     List<DishResponseDTO> findAllByRestaurant(long restaurantId);
+
     DishResponseDTO update(long id, DishUpdateRequestDTO dishDTO);
+
     boolean remove(long id);
 }

@@ -9,8 +9,12 @@ import java.util.List;
 
 public interface CategoryService {
     CategoryResponseDTO save(CategoryRequestDTO categoryDTO);
+
     List<CategoryResponseDTO> findAll();
+
     CategoryResponseDTO findById(long id);
+
     Category addRestaurant(long id, Restaurant restaurant);
+
     boolean remove(long id);
 }

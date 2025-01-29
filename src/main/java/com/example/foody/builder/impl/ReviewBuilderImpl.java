@@ -7,8 +7,12 @@ import com.example.foody.model.Review;
 import com.example.foody.model.user.CustomerUser;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link ReviewBuilder} interface.
+ */
 @Component
 public class ReviewBuilderImpl implements ReviewBuilder {
+
     private long id;
     private String title;
     private String description;

@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
+/**
+ * Data Transfer Object for week day information update requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +24,7 @@ import java.time.LocalTime;
 })
 @SequentialTimes(fields = {"startLaunch", "endLaunch", "startDinner", "endDinner"}, message = "end time must be after start time")
 public class WeekDayInfoUpdateRequestDTO {
+
     @JsonFormat(pattern = "HH:mm")
     private LocalTime startLaunch;
 

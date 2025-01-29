@@ -9,10 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for user update requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserUpdateRequestDTO {
+
     @NotBlank(message = "name cannot be blank")
     @Size(min = 1, max = 30, message = "name cannot be less than 1 character or more than 30 characters long")
     private String name;
@@ -21,9 +25,14 @@ public class UserUpdateRequestDTO {
     @Size(min = 1, max = 30, message = "surname cannot be less than 1 character or more than 30 characters long")
     private String surname;
 
+    /**
+     * The birth date of the user.
+     * <p>
+     * Must be a past date.
+     */
     @NotNull(message = "birthDate cannot be null")
     @Past(message = "birthDate cannot be in the future")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotBlank(message = "phoneNumber cannot be blank")

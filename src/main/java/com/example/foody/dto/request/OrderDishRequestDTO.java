@@ -7,10 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for order dish requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDishRequestDTO {
+
     @NotNull(message = "dishId cannot be null")
     @Positive(message = "dishId cannot be a negative number or zero")
     private Long dishId;

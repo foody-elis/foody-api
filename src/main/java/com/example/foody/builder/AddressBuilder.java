@@ -3,6 +3,9 @@ package com.example.foody.builder;
 import com.example.foody.model.Address;
 import com.example.foody.model.Restaurant;
 
+/**
+ * Interface for building {@link Address} objects.
+ */
 public interface AddressBuilder {
     AddressBuilder id(long id);
     AddressBuilder city(String city);

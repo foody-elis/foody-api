@@ -8,8 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link CategoryBuilder} interface.
+ */
 @Component
 public class CategoryBuilderImpl implements CategoryBuilder {
+
     private long id;
     private String name;
     private List<Restaurant> restaurants = new ArrayList<>();

@@ -15,7 +15,10 @@ public abstract class OrderState {
     }
 
     public abstract void create(Order order);
+
     public abstract void pay(Order order);
+
     public abstract void prepare(Order order);
+
     public abstract void complete(Order order);
 }

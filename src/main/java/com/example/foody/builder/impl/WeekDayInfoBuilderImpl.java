@@ -11,8 +11,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link WeekDayInfoBuilder} interface.
+ */
 @Component
 public class WeekDayInfoBuilderImpl implements WeekDayInfoBuilder {
+
     private long id;
     private int weekDay;
     private LocalTime startLaunch;
@@ -22,7 +26,6 @@ public class WeekDayInfoBuilderImpl implements WeekDayInfoBuilder {
     private SittingTimeStep sittingTimeStep;
     private Restaurant restaurant;
     private List<SittingTime> sittingTimes = new ArrayList<>();
-
 
     @Override
     public WeekDayInfoBuilder id(long id) {

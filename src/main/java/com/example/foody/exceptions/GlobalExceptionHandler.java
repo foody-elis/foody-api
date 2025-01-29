@@ -44,33 +44,93 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Global exception handler for the application.
+ * <p>
+ * This class handles various exceptions and maps them to appropriate HTTP responses.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * Handles {@link MethodArgumentNotValidException} and returns a {@link ResponseEntity} with a BAD_REQUEST status.
+     *
+     * @param exception  the {@link MethodArgumentNotValidException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the validation error
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDTO> handleValidationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
+    public ResponseEntity<ErrorDTO> handleValidationException(
+            MethodArgumentNotValidException exception,
+            WebRequest webRequest
+    ) {
         Map<String, Object> errorMap = collectErrors(exception);
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, errorMap, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.BAD_REQUEST,
+                errorMap,
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
     }
 
+    /**
+     * Handles {@link ConstraintViolationException} and returns a {@link ResponseEntity} with a BAD_REQUEST status.
+     *
+     * @param exception  the {@link ConstraintViolationException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the constraint violation
+     */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorDTO> handleConstraintViolationException(ConstraintViolationException exception, WebRequest webRequest) {
+    public ResponseEntity<ErrorDTO> handleConstraintViolationException(
+            ConstraintViolationException exception,
+            WebRequest webRequest
+    ) {
         String message = exception.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .findFirst()
                 .orElse("Constraint violation");
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, message, ((ServletWebRequest) webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.BAD_REQUEST,
+                message,
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
     }
 
-    // InvalidFormatException is thrown by Jackson when it cannot deserialize a value to a specific type (@JsonFormat pattern is not respected)
+    /**
+     * Handles {@link InvalidFormatException} and returns a {@link ResponseEntity} with a BAD_REQUEST status.
+     * <p>
+     * {@link InvalidFormatException} is thrown by Jackson when it cannot deserialize a value to a specific type (e.g. @JsonFormat is violated).
+     *
+     * @param exception  the {@link InvalidFormatException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the invalid format
+     */
     @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity<ErrorDTO> handleInvalidFormatException(InvalidFormatException exception, WebRequest webRequest) {
-        String message = String.format("Invalid value '%s' for %s field.", exception.getValue(), exception.getPath().getFirst().getFieldName());
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, message, ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorDTO> handleInvalidFormatException(
+            InvalidFormatException exception,
+            WebRequest webRequest
+    ) {
+        String message = String.format(
+                "Invalid value '%s' for %s field.",
+                exception.getValue(),
+                exception.getPath().getFirst().getFieldName()
+        );
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.BAD_REQUEST,
+                message,
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
     }
 
+    /**
+     * Handles various exceptions related to bad requests and returns a {@link ResponseEntity} with a BAD_REQUEST status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the bad request error
+     */
     @ExceptionHandler({
             InvalidWeekDayException.class,
             SittingTimeOverlappingException.class,
@@ -83,20 +143,48 @@ public class GlobalExceptionHandler {
             InvalidOrderStateException.class,
             ReviewNotAllowedException.class
     })
-    public ResponseEntity<ErrorDTO> handleBadRequestException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorDTO> handleBadRequestException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
     }
 
+    /**
+     * Handles unauthorized exceptions and returns a {@link ResponseEntity} with an UNAUTHORIZED status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the unauthorized error
+     */
     @ExceptionHandler({
             InvalidCredentialsException.class,
             InvalidPasswordException.class
     })
-    public ResponseEntity<ErrorDTO> handleUnauthorizedException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.UNAUTHORIZED, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorDTO> handleUnauthorizedException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDTO);
     }
 
+    /**
+     * Handles forbidden exceptions and returns a {@link ResponseEntity} with a FORBIDDEN status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the forbidden error
+     */
     @ExceptionHandler({
             AccessDeniedException.class,
             AuthenticationException.class,
@@ -106,38 +194,94 @@ public class GlobalExceptionHandler {
             ForbiddenOrderAccessException.class,
             ForbiddenReviewAccessException.class
     })
-    public ResponseEntity<ErrorDTO> handleForbiddenException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.FORBIDDEN, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorDTO> handleForbiddenException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.FORBIDDEN,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDTO);
     }
 
+    /**
+     * Handles not found exceptions and returns a {@link ResponseEntity} with a NOT_FOUND status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the not found error
+     */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleNotFoundException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.NOT_FOUND, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorDTO> handleNotFoundException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDTO);
     }
 
+    /**
+     * Handles conflict exceptions and returns a {@link ResponseEntity} with a CONFLICT status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the conflict error
+     */
     @ExceptionHandler({
             EntityDuplicateException.class,
             RestaurateurAlreadyHasRestaurantException.class,
             DuplicateActiveFutureBookingException.class
     })
-    public ResponseEntity<ErrorDTO> handleConflictException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.CONFLICT, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorDTO> handleConflictException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDTO);
     }
 
+    /**
+     * Handles internal server error exceptions and returns a {@link ResponseEntity} with an INTERNAL_SERVER_ERROR status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the internal server error
+     */
     @ExceptionHandler({
             MalformedJwtException.class,
             ExpiredJwtException.class,
             UnsupportedJwtException.class,
             SignatureException.class
     })
-    public ResponseEntity<ErrorDTO> handleInvalidTokenException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(CustomHttpStatus.INVALID_TOKEN, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
+    public ResponseEntity<ErrorDTO> handleInvalidTokenException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                CustomHttpStatus.INVALID_TOKEN,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
         return ResponseEntity.status(CustomHttpStatus.INVALID_TOKEN.getValue()).body(errorDTO);
     }
 
+    /**
+     * Handles bad gateway exceptions and returns a {@link ResponseEntity} with a BAD_GATEWAY status.
+     *
+     * @param exception  the {@link RuntimeException} thrown
+     * @param webRequest the current web request
+     * @return a {@link ResponseEntity} containing an {@link ErrorDTO} with details of the bad gateway error
+     */
     @ExceptionHandler({
             EntityCreationException.class,
             EntityEditException.class,
@@ -147,28 +291,47 @@ public class GlobalExceptionHandler {
             EmailSendingException.class,
             FirebaseCustomTokenCreationException.class
     })
-    public ResponseEntity<ErrorDTO> handleBadGatewayException(RuntimeException exception, WebRequest webRequest) {
-        ErrorDTO errorDTO = buildErrorDTO(HttpStatus.BAD_GATEWAY, exception.getMessage(), ((ServletWebRequest)webRequest).getRequest().getRequestURI());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_GATEWAY);
+    public ResponseEntity<ErrorDTO> handleBadGatewayException(
+            RuntimeException exception,
+            WebRequest webRequest
+    ) {
+        ErrorDTO errorDTO = buildErrorDTO(
+                HttpStatus.BAD_GATEWAY,
+                exception.getMessage(),
+                ((ServletWebRequest) webRequest).getRequest().getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorDTO);
     }
 
-    /*
-    Collects validation errors from a MethodArgumentNotValidException and returns a map with the object name as key and the error message/s as value.
-    It manages:
-    - single error messages, {objectName: errorMessage}
-    - multiple error messages, {objectName: [errorMessage1, errorMessage2, ...]}
+    /**
+     * Collects validation errors from a {@link MethodArgumentNotValidException} and returns a map with the object name as key and the error message(s) as value.
+     * <p>
+     * It manages:
+     * <li>single error messages, {objectName: errorMessage}</li>
+     * <li>multiple error messages, {objectName: [errorMessage1, errorMessage2, ...]}</li>
+     *
+     * @param exception the {@link MethodArgumentNotValidException} containing validation errors
+     * @return a {@link Map} where the keys are the field names or object names and the values are the corresponding error messages
      */
     private Map<String, Object> collectErrors(MethodArgumentNotValidException exception) {
-        // getAllErrors() returns all errors, both global and field errors
         return exception.getBindingResult().getAllErrors().stream()
                 .collect(Collectors.toMap(
                         this::getErrorKey,
                         this::getErrorMessage,
-                        this::mergeErrors // Merge function to handle conflicts
+                        this::mergeErrors
                 ));
     }
 
-    // Returns the key for the error map, it is the field name if the error is a FieldError, otherwise it is the object name (if the error is a ObjectError)
+    /**
+     * Retrieves the key for the given {@link ObjectError}.
+     * <p>
+     * If the error is a {@link FieldError}, the key will be the field name.
+     * <p>
+     * Otherwise, the key will be the object name.
+     *
+     * @param error the {@link ObjectError} to retrieve the key from
+     * @return the key as a {@link String}, which is either the field name or the object name
+     */
     private String getErrorKey(ObjectError error) {
         if (error instanceof FieldError) {
             return ((FieldError) error).getField();
@@ -177,15 +340,31 @@ public class GlobalExceptionHandler {
         }
     }
 
-    // Returns the error message from the ObjectError, it manage getDefaultMessage() returning null
+    /**
+     * Retrieves the error message for the given {@link ObjectError}.
+     * <p>
+     * If the error has a default message, it will be returned.
+     * <p>
+     * Otherwise, "unknown error" will be returned.
+     *
+     * @param error the {@link ObjectError} to retrieve the error message from
+     * @return the error message as a {@link String}
+     */
     private String getErrorMessage(ObjectError error) {
         String defaultMessage = error.getDefaultMessage();
         return defaultMessage != null ? defaultMessage : "unknown error";
     }
 
-    /*
-    Handles conflicts when there are several errors for the same object when collecting validation errors.
-    Returns the new value associated with the specified key.
+    /**
+     * Merges two error messages into a single {@link List} of error messages.
+     * <p>
+     * If the existing error is a {@link String}, it will be converted to a {@link List} containing the existing error and the replacement error.
+     * <p>
+     * If the existing error is a {@link List}, the replacement error will be added to the existing list.
+     *
+     * @param existing    the existing error message
+     * @param replacement the replacement error message
+     * @return the merged error message
      */
     private Object mergeErrors(Object existing, Object replacement) {
         if (existing instanceof String) {
@@ -201,11 +380,33 @@ public class GlobalExceptionHandler {
         return replacement;
     }
 
+    /**
+     * Builds an {@link ErrorDTO} object with the given HTTP status, message, and request path.
+     *
+     * @param httpStatus the {@link HttpStatus} to set in the {@link ErrorDTO}
+     * @param message    the error message or details to include in the {@link ErrorDTO}
+     * @param path       the request URI path where the error occurred
+     * @return an {@link ErrorDTO} containing the provided details
+     */
     private ErrorDTO buildErrorDTO(HttpStatus httpStatus, Object message, String path) {
-        return new ErrorDTO(LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), message, path);
+        return new ErrorDTO(
+                LocalDateTime.now(), httpStatus.value(),
+                httpStatus.getReasonPhrase(), message, path
+        );
     }
 
+    /**
+     * Builds an {@link ErrorDTO} object with the given custom HTTP status, message, and request path.
+     *
+     * @param httpStatus the {@link CustomHttpStatus} to set in the {@link ErrorDTO}
+     * @param message    the error message or details to include in the {@link ErrorDTO}
+     * @param path       the request URI path where the error occurred
+     * @return an {@link ErrorDTO} containing the provided details
+     */
     private ErrorDTO buildErrorDTO(CustomHttpStatus httpStatus, Object message, String path) {
-        return new ErrorDTO(LocalDateTime.now(), httpStatus.getValue(), httpStatus.getReason(), message, path);
+        return new ErrorDTO(
+                LocalDateTime.now(), httpStatus.getValue(),
+                httpStatus.getReason(), message, path
+        );
     }
 }

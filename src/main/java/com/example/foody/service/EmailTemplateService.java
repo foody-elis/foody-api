@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface EmailTemplateService {
     String prepareEmailContent(EmailTemplateType emailTemplateType, Map<EmailPlaceholder, Object> variables);
+
     String extractSubject(String templateContent);
+
     String extractBody(String templateContent);
 }

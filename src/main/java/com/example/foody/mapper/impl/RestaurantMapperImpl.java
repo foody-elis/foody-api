@@ -12,12 +12,20 @@ import com.example.foody.mapper.ReviewMapper;
 import com.example.foody.mapper.SittingTimeMapper;
 import com.example.foody.model.*;
 import com.example.foody.model.user.RestaurateurUser;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Implementation of the {@link RestaurantMapper} interface.
+ * <p>
+ * Provides methods to convert between {@link Restaurant} entities and DTOs.
+ */
 @Component
+@AllArgsConstructor
 public class RestaurantMapperImpl implements RestaurantMapper {
+
     private final RestaurantBuilder restaurantBuilder;
     private final AddressBuilder addressBuilder;
     private final CategoryMapper categoryMapper;
@@ -25,15 +33,14 @@ public class RestaurantMapperImpl implements RestaurantMapper {
     private final ReviewMapper reviewMapper;
     private final DishHelper dishHelper;
 
-    public RestaurantMapperImpl(RestaurantBuilder restaurantBuilder, AddressBuilder addressBuilder, CategoryMapper categoryMapper, SittingTimeMapper sittingTimeMapper, ReviewMapper reviewMapper, DishHelper dishHelper) {
-        this.restaurantBuilder = restaurantBuilder;
-        this.addressBuilder = addressBuilder;
-        this.categoryMapper = categoryMapper;
-        this.sittingTimeMapper = sittingTimeMapper;
-        this.reviewMapper = reviewMapper;
-        this.dishHelper = dishHelper;
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Converts a {@link Restaurant} entity to a {@link RestaurantResponseDTO}.
+     *
+     * @param restaurant the Restaurant entity to convert
+     * @return the converted RestaurantResponseDTO
+     */
     @Override
     public RestaurantResponseDTO restaurantToRestaurantResponseDTO(Restaurant restaurant) {
         if (restaurant == null) {
@@ -46,8 +53,26 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return restaurantResponseDTO;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Converts a {@link Restaurant} entity to a {@link DetailedRestaurantResponseDTO}.
+     *
+     * @param restaurant    the Restaurant entity to convert
+     * @param averageRating the average rating of the restaurant
+     * @param sittingTimes  the list of sitting times for the restaurant
+     * @param dishes        the list of dishes offered by the restaurant
+     * @param reviews       the list of reviews for the restaurant
+     * @return the converted DetailedRestaurantResponseDTO
+     */
     @Override
-    public DetailedRestaurantResponseDTO restaurantToDetailedRestaurantResponseDTO(Restaurant restaurant, double averageRating, List<SittingTime> sittingTimes, List<Dish> dishes, List<Review> reviews) {
+    public DetailedRestaurantResponseDTO restaurantToDetailedRestaurantResponseDTO(
+            Restaurant restaurant,
+            double averageRating,
+            List<SittingTime> sittingTimes,
+            List<Dish> dishes,
+            List<Review> reviews
+    ) {
         if (restaurant == null) {
             return null;
         }
@@ -69,6 +94,14 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return detailedRestaurantResponseDTO;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Converts a {@link RestaurantRequestDTO} to a {@link Restaurant} entity.
+     *
+     * @param restaurantRequestDTO the RestaurantRequestDTO to convert
+     * @return the converted Restaurant entity
+     */
     @Override
     public Restaurant restaurantRequestDTOToRestaurant(RestaurantRequestDTO restaurantRequestDTO) {
         if (restaurantRequestDTO == null) {
@@ -92,6 +125,14 @@ public class RestaurantMapperImpl implements RestaurantMapper {
                 .build();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Updates a {@link Restaurant} entity from a {@link RestaurantRequestDTO}.
+     *
+     * @param restaurant           the Restaurant entity to update
+     * @param restaurantRequestDTO the RestaurantRequestDTO with updated information
+     */
     @Override
     public void updateRestaurantFromRestaurantRequestDTO(Restaurant restaurant, RestaurantRequestDTO restaurantRequestDTO) {
         if (restaurantRequestDTO == null || restaurant == null) {
@@ -113,6 +154,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         }
     }
 
+    /**
+     * Maps common fields from a {@link Restaurant} entity to a {@link RestaurantResponseDTO}.
+     *
+     * @param restaurant            the Restaurant entity
+     * @param restaurantResponseDTO the RestaurantResponseDTO to populate
+     */
     private void mapCommonFields(Restaurant restaurant, RestaurantResponseDTO restaurantResponseDTO) {
         restaurantResponseDTO.setId(restaurant.getId());
         restaurantResponseDTO.setName(restaurant.getName());
@@ -133,6 +180,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         restaurantResponseDTO.setPostalCode(restaurantAddressPostalCode(restaurant));
     }
 
+    /**
+     * Retrieves the restaurateur ID from a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the restaurateur ID, or null if not available
+     */
     private Long restaurantRestaurateurId(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -144,6 +197,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return restaurateur.getId();
     }
 
+    /**
+     * Retrieves the restaurateur email from a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the restaurateur email, or null if not available
+     */
     private String restaurantRestaurateurEmail(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -155,6 +214,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return restaurateur.getEmail();
     }
 
+    /**
+     * Retrieves the city from the address of a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the city, or null if not available
+     */
     private String restaurantAddressCity(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -166,6 +231,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return address.getCity();
     }
 
+    /**
+     * Retrieves the province from the address of a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the province, or null if not available
+     */
     private String restaurantAddressProvince(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -177,6 +248,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return address.getProvince();
     }
 
+    /**
+     * Retrieves the street from the address of a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the street, or null if not available
+     */
     private String restaurantAddressStreet(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -188,6 +265,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return address.getStreet();
     }
 
+    /**
+     * Retrieves the civic number from the address of a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the civic number, or null if not available
+     */
     private String restaurantAddressCivicNumber(Restaurant restaurant) {
         if (restaurant == null) {
             return null;
@@ -199,6 +282,12 @@ public class RestaurantMapperImpl implements RestaurantMapper {
         return address.getCivicNumber();
     }
 
+    /**
+     * Retrieves the postal code from the address of a {@link Restaurant} entity.
+     *
+     * @param restaurant the Restaurant entity
+     * @return the postal code, or null if not available
+     */
     private String restaurantAddressPostalCode(Restaurant restaurant) {
         if (restaurant == null) {
             return null;

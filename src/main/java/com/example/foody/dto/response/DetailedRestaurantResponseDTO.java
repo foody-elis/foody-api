@@ -10,17 +10,36 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Transfer Object for detailed restaurant response.
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailedRestaurantResponseDTO extends RestaurantResponseDTO {
+
     @JsonSerialize(using = RoundedDoubleSerializer.class)
     private double averageRating;
-    private List<SittingTimeResponseDTO> sittingTimes = new ArrayList<>(); // First 3 order by start time after now
-    private List<DishResponseDTO> dishes = new ArrayList<>(); // First 5 order by average rating
-    private List<ReviewResponseDTO> reviews = new ArrayList<>(); // First 10 order by date
 
+    /**
+     * List of sitting times, first SITTING_TIMES_LIMIT ordered by start time after now.
+     */
+    private List<SittingTimeResponseDTO> sittingTimes = new ArrayList<>();
+
+    /**
+     * List of dishes, first DISHES_LIMIT ordered by average rating.
+     */
+    private List<DishResponseDTO> dishes = new ArrayList<>();
+
+    /**
+     * List of reviews, first REVIEWS_LIMIT ordered by date.
+     */
+    private List<ReviewResponseDTO> reviews = new ArrayList<>();
+
+    /**
+     * Query result limits for sitting times, dishes, and reviews.
+     */
     public static class QueryResultLimits {
         public static final int SITTING_TIMES_LIMIT = 3;
         public static final int DISHES_LIMIT = 5;

@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Data Transfer Object for order dish response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

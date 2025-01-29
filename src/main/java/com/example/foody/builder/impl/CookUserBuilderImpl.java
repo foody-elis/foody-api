@@ -5,6 +5,9 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.CookUser;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link CookUserBuilder} interface.
+ */
 @Component
 public class CookUserBuilderImpl extends UserBuilderImpl<CookUser> implements CookUserBuilder {
     private Restaurant employerRestaurant;
@@ -15,6 +18,11 @@ public class CookUserBuilderImpl extends UserBuilderImpl<CookUser> implements Co
         return this;
     }
 
+    /**
+     * Builds and returns the {@link CookUser} object.
+     *
+     * @return the built {@link CookUser} object
+     */
     @Override
     public CookUser build() {
         return new CookUser(

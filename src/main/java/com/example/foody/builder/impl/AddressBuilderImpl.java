@@ -5,8 +5,12 @@ import com.example.foody.model.Address;
 import com.example.foody.model.Restaurant;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link AddressBuilder} interface.
+ */
 @Component
 public class AddressBuilderImpl implements AddressBuilder {
+
     private long id;
     private String city;
     private String province;

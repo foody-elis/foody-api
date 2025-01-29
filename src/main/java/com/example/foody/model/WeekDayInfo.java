@@ -14,6 +14,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the information for a specific day of the week for a restaurant.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +32,7 @@ import java.util.List;
 )
 @SQLRestriction("deleted_at IS NULL")
 public class WeekDayInfo extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -59,6 +65,11 @@ public class WeekDayInfo extends DefaultEntity {
     @OneToMany(mappedBy = "weekDayInfo", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<SittingTime> sittingTimes = new ArrayList<>();
 
+    /**
+     * Marks the WeekDayInfo as deleted by setting the deletedAt timestamp to the current time.
+     * <p>
+     * Also marks all associated sitting times as deleted.
+     */
     @Override
     public void delete() {
         super.delete();

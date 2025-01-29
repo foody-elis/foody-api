@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for user response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDTO {
+
     private long id;
     private String email;
     private String name;

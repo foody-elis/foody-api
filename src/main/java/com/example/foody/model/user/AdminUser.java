@@ -9,13 +9,31 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Represents an admin user in the system.
+ * <p>
+ * Extends the {@link User} class and inherits its properties and methods.
+ */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue(Role.Constants.ADMIN_VALUE)
 public class AdminUser extends User {
-    public AdminUser(long id, String email, String password, String name, String surname, LocalDate birthDate, String phoneNumber, String avatar, Role role, boolean active, String firebaseCustomToken) {
+
+    public AdminUser(
+            long id,
+            String email,
+            String password,
+            String name,
+            String surname,
+            LocalDate birthDate,
+            String phoneNumber,
+            String avatar,
+            Role role,
+            boolean active,
+            String firebaseCustomToken
+    ) {
         super(id, email, password, name, surname, birthDate, phoneNumber, avatar, role, active, firebaseCustomToken);
     }
 }

@@ -14,14 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a restaurant entity in the system.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "restaurants")
 @SQLRestriction("deleted_at IS NULL")
 public class Restaurant extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
@@ -31,9 +37,6 @@ public class Restaurant extends DefaultEntity {
 
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     protected String description;
-
-    @Column(name = "photo_url")
-    private String photoUrl;
 
     @Column(name = "phone_number", length = 16, nullable = false)
     protected String phoneNumber;
@@ -59,7 +62,9 @@ public class Restaurant extends DefaultEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     protected List<Review> reviews = new ArrayList<>();
 
-    // This is a OneToSeven relationship, a record for each day of the week
+    /**
+     * One-to-seven relationship with {@link WeekDayInfo}, one for each day of the week.
+     */
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     protected List<WeekDayInfo> weekDayInfos = new ArrayList<>();
 
@@ -80,12 +85,23 @@ public class Restaurant extends DefaultEntity {
     @OneToMany(mappedBy = "employerRestaurant", cascade = CascadeType.REMOVE, orphanRemoval = true)
     protected List<EmployeeUser> employees = new ArrayList<>();
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
+    /**
+     * Marks the restaurant as deleted by setting the deletedAt timestamp to the current time.
+     * <p>
+     * Also marks all associated entities as deleted.
+     */
     @Override
     public void delete() {
         super.delete();
         deleteChildren();
     }
 
+    /**
+     * Marks all child entities of the restaurant as deleted.
+     */
     private void deleteChildren() {
         this.dishes.forEach(Dish::delete);
         this.reviews.forEach(Review::delete);

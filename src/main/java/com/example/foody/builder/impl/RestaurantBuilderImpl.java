@@ -9,8 +9,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link RestaurantBuilder} interface.
+ */
 @Component
 public class RestaurantBuilderImpl implements RestaurantBuilder {
+
     private long id;
     private String name;
     private String description;
@@ -130,7 +134,6 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 id,
                 name,
                 description,
-                photoUrl,
                 phoneNumber,
                 seats,
                 approved,
@@ -142,7 +145,8 @@ public class RestaurantBuilderImpl implements RestaurantBuilder {
                 bookings,
                 address,
                 restaurateur,
-                employees
+                employees,
+                photoUrl
         );
     }
 }

@@ -13,6 +13,11 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
+/**
+ * Represents a booking entity in the system.
+ * <p>
+ * Extends the {@link DefaultEntity} class and inherits its properties and methods.
+ */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -20,6 +25,7 @@ import java.time.LocalDate;
 @Table(name = "bookings")
 @SQLRestriction("deleted_at IS NULL")
 public class Booking extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -43,14 +49,24 @@ public class Booking extends DefaultEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    /** The current state of the booking. */
     @Transient
     private BookingState state;
 
+    /** The status of the booking. */
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
-    public Booking(long id, LocalDate date, int seats, SittingTime sittingTime, CustomerUser customer, Restaurant restaurant, BookingState state) {
+    public Booking(
+            long id,
+            LocalDate date,
+            int seats,
+            SittingTime sittingTime,
+            CustomerUser customer,
+            Restaurant restaurant,
+            BookingState state
+    ) {
         this.id = id;
         this.date = date;
         this.seats = seats;
@@ -61,6 +77,11 @@ public class Booking extends DefaultEntity {
         setStatus(state);
     }
 
+    /**
+     * Gets the current state of the booking.
+     *
+     * @return the current state of the booking
+     */
     public BookingState getState() {
         if (state == null && status != null) {
             state = BookingStateUtils.getState(status);
@@ -68,19 +89,35 @@ public class Booking extends DefaultEntity {
         return state;
     }
 
+    /**
+     * Sets the current state of the booking.
+     *
+     * @param state the new state of the booking
+     */
     public void setState(BookingState state) {
         this.state = state;
         setStatus(state);
     }
 
+    /**
+     * Activates the booking.
+     */
     public void activate() {
         state.activate(this);
     }
 
+    /**
+     * Cancels the booking.
+     */
     public void cancel() {
         state.cancel(this);
     }
 
+    /**
+     * Sets the status of the booking based on its state.
+     *
+     * @param state the state of the booking
+     */
     private void setStatus(BookingState state) {
         if (state != null) {
             this.status = state.getStatus();

@@ -4,18 +4,26 @@ import com.example.foody.model.user.CustomerUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+/**
+ * Represents a review entity in the system.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "reviews")
 @SQLRestriction("deleted_at IS NULL")
 public class Review extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -39,18 +47,12 @@ public class Review extends DefaultEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    // Nullable because the review could be about the restaurant in general
+    /**
+     * The dish being reviewed.
+     * <p>
+     * Nullable because the review could be about the restaurant in general.
+     */
     @ManyToOne
     @JoinColumn(name = "dish_id")
     private Dish dish;
-
-    public Review(long id, String title, String description, int rating, CustomerUser customer, Restaurant restaurant, Dish dish) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.rating = rating;
-        this.customer = customer;
-        this.restaurant = restaurant;
-        this.dish = dish;
-    }
 }

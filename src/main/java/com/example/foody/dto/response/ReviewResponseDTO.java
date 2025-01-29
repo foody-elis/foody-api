@@ -7,13 +7,19 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Data Transfer Object for review response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewResponseDTO {
+
     private long id;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+
     private String title;
     private String description;
     private int rating;

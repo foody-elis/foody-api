@@ -8,6 +8,9 @@ import com.example.foody.model.order_dish.OrderDish;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Interface for building {@link Dish} objects.
+ */
 public interface DishBuilder {
     DishBuilder id(long id);
     DishBuilder name(String name);

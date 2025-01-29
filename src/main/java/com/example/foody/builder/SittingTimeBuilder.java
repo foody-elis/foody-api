@@ -7,6 +7,9 @@ import com.example.foody.model.WeekDayInfo;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Interface for building {@link SittingTime} objects.
+ */
 public interface SittingTimeBuilder {
     SittingTimeBuilder id(long id);
     SittingTimeBuilder start(LocalTime start);

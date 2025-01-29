@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+/**
+ * Implementation of the {@link BookingBuilder} interface.
+ */
 @Component
 public class BookingBuilderImpl implements BookingBuilder {
+
     private long id;
     private LocalDate date;
     private int seats;

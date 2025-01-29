@@ -9,10 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for user requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDTO {
+
     @Email(message = "email is not a well-formed email address")
     @NotBlank(message = "email cannot be blank")
     @Size(min = 1, max = 320, message = "email cannot be less than 1 character or more than 320 characters long")
@@ -30,9 +34,13 @@ public class UserRequestDTO {
     @Size(min = 1, max = 30, message = "surname cannot be less than 1 character or more than 30 characters long")
     private String surname;
 
+    /**
+     * The birth date of the user.
+     * Must be a past date.
+     */
     @NotNull(message = "birthDate cannot be null")
     @Past(message = "birthDate cannot be in the future")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotBlank(message = "phoneNumber cannot be blank")
@@ -43,7 +51,11 @@ public class UserRequestDTO {
     @Base64(message = "avatarBase64 must be null or a valid non-empty Base64 string")
     private String avatarBase64;
 
-    // The role is set by the AuthenticationService during the registration process
+    /**
+     * The role of the user.
+     * <p>
+     * It is set by the AuthenticationService during the registration process.
+     */
     @Null(message = "role cannot be specified")
     private String role;
 }

@@ -6,7 +6,13 @@ import com.example.foody.utils.enums.Role;
 
 import java.time.LocalDate;
 
+/**
+ * Abstract implementation of the {@link UserBuilder} interface.
+ *
+ * @param <U> the type of the user
+ */
 public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> {
+
     protected long id;
     protected String email;
     protected String password;
@@ -84,7 +90,4 @@ public abstract class UserBuilderImpl<U extends User> implements UserBuilder<U> 
         this.firebaseCustomToken = firebaseCustomToken;
         return this;
     }
-
-    @Override
-    public abstract U build();
 }

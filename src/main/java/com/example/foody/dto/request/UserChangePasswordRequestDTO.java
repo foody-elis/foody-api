@@ -6,10 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for user change password requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserChangePasswordRequestDTO {
+
     @NotBlank(message = "currentPassword cannot be blank")
     private String currentPassword;
 

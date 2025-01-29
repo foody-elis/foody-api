@@ -5,6 +5,9 @@ import com.example.foody.model.Restaurant;
 
 import java.util.List;
 
+/**
+ * Interface for building {@link Category} objects.
+ */
 public interface CategoryBuilder {
     CategoryBuilder id(long id);
     CategoryBuilder name(String name);

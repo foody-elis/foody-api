@@ -16,7 +16,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Repeatable(UniformNullity.List.class)
 public @interface UniformNullity {
     String message() default "all fields must be null or all fields must be not null";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     String[] fields();

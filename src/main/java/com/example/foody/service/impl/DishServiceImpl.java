@@ -3,6 +3,7 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.DishRequestDTO;
 import com.example.foody.dto.request.DishUpdateRequestDTO;
 import com.example.foody.dto.response.DishResponseDTO;
+import com.example.foody.exceptions.dish.ForbiddenDishAccessException;
 import com.example.foody.exceptions.entity.EntityCreationException;
 import com.example.foody.exceptions.entity.EntityDeletionException;
 import com.example.foody.exceptions.entity.EntityEditException;
@@ -149,7 +150,7 @@ public class DishServiceImpl implements DishService {
         if (!UserRoleUtils.isRestaurateur(user)) return;
         if (dish.getRestaurant().getRestaurateur().getId() == user.getId()) return;
 
-        throw new ForbiddenRestaurantAccessException();
+        throw new ForbiddenDishAccessException();
     }
 
     private String updateDishPhoto(Dish dish, String photoBase64) {

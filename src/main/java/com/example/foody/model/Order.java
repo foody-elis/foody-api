@@ -14,6 +14,11 @@ import org.hibernate.annotations.SQLRestriction;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents an order entity in the system.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -21,6 +26,7 @@ import java.util.List;
 @Table(name = "orders")
 @SQLRestriction("deleted_at IS NULL")
 public class Order extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -31,6 +37,9 @@ public class Order extends DefaultEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderDish> orderDishes = new ArrayList<>();
 
+    /**
+     * The buyer associated with the order.
+     */
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "id", column = @Column(name = "buyer_id"))
@@ -41,14 +50,27 @@ public class Order extends DefaultEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    /**
+     * The current state of the order.
+     */
     @Transient
     private OrderState state;
 
+    /**
+     * The status of the order.
+     */
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    public Order(long id, String tableCode, List<OrderDish> orderDishes, BuyerUser buyer, Restaurant restaurant, OrderState state) {
+    public Order(
+            long id,
+            String tableCode,
+            List<OrderDish> orderDishes,
+            BuyerUser buyer,
+            Restaurant restaurant,
+            OrderState state
+    ) {
         this.id = id;
         this.tableCode = tableCode;
         this.orderDishes = orderDishes;
@@ -58,6 +80,11 @@ public class Order extends DefaultEntity {
         setStatus(state);
     }
 
+    /**
+     * Gets the current state of the order.
+     *
+     * @return the current state of the order
+     */
     public OrderState getState() {
         if (state == null && status != null) {
             state = OrderStateUtils.getState(status);
@@ -65,27 +92,49 @@ public class Order extends DefaultEntity {
         return state;
     }
 
+    /**
+     * Sets the state of the order.
+     *
+     * @param state the new state of the order
+     */
     public void setState(OrderState state) {
         this.state = state;
         setStatus(state);
     }
 
+    /**
+     * Creates the order by invoking the create method on the current state.
+     */
     public void create() {
         state.create(this);
     }
 
+    /**
+     * Pays for the order by invoking the pay method on the current state.
+     */
     public void pay() {
         state.pay(this);
     }
 
+    /**
+     * Prepares the order by invoking the prepare method on the current state.
+     */
     public void prepare() {
         state.prepare(this);
     }
 
+    /**
+     * Completes the order by invoking the complete method on the current state.
+     */
     public void complete() {
         state.complete(this);
     }
 
+    /**
+     * Sets the status of the order based on the current state.
+     *
+     * @param state the current state of the order
+     */
     private void setStatus(OrderState state) {
         this.status = state != null ? state.getStatus() : null;
     }

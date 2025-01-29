@@ -14,7 +14,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = SequentialTimesValidator.class)
 public @interface SequentialTimes {
     String message() default "second time must be after first time";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     String[] fields();

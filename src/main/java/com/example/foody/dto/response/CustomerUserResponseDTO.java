@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for customer user response.
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor

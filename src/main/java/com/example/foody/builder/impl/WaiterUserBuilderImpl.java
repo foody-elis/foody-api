@@ -9,8 +9,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link WaiterUserBuilder} interface.
+ */
 @Component
 public class WaiterUserBuilderImpl extends UserBuilderImpl<WaiterUser> implements WaiterUserBuilder {
+
     private Restaurant employerRestaurant;
     private List<Order> orders = new ArrayList<>();
 

@@ -8,6 +8,9 @@ import com.example.foody.state.order.OrderState;
 
 import java.util.List;
 
+/**
+ * Interface for building {@link Order} objects.
+ */
 public interface OrderBuilder {
     OrderBuilder id(long id);
     OrderBuilder tableCode(String tableCode);

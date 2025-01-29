@@ -10,8 +10,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link SittingTimeBuilder} interface.
+ */
 @Component
 public class SittingTimeBuilderImpl implements SittingTimeBuilder {
+
     private long id;
     private LocalTime start;
     private LocalTime end;

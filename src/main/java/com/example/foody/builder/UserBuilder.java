@@ -5,6 +5,11 @@ import com.example.foody.utils.enums.Role;
 
 import java.time.LocalDate;
 
+/**
+ * Interface for building {@link User} objects.
+ *
+ * @param <U> the type of User
+ */
 public interface UserBuilder<U extends User> {
     UserBuilder<U> id(long id);
     UserBuilder<U> email(String email);

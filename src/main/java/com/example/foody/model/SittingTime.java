@@ -11,6 +11,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a sitting time entity in the system.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +24,7 @@ import java.util.List;
 @Table(name = "sitting_times")
 @SQLRestriction("deleted_at IS NULL")
 public class SittingTime extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -33,7 +39,11 @@ public class SittingTime extends DefaultEntity {
     @JoinColumn(name = "week_day_info_id", nullable = false)
     private WeekDayInfo weekDayInfo;
 
-    // When a sitting time is deleted, all bookings associated with it are also deleted and booking owner is notified
+    /**
+     * The bookings associated with this sitting time.
+     * <p>
+     * When a sitting time is deleted, all bookings associated with it are also deleted and the booking owner is notified.
+     */
     @OneToMany(mappedBy = "sittingTime", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Booking> bookings = new ArrayList<>();
 }

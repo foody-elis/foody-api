@@ -11,13 +11,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for booking requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingRequestDTO {
+
     @NotNull(message = "date cannot be null")
     @FutureOrPresent(message = "date cannot be in the past")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @NotNull(message = "seats cannot be null")

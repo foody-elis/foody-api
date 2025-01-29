@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface SittingTimeService {
     List<SittingTime> createForWeekDayInfo(WeekDayInfo weekDayInfo);
+
     List<SittingTimeResponseDTO> findAll();
+
     List<SittingTimeResponseDTO> findAllByRestaurant(long restaurantId);
+
     List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDay(long restaurantId, int weekDay);
+
     List<SittingTimeResponseDTO> findAllByRestaurantAndWeekDayAndStartAfterNow(long restaurantId, int weekDay);
+
     boolean remove(long id);
 }

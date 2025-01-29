@@ -5,6 +5,9 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.Review;
 import com.example.foody.model.user.CustomerUser;
 
+/**
+ * Interface for building {@link Review} objects.
+ */
 public interface ReviewBuilder {
     ReviewBuilder id(long id);
     ReviewBuilder title(String title);

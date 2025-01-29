@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface UserService {
     List<UserResponseDTO> findAll();
+
     UserResponseDTO findById(long id);
+
     UserResponseDTO findByEmail(String email);
+
     List<UserResponseDTO> findByRole(Role role);
+
     UserResponseDTO update(long id, UserUpdateRequestDTO userUpdateRequestDTO);
+
     boolean remove(long id);
 }

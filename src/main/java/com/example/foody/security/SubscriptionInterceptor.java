@@ -11,7 +11,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class SubscriptionInterceptor implements ChannelInterceptor {
 
@@ -36,10 +35,11 @@ public class SubscriptionInterceptor implements ChannelInterceptor {
 
             if (destination != null && accessor.getUser() != null) {
                 for (String topic : protectedTopics) {
-                    if(destination.matches(topic + "\\d+")) {
+                    if (destination.matches(topic + "\\d+")) {
                         String restaurantId = destination.substring(topic.length());
 
-                        if (isCookAtRestaurant(accessor.getUser().getName(), Long.parseLong(restaurantId))) return message;
+                        if (isCookAtRestaurant(accessor.getUser().getName(), Long.parseLong(restaurantId)))
+                            return message;
 
                         break;
                     }

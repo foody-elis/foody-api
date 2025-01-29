@@ -15,5 +15,6 @@ public abstract class BookingState {
     }
 
     public abstract void activate(Booking booking);
+
     public abstract void cancel(Booking booking);
 }

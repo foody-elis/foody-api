@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
+/**
+ * Data Transfer Object for sitting time response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SittingTimeResponseDTO {
+
     private long id;
 
     @JsonFormat(pattern = "HH:mm")

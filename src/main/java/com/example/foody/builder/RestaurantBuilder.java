@@ -6,6 +6,9 @@ import com.example.foody.model.user.RestaurateurUser;
 
 import java.util.List;
 
+/**
+ * Interface for building {@link Restaurant} objects.
+ */
 public interface RestaurantBuilder {
     RestaurantBuilder id(long id);
     RestaurantBuilder name(String name);

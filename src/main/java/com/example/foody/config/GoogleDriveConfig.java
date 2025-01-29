@@ -22,18 +22,39 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Configuration class for integrating Google Drive API.
+ * This class provides the necessary beans and configuration to use Google Drive within the application.
+ */
 @Getter
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "spring.google-drive")
 public class GoogleDriveConfig {
+
+    /**
+     * Application name, retrieved from application.properties.
+     */
     @Value("${spring.application.name}")
     private String APPLICATION_NAME;
 
-    // Fields retrieved from application.properties
+    /**
+     * Path to the credentials file for Google Drive API, retrieved from application.properties.
+     */
     private String CREDENTIALS_FILE_PATH;
+
+    /**
+     * Map of folder configurations, retrieved from application.properties.
+     */
     private Map<String, String> FOLDERS;
 
+    /**
+     * Bean to configure and provide a {@link Drive} instance for interacting with Google Drive.
+     *
+     * @return A configured {@link Drive} instance.
+     * @throws IOException              If there is an issue reading the credentials file.
+     * @throws GeneralSecurityException If there is a security configuration issue.
+     */
     @Bean
     public Drive googleDrive() throws IOException, GeneralSecurityException {
         InputStream inputStream = new ClassPathResource(CREDENTIALS_FILE_PATH).getInputStream();

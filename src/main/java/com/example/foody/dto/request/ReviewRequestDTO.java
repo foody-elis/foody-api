@@ -5,10 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for review requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDTO {
+
     @NotBlank(message = "title cannot be blank")
     @Size(min = 1, max = 100, message = "title cannot be less than 1 character or more than 100 characters long")
     private String title;
@@ -17,6 +21,11 @@ public class ReviewRequestDTO {
     @Size(min = 1, max = 65535, message = "description cannot be less than 1 character or more than 65535 characters long")
     private String description;
 
+    /**
+     * The rating of the review.
+     * <p>
+     * Must be a number between 1 and 5.
+     */
     @NotNull(message = "rating cannot be null")
     @Min(value = 1, message = "rating cannot be less than 1")
     @Max(value = 5, message = "rating cannot be more than 5")

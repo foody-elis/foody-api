@@ -6,10 +6,11 @@ Ciao {customerName} {customerSurname},
 
 Grazie per aver scelto {restaurantName}!
 
-Saremmo felici se potessi lasciare una recensione su {restaurantReviewLink} per condividere la tua esperienza con il ristorante.
-Inoltre, ci piacerebbe sapere cosa ne pensi dei piatti che hai ordinato.
+Ci farebbe davvero piacere sapere cosa ne pensi della tua esperienza.
+Puoi lasciare una recensione direttamente sull’app, sia per il ristorante che per i piatti che hai ordinato.
+Il tuo feedback è prezioso e ci aiuta a migliorare sempre di più!
 
-{dishesReviewLinks}
+Apri l’app e raccontaci la tua esperienza!
 
 A presto!
 Foody Team

@@ -8,16 +8,26 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Data Transfer Object for dish response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DishResponseDTO {
+
     private long id;
     private String name;
     private String description;
     private BigDecimal price;
     private String photoUrl;
     private Long restaurantId;
+
+    /**
+     * The average rating of the dish.
+     * <p>
+     * Serialized using RoundedDoubleSerializer to round the value.
+     */
     @JsonSerialize(using = RoundedDoubleSerializer.class)
     private double averageRating;
 }

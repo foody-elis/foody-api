@@ -7,6 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+/**
+ * Represents an address entity in the system.
+ * <p>
+ * Extends the {@link DefaultEntity} class and inherits its properties and methods.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "addresses")
 @SQLRestriction("deleted_at IS NULL")
 public class Address extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

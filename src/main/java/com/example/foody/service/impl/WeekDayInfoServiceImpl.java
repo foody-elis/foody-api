@@ -3,7 +3,10 @@ package com.example.foody.service.impl;
 import com.example.foody.dto.request.WeekDayInfoRequestDTO;
 import com.example.foody.dto.request.WeekDayInfoUpdateRequestDTO;
 import com.example.foody.dto.response.WeekDayInfoResponseDTO;
-import com.example.foody.exceptions.entity.*;
+import com.example.foody.exceptions.entity.EntityCreationException;
+import com.example.foody.exceptions.entity.EntityDuplicateException;
+import com.example.foody.exceptions.entity.EntityEditException;
+import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.restaurant.ForbiddenRestaurantAccessException;
 import com.example.foody.mapper.WeekDayInfoMapper;
 import com.example.foody.model.Restaurant;
@@ -101,7 +104,7 @@ public class WeekDayInfoServiceImpl implements WeekDayInfoService {
 
     private void updateWeekDayInfoSittingTimes(WeekDayInfo weekDayInfo) {
         weekDayInfo.getSittingTimes().forEach(sittingTime ->
-            sittingTimeService.remove(sittingTime.getId())
+                sittingTimeService.remove(sittingTime.getId())
         );
         sittingTimeService.createForWeekDayInfo(weekDayInfo);
     }

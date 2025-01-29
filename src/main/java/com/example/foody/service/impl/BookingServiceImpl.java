@@ -225,7 +225,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkWeekDayOrThrow(Booking booking) {
-        if (booking.getDate().getDayOfWeek().getValue() == booking.getSittingTime().getWeekDayInfo().getWeekDay()) return;
+        if (booking.getDate().getDayOfWeek().getValue() == booking.getSittingTime().getWeekDayInfo().getWeekDay())
+            return;
 
         throw new InvalidBookingWeekDayException();
     }
@@ -238,7 +239,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkSittingTimeOrThrow(Booking booking) {
-        if (booking.getRestaurant().getId() == booking.getSittingTime().getWeekDayInfo().getRestaurant().getId()) return;
+        if (booking.getRestaurant().getId() == booking.getSittingTime().getWeekDayInfo().getRestaurant().getId())
+            return;
 
         throw new InvalidBookingRestaurantException();
     }

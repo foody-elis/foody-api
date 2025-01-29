@@ -6,8 +6,12 @@ import com.example.foody.model.Order;
 import com.example.foody.model.order_dish.OrderDish;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link OrderDishBuilder} interface.
+ */
 @Component
 public class OrderDishBuilderImpl implements OrderDishBuilder {
+
     private Order order;
     private Dish dish;
     private int quantity;

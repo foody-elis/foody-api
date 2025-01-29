@@ -7,10 +7,16 @@ import java.util.List;
 
 public interface ReviewService {
     ReviewResponseDTO save(ReviewRequestDTO reviewDTO);
+
     List<ReviewResponseDTO> findAll();
+
     ReviewResponseDTO findById(long id);
+
     List<ReviewResponseDTO> findAllByCustomer(long customerId);
+
     List<ReviewResponseDTO> findAllByRestaurant(long restaurantId);
+
     List<ReviewResponseDTO> findAllByDish(long dishId);
+
     boolean remove(long id);
 }

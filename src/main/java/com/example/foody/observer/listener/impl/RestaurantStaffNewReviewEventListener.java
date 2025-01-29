@@ -10,6 +10,13 @@ import com.example.foody.utils.enums.EmailTemplateType;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+/**
+ * Listener implementation for handling new review events for restaurant staff.
+ * <p>
+ * Implements the {@link EventListener} interface for {@link Review} events.
+ * <p>
+ * Sends an email notification to the restaurant staff when a new review is created.
+ */
 public class RestaurantStaffNewReviewEventListener implements EventListener<Review> {
     private final EmailService emailService;
     private final User user; // RestaurateurUser or EmployeeUser
@@ -19,6 +26,15 @@ public class RestaurantStaffNewReviewEventListener implements EventListener<Revi
         this.user = user;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method is called when a new review is created.
+     * <p>
+     * Sends an email notification to the restaurant staff with the review details.
+     *
+     * @param review the review that was created
+     */
     @Override
     public void update(Review review) {
         Map<EmailPlaceholder, Object> variables = Map.of(

@@ -156,7 +156,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void checkPastActiveBookingOrThrow(User user, Review review) {
-        if (bookingRepository.existsPastActiveBookingByCustomer_IdAndRestaurant_Id(user.getId(), review.getRestaurant().getId())) return;
+        if (bookingRepository.existsPastActiveBookingByCustomer_IdAndRestaurant_Id(user.getId(), review.getRestaurant().getId()))
+            return;
 
         throw new ReviewNotAllowedException("restaurant", review.getRestaurant().getId(), "there are no past active bookings for the restaurant");
     }
@@ -168,10 +169,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void checkReviewAccessOrThrow(User user, Review review) {
-        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isEmployee(user)) return;
+        if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isEmployee(user))
+            return;
         if (review.getCustomer().getId() == user.getId()) return;
         if (review.getRestaurant().getRestaurateur().getId() == user.getId()) return;
-        if (review.getRestaurant().getEmployees().stream().anyMatch(employee -> employee.getId() == user.getId())) return;
+        if (review.getRestaurant().getEmployees().stream().anyMatch(employee -> employee.getId() == user.getId()))
+            return;
 
         throw new ForbiddenReviewAccessException();
     }

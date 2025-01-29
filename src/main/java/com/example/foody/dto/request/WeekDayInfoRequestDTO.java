@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
+/**
+ * Data Transfer Object for week day information requests.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +27,7 @@ import java.time.LocalTime;
 })
 @SequentialTimes(fields = {"startLaunch", "endLaunch", "startDinner", "endDinner"}, message = "end time must be after start time")
 public class WeekDayInfoRequestDTO {
+
     @NotNull(message = "weekDay cannot be null")
     @Min(value = 1, message = "weekDay cannot be less than 1")
     @Max(value = 7, message = "weekDay cannot be greater than 7")

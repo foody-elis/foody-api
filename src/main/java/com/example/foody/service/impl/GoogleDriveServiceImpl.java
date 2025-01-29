@@ -20,12 +20,11 @@ import java.util.Map;
 
 @Service
 public class GoogleDriveServiceImpl implements GoogleDriveService {
-    private final Drive drive;
-    private final Map<String, String> folders;
-
     private static final String GOOGLE_DRIVE_URL = "https://drive.google.com/uc?id=";
     private static final String IMAGE_MIME_TYPE = "image/jpeg";
     private static final String IMAGE_EXTENSION = "jpeg";
+    private final Drive drive;
+    private final Map<String, String> folders;
 
     public GoogleDriveServiceImpl(
             Drive drive,

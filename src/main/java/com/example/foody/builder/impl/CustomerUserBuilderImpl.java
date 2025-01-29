@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link CustomerUserBuilder} interface.
+ */
 @Component
 public class CustomerUserBuilderImpl extends UserBuilderImpl<CustomerUser> implements CustomerUserBuilder {
     private CreditCard creditCard;
@@ -42,6 +45,11 @@ public class CustomerUserBuilderImpl extends UserBuilderImpl<CustomerUser> imple
         return this;
     }
 
+    /**
+     * Builds and returns the {@link CustomerUser} object.
+     *
+     * @return the built {@link CustomerUser} object
+     */
     @Override
     public CustomerUser build() {
         return new CustomerUser(

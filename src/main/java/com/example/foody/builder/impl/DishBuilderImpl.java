@@ -11,8 +11,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link DishBuilder} interface.
+ */
 @Component
 public class DishBuilderImpl implements DishBuilder {
+
     private long id;
     private String name;
     private String description;

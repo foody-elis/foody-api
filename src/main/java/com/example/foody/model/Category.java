@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a category entity in the system.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "categories")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

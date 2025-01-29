@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Transfer Object for restaurant response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantResponseDTO {
+
     private long id;
     private String name;
     private String description;

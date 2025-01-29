@@ -8,6 +8,9 @@ import com.example.foody.state.booking.BookingState;
 
 import java.time.LocalDate;
 
+/**
+ * Interface for building {@link Booking} objects.
+ */
 public interface BookingBuilder {
     BookingBuilder id(long id);
     BookingBuilder date(LocalDate date);

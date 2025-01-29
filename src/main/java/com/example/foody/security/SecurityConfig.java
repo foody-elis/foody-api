@@ -42,12 +42,12 @@ public class SecurityConfig {
     static RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy(
                 """
-                ROLE_ADMIN > ROLE_CUSTOMER
-                ROLE_ADMIN > ROLE_MODERATOR
-                ROLE_MODERATOR > ROLE_RESTAURATEUR
-                ROLE_RESTAURATEUR > ROLE_COOK
-                ROLE_RESTAURATEUR > ROLE_WAITER
-                """
+                        ROLE_ADMIN > ROLE_CUSTOMER
+                        ROLE_ADMIN > ROLE_MODERATOR
+                        ROLE_MODERATOR > ROLE_RESTAURATEUR
+                        ROLE_RESTAURATEUR > ROLE_COOK
+                        ROLE_RESTAURATEUR > ROLE_WAITER
+                        """
         );
     }
 
@@ -80,7 +80,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/restaurants/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/categories").hasRole(Role.Constants.ADMIN_VALUE)
-                        .requestMatchers(DELETE,"/api/v1/categories/*").hasRole(Role.Constants.ADMIN_VALUE)
+                        .requestMatchers(DELETE, "/api/v1/categories/*").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers("/api/v1/categories/**").authenticated()
 
                         .requestMatchers(POST, "/api/v1/week-day-infos").access(hasSpecificRole(Role.RESTAURATEUR))

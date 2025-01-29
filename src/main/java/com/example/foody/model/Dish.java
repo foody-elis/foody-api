@@ -12,6 +12,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a dish entity in the system.
+ * <p>
+ * Extends {@link DefaultEntity}.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +25,7 @@ import java.util.List;
 @Table(name = "dishes")
 @SQLRestriction("deleted_at IS NULL")
 public class Dish extends DefaultEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,7 +36,11 @@ public class Dish extends DefaultEntity {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    // max 999.999,99 = 1 mln
+    /**
+     * The price of the dish.
+     * <p>
+     * Maximum value: 999,999.99 (1 million).
+     */
     @Column(name = "price", precision = 8, scale = 2, nullable = false)
     private BigDecimal price;
 
@@ -47,6 +57,11 @@ public class Dish extends DefaultEntity {
     @OneToMany(mappedBy = "dish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OrderDish> orderDishes = new ArrayList<>();
 
+    /**
+     * Marks the dish as deleted by setting the deletedAt timestamp to the current time.
+     * <p>
+     * Also marks all associated reviews as deleted.
+     */
     @Override
     public void delete() {
         super.delete();

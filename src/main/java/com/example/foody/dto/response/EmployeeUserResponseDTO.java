@@ -5,6 +5,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for employee user response.
+ * <p>
+ * Extends {@link UserResponseDTO} to include additional information specific to employee users.
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor

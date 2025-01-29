@@ -9,8 +9,6 @@ public enum EmailPlaceholder {
     CUSTOMER_NAME("customerName"),
     CUSTOMER_SURNAME("customerSurname"),
     RESTAURANT_NAME("restaurantName"),
-    RESTAURANT_REVIEW_LINK("restaurantReviewLink"),
-    DISHES_REVIEW_LINKS("dishesReviewLinks"),
     ORDER_ID("orderId"),
     RESTAURATEUR_NAME("restaurateurName"),
     RESTAURATEUR_SURNAME("restaurateurSurname"),

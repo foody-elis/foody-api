@@ -11,8 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link OrderBuilder} interface.
+ */
 @Component
 public class OrderBuilderImpl implements OrderBuilder {
+
     private long id;
     private String tableCode;
     private List<OrderDish> orderDishes = new ArrayList<>();

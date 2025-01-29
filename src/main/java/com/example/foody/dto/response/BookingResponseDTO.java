@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for booking response.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

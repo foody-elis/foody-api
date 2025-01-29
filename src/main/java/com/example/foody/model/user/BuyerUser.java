@@ -11,13 +11,23 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a buyer user in the system.
+ * <p>
+ * This class is embeddable and can be used as a component in other entities.
+ */
 @Data
 @NoArgsConstructor
 @Embeddable
 public class BuyerUser {
+
     private Long id;
 
-    // Field user is set when an order is retrieved from the database
+    /**
+     * The user associated with the buyer.
+     * <p>
+     * This field is transient and not persisted in the database.
+     */
     @Transient
     private User user;
 

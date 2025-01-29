@@ -15,11 +15,10 @@ import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    @Value("${spring.mail.username}")
-    private String FROM;
-
     private final JavaMailSender javaMailSender;
     private final EmailTemplateService emailTemplateService;
+    @Value("${spring.mail.username}")
+    private String FROM;
 
     public EmailServiceImpl(JavaMailSender javaMailSender, EmailTemplateService emailTemplateService) {
         this.javaMailSender = javaMailSender;

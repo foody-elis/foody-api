@@ -11,10 +11,18 @@ import com.example.foody.model.CreditCard;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.*;
 import com.example.foody.utils.enums.Role;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link UserMapper} interface.
+ * <p>
+ * Provides methods to convert between {@link User} entities and DTOs.
+ */
 @Component
+@AllArgsConstructor
 public class UserMapperImpl implements UserMapper {
+
     private final UserBuilder<AdminUser> adminUserBuilder;
     private final UserBuilder<ModeratorUser> moderatorUserBuilder;
     private final UserBuilder<RestaurateurUser> restaurateurUserBuilder;
@@ -22,21 +30,15 @@ public class UserMapperImpl implements UserMapper {
     private final UserBuilder<WaiterUser> waiterUserBuilder;
     private final UserBuilder<CustomerUser> customerUserBuilder;
 
-    public UserMapperImpl(
-            UserBuilder<AdminUser> adminUserBuilder,
-            UserBuilder<ModeratorUser> moderatorUserBuilder,
-            UserBuilder<RestaurateurUser> restaurateurUserBuilder,
-            UserBuilder<CookUser> cookUserBuilder,
-            UserBuilder<WaiterUser> waiterUserBuilder,
-            UserBuilder<CustomerUser> customerUserBuilder) {
-        this.adminUserBuilder = adminUserBuilder;
-        this.moderatorUserBuilder = moderatorUserBuilder;
-        this.restaurateurUserBuilder = restaurateurUserBuilder;
-        this.cookUserBuilder = cookUserBuilder;
-        this.waiterUserBuilder = waiterUserBuilder;
-        this.customerUserBuilder = customerUserBuilder;
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Converts a {@link User} entity to a {@link UserResponseDTO}.
+     *
+     * @param user                the User entity to convert
+     * @param firebaseCustomToken the Firebase custom token associated with the user
+     * @return the converted UserResponseDTO
+     */
     @Override
     public UserResponseDTO userToUserResponseDTO(User user, String firebaseCustomToken) {
         return switch (user) {
@@ -47,6 +49,14 @@ public class UserMapperImpl implements UserMapper {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Converts a {@link UserRequestDTO} to a {@link User} entity.
+     *
+     * @param userRequestDTO the UserRequestDTO to convert
+     * @return the converted User entity
+     */
     @Override
     public User userRequestDTOToUser(UserRequestDTO userRequestDTO) {
         if (userRequestDTO == null) {
@@ -77,6 +87,14 @@ public class UserMapperImpl implements UserMapper {
         return userBuilder.build();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Updates a {@link User} entity from a {@link UserUpdateRequestDTO}.
+     *
+     * @param user                 the User entity to update
+     * @param userUpdateRequestDTO the UserUpdateRequestDTO with updated information
+     */
     @Override
     public void updateUserFromUserUpdateRequestDTO(User user, UserUpdateRequestDTO userUpdateRequestDTO) {
         if (user == null || userUpdateRequestDTO == null) {
@@ -89,6 +107,13 @@ public class UserMapperImpl implements UserMapper {
         user.setPhoneNumber(userUpdateRequestDTO.getPhoneNumber());
     }
 
+    /**
+     * Builds a {@link UserResponseDTO} from a {@link User} entity.
+     *
+     * @param user                the User entity
+     * @param firebaseCustomToken the Firebase custom token associated with the user
+     * @return the built UserResponseDTO
+     */
     private UserResponseDTO buildUserResponseDTO(User user, String firebaseCustomToken) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
 
@@ -98,7 +123,17 @@ public class UserMapperImpl implements UserMapper {
         return userResponseDTO;
     }
 
-    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(EmployeeUser employeeUser, String firebaseCustomToken) {
+    /**
+     * Builds an {@link EmployeeUserResponseDTO} from an {@link EmployeeUser} entity.
+     *
+     * @param employeeUser        the EmployeeUser entity
+     * @param firebaseCustomToken the Firebase custom token associated with the user
+     * @return the built EmployeeUserResponseDTO
+     */
+    private EmployeeUserResponseDTO buildEmployeeUserResponseDTO(
+            EmployeeUser employeeUser,
+            String firebaseCustomToken
+    ) {
         EmployeeUserResponseDTO employeeUserResponseDTO = new EmployeeUserResponseDTO();
 
         mapCommonFields(employeeUser, firebaseCustomToken, employeeUserResponseDTO);
@@ -107,7 +142,17 @@ public class UserMapperImpl implements UserMapper {
         return employeeUserResponseDTO;
     }
 
-    private CustomerUserResponseDTO buildCustomerUserResponseDTO(CustomerUser customerUser, String firebaseCustomToken) {
+    /**
+     * Builds a {@link CustomerUserResponseDTO} from a {@link CustomerUser} entity.
+     *
+     * @param customerUser        the CustomerUser entity
+     * @param firebaseCustomToken the Firebase custom token associated with the user
+     * @return the built CustomerUserResponseDTO
+     */
+    private CustomerUserResponseDTO buildCustomerUserResponseDTO(
+            CustomerUser customerUser,
+            String firebaseCustomToken
+    ) {
         CustomerUserResponseDTO customerUserResponseDTO = new CustomerUserResponseDTO();
 
         mapCommonFields(customerUser, firebaseCustomToken, customerUserResponseDTO);
@@ -116,7 +161,19 @@ public class UserMapperImpl implements UserMapper {
         return customerUserResponseDTO;
     }
 
-    private <T extends UserResponseDTO> void mapCommonFields(User user, String firebaseCustomToken, T userResponseDTO) {
+    /**
+     * Maps common fields from a {@link User} entity to a {@link UserResponseDTO}.
+     *
+     * @param user                the User entity
+     * @param firebaseCustomToken the Firebase custom token associated with the user
+     * @param userResponseDTO     the UserResponseDTO to populate
+     * @param <T>                 the type of UserResponseDTO
+     */
+    private <T extends UserResponseDTO> void mapCommonFields(
+            User user,
+            String firebaseCustomToken,
+            T userResponseDTO
+    ) {
         userResponseDTO.setId(user.getId());
         userResponseDTO.setEmail(user.getEmail());
         userResponseDTO.setName(user.getName());
@@ -130,6 +187,12 @@ public class UserMapperImpl implements UserMapper {
         userResponseDTO.setFirebaseCustomToken(firebaseCustomToken);
     }
 
+    /**
+     * Retrieves the employer restaurant ID from an {@link EmployeeUser} entity.
+     *
+     * @param employee the EmployeeUser entity
+     * @return the employer restaurant ID, or null if not available
+     */
     private Long employerRestaurantId(EmployeeUser employee) {
         if (employee == null) {
             return null;
@@ -141,6 +204,12 @@ public class UserMapperImpl implements UserMapper {
         return employerRestaurant.getId();
     }
 
+    /**
+     * Retrieves the credit card ID from a {@link CustomerUser} entity.
+     *
+     * @param customerUser the CustomerUser entity
+     * @return the credit card ID, or null if not available
+     */
     private Long creditCardId(CustomerUser customerUser) {
         if (customerUser == null) {
             return null;

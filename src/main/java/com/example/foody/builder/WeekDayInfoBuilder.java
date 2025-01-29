@@ -8,6 +8,9 @@ import com.example.foody.utils.enums.SittingTimeStep;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Interface for building {@link WeekDayInfo} objects.
+ */
 public interface WeekDayInfoBuilder {
     WeekDayInfoBuilder id(long id);
     WeekDayInfoBuilder weekDay(int weekDay);

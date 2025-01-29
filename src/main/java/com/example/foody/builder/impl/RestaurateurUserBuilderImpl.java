@@ -5,8 +5,12 @@ import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.RestaurateurUser;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation of the {@link RestaurateurUserBuilder} interface.
+ */
 @Component
 public class RestaurateurUserBuilderImpl extends UserBuilderImpl<RestaurateurUser> implements RestaurateurUserBuilder {
+
     private Restaurant restaurant;
 
     @Override
