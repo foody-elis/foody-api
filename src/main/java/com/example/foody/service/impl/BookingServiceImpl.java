@@ -141,6 +141,21 @@ public class BookingServiceImpl implements BookingService {
     /**
      * {@inheritDoc}
      * <p>
+     * This method retrieves all current active {@link Booking} entities for a specific customer.
+     *
+     * @param customerId the ID of the customer
+     * @return the list of booking response data transfer objects
+     */
+    @Override
+    public List<BookingResponseDTO> findAllCurrentActivesByCustomer(long customerId) {
+        List<Booking> bookings = bookingRepository
+                .findAllCurrentActiveBookingsByCustomer_Id(customerId);
+        return bookingMapper.bookingsToBookingResponseDTOs(bookings);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * This method retrieves all {@link Booking} entities for a specific restaurant.
      *
      * @param restaurantId the ID of the restaurant

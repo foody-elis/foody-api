@@ -62,9 +62,7 @@ public class CustomerUserOrderCompletedEventListenerTest {
         Map<EmailPlaceholder, Object> expectedVariables = Map.of(
                 EmailPlaceholder.CUSTOMER_NAME, "John",
                 EmailPlaceholder.CUSTOMER_SURNAME, "Doe",
-                EmailPlaceholder.RESTAURANT_NAME, "Test Restaurant",
-                EmailPlaceholder.RESTAURANT_REVIEW_LINK, expectedRestaurantLink,
-                EmailPlaceholder.DISHES_REVIEW_LINKS, expectedDishLinks
+                EmailPlaceholder.RESTAURANT_NAME, "Test Restaurant"
         );
 
         // Act

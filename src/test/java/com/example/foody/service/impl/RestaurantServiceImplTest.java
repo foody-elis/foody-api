@@ -393,7 +393,7 @@ public class RestaurantServiceImplTest {
         List<Restaurant> restaurants = List.of(TestDataUtil.createTestRestaurant());
         mockSecurityContext(admin);
 
-        when(restaurantRepository.findAllByCategory_Id(category.getId())).thenReturn(restaurants);
+        when(restaurantRepository.findAllByCategories_Id(category.getId())).thenReturn(restaurants);
         when(restaurantHelper.buildDetailedRestaurantResponseDTOs(restaurants))
                 .thenReturn(List.of(TestDataUtil.createTestDetailedRestaurantResponseDTO()));
 
@@ -413,7 +413,7 @@ public class RestaurantServiceImplTest {
         List<Restaurant> restaurants = List.of(TestDataUtil.createTestRestaurant());
         mockSecurityContext(moderator);
 
-        when(restaurantRepository.findAllByCategory_Id(category.getId())).thenReturn(restaurants);
+        when(restaurantRepository.findAllByCategories_Id(category.getId())).thenReturn(restaurants);
         when(restaurantHelper.buildDetailedRestaurantResponseDTOs(restaurants))
                 .thenReturn(List.of(TestDataUtil.createTestDetailedRestaurantResponseDTO()));
 
@@ -433,7 +433,7 @@ public class RestaurantServiceImplTest {
         List<Restaurant> approvedRestaurants = List.of(TestDataUtil.createTestRestaurant());
         mockSecurityContext(customer);
 
-        when(restaurantRepository.findAllByCategory_IdAndApproved(category.getId(), true)).thenReturn(approvedRestaurants);
+        when(restaurantRepository.findAllByCategories_IdAndApproved(category.getId(), true)).thenReturn(approvedRestaurants);
         when(restaurantHelper.buildDetailedRestaurantResponseDTOs(approvedRestaurants))
                 .thenReturn(List.of(TestDataUtil.createTestDetailedRestaurantResponseDTO()));
 

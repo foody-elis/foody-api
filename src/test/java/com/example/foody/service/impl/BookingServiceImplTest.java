@@ -430,6 +430,24 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    void findAllCurrentActivesByCustomerWhenBookingsExistReturnsBookingResponseDTOs() {
+        // Arrange
+        CustomerUser customer = TestDataUtil.createTestCustomerUser();
+        List<Booking> bookings = List.of(TestDataUtil.createTestBooking());
+
+        when(bookingRepository.findAllCurrentActiveBookingsByCustomer_Id(customer.getId())).thenReturn(bookings);
+        when(bookingMapper.bookingsToBookingResponseDTOs(bookings))
+                .thenReturn(List.of(TestDataUtil.createTestBookingResponseDTO()));
+
+        // Act
+        List<BookingResponseDTO> responseDTOs = bookingService.findAllCurrentActivesByCustomer(customer.getId());
+
+        // Assert
+        assertNotNull(responseDTOs);
+        assertEquals(1, responseDTOs.size());
+    }
+
+    @Test
     void findAllByRestaurantWhenBookingsExistReturnsBookingResponseDTOs() {
         // Arrange
         RestaurateurUser restaurateur = TestDataUtil.createTestRestaurateurUser();

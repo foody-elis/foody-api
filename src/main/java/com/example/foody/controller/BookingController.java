@@ -88,6 +88,20 @@ public class BookingController {
     }
 
     /**
+     * Retrieves all current active bookings for a specific customer.
+     *
+     * @param customer the authenticated customer user
+     * @return the response entity containing the list of booking response data transfer objects
+     */
+    @GetMapping(path = "/customer/current")
+    public ResponseEntity<List<BookingResponseDTO>> getCurrentActiveBookingsByCustomer(
+            @AuthenticationPrincipal CustomerUser customer
+    ) {
+        List<BookingResponseDTO> responseDTOs = bookingService.findAllCurrentActivesByCustomer(customer.getId());
+        return ResponseEntity.ok(responseDTOs);
+    }
+
+    /**
      * Retrieves all bookings for a specific restaurant.
      *
      * @param restaurantId the restaurant ID

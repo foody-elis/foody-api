@@ -104,6 +104,23 @@ public class BookingControllerTest {
     }
 
     @Test
+    void getCurrentActiveBookingsByCustomerWhenCalledReturnsOkResponse() {
+        // Arrange
+        List<BookingResponseDTO> responseDTOs =
+                Collections.singletonList(TestDataUtil.createTestBookingResponseDTO());
+        CustomerUser customer = TestDataUtil.createTestCustomerUser();
+
+        when(bookingService.findAllCurrentActivesByCustomer(customer.getId())).thenReturn(responseDTOs);
+
+        // Act
+        ResponseEntity<List<BookingResponseDTO>> response = bookingController.getCurrentActiveBookingsByCustomer(customer);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDTOs, response.getBody());
+    }
+
+    @Test
     void getBookingsByRestaurantWhenValidIdReturnsOkResponse() {
         // Arrange
         List<BookingResponseDTO> responseDTOs =

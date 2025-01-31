@@ -92,7 +92,7 @@ public class OrderServiceImplTest {
         Restaurant restaurant = TestDataUtil.createTestRestaurant();
         mockSecurityContext(customer);
 
-        when(bookingRepository.existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId()))
+        when(bookingRepository.existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId()))
                 .thenReturn(true);
         orderRequestDTO.getOrderDishes().forEach(orderDish -> {
             when(dishRepository.findById(orderDish.getDishId())).thenReturn(Optional.of(TestDataUtil.createTestDish()));
@@ -196,7 +196,7 @@ public class OrderServiceImplTest {
         when(orderMapper.orderRequestDTOToOrder(orderRequestDTO)).thenReturn(order);
         when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true))
                 .thenReturn(Optional.of(restaurant));
-        when(bookingRepository.existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId()))
+        when(bookingRepository.existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId()))
                 .thenReturn(false);
 
         // Act & Assert
@@ -204,7 +204,7 @@ public class OrderServiceImplTest {
         verify(restaurantRepository, times(1))
                 .findByIdAndApproved(orderRequestDTO.getRestaurantId(), true);
         verify(bookingRepository, times(1))
-                .existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId());
+                .existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId());
         verify(orderRepository, never()).save(any(Order.class));
     }
 
@@ -227,7 +227,7 @@ public class OrderServiceImplTest {
 
         when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true))
                 .thenReturn(Optional.of(restaurant));
-        when(bookingRepository.existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId()))
+        when(bookingRepository.existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId()))
                 .thenReturn(true);
         when(orderMapper.orderRequestDTOToOrder(orderRequestDTO)).thenReturn(order);
 
@@ -236,7 +236,7 @@ public class OrderServiceImplTest {
         verify(restaurantRepository, times(1))
                 .findByIdAndApproved(orderRequestDTO.getRestaurantId(), true);
         verify(bookingRepository, times(1))
-                .existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId());
+                .existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId());
         verify(orderRepository, never()).save(any(Order.class));
     }
 
@@ -249,7 +249,7 @@ public class OrderServiceImplTest {
         Order order = TestDataUtil.createTestOrder();
         mockSecurityContext(customer);
 
-        when(bookingRepository.existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId()))
+        when(bookingRepository.existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId()))
                 .thenReturn(true);
         when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true))
                 .thenReturn(Optional.of(restaurant));
@@ -278,7 +278,7 @@ public class OrderServiceImplTest {
         Order order = TestDataUtil.createTestOrder();
         mockSecurityContext(customer);
 
-        when(bookingRepository.existsActiveBookingForOrder(customer.getId(), orderRequestDTO.getRestaurantId()))
+        when(bookingRepository.existsCurrentActiveBooking(customer.getId(), orderRequestDTO.getRestaurantId()))
                 .thenReturn(true);
         when(restaurantRepository.findByIdAndApproved(orderRequestDTO.getRestaurantId(), true))
                 .thenReturn(Optional.of(restaurant));

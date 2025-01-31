@@ -97,6 +97,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/bookings").hasRole(Role.Constants.ADMIN_VALUE)
                         .requestMatchers(GET, "/api/v1/bookings/*").hasAnyRole(Role.Constants.CUSTOMER_VALUE, Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers(GET, "/api/v1/bookings/customer").access(hasSpecificRole(Role.CUSTOMER))
+                        .requestMatchers(GET, "/api/v1/bookings/customer/current").access(hasSpecificRole(Role.CUSTOMER))
                         .requestMatchers(GET, "/api/v1/bookings/restaurant/*").hasRole(Role.Constants.RESTAURATEUR_VALUE)
                         .requestMatchers("/api/v1/bookings/**").authenticated()
 

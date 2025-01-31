@@ -459,7 +459,7 @@ public class OrderServiceImpl implements OrderService {
      * @throws OrderNotAllowedException if there is no active booking for the order
      */
     private void checkActiveBookingOrThrow(Order order) {
-        if (bookingRepository.existsActiveBookingForOrder(order.getBuyer().getId(), order.getRestaurant().getId()))
+        if (bookingRepository.existsCurrentActiveBooking(order.getBuyer().getId(), order.getRestaurant().getId()))
             return;
 
         throw new OrderNotAllowedException(

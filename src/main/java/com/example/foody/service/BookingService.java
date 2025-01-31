@@ -42,6 +42,14 @@ public interface BookingService {
     List<BookingResponseDTO> findAllByCustomer(long customerId);
 
     /**
+     * Retrieves all current active bookings for a specific customer.
+     *
+     * @param customerId the ID of the customer
+     * @return the list of booking response data transfer objects
+     */
+    List<BookingResponseDTO> findAllCurrentActivesByCustomer(long customerId);
+
+    /**
      * Retrieves all bookings for a specific restaurant.
      *
      * @param restaurantId the ID of the restaurant
