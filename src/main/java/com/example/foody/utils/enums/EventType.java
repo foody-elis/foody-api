@@ -1,7 +1,11 @@
 package com.example.foody.utils.enums;
 
+/**
+ * Enumeration representing different types of events.
+ */
 public enum EventType {
-    ORDER_COMPLETED, // Order paid, notify the customer and the restaurant
-    ORDER_CREATED, // New order, notify all cooks
-    NEW_REVIEW, // New review, notify the restaurateur and all employees
+
+    ORDER_COMPLETED,
+    ORDER_CREATED,
+    NEW_REVIEW,
 }

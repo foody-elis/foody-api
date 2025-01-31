@@ -3,9 +3,13 @@ package com.example.foody.utils.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Enumeration representing placeholders used in email templates.
+ */
 @Getter
 @AllArgsConstructor
 public enum EmailPlaceholder {
+
     CUSTOMER_NAME("customerName"),
     CUSTOMER_SURNAME("customerSurname"),
     RESTAURANT_NAME("restaurantName"),
@@ -27,6 +31,11 @@ public enum EmailPlaceholder {
 
     private final String placeholder;
 
+    /**
+     * Returns the placeholder in a formatted string.
+     *
+     * @return the formatted placeholder string
+     */
     @Override
     public String toString() {
         return "{" + placeholder + "}";

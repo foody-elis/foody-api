@@ -3,9 +3,13 @@ package com.example.foody.utils.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Enumeration representing different roles in the system.
+ */
 @Getter
 @AllArgsConstructor
 public enum Role {
+
     ADMIN(Constants.ROLE_ADMIN),
     MODERATOR(Constants.ROLE_MODERATOR),
     RESTAURATEUR(Constants.ROLE_RESTAURATEUR),
@@ -15,7 +19,11 @@ public enum Role {
 
     private final String role;
 
+    /**
+     * Constants for role names.
+     */
     public static class Constants {
+
         public static final String ROLE_PREFIX = "ROLE_";
 
         public static final String ADMIN_VALUE = "ADMIN";

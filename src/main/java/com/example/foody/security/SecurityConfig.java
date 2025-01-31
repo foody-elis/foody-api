@@ -132,7 +132,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/ws").hasRole(Role.Constants.COOK_VALUE)
 
-                        .anyRequest().permitAll() // todo remove?
+                        .anyRequest().denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

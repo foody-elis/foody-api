@@ -21,15 +21,23 @@ import com.example.foody.service.ReviewService;
 import com.example.foody.utils.UserRoleUtils;
 import com.example.foody.utils.enums.EventType;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the ReviewService interface.
+ * <p>
+ * Provides methods to create, read, update, and delete {@link Review} objects.
+ */
 @Service
 @Transactional(rollbackOn = Exception.class)
+@AllArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
+
     private final ReviewRepository reviewRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishRepository dishRepository;
@@ -39,17 +47,15 @@ public class ReviewServiceImpl implements ReviewService {
     private final EmailService emailService;
     private final EventManager eventManager;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, BookingRepository bookingRepository, OrderRepository orderRepository, ReviewMapper reviewMapper, EmailService emailService, EventManager eventManager) {
-        this.reviewRepository = reviewRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.dishRepository = dishRepository;
-        this.bookingRepository = bookingRepository;
-        this.orderRepository = orderRepository;
-        this.reviewMapper = reviewMapper;
-        this.emailService = emailService;
-        this.eventManager = eventManager;
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method persists a new {@link Review} entity to the database.
+     *
+     * @param reviewDTO the review data transfer object
+     * @return the saved review response data transfer object
+     * @throws EntityCreationException if there is an error during review creation
+     */
     @Override
     public ReviewResponseDTO save(ReviewRequestDTO reviewDTO) {
         CustomerUser principal = (CustomerUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -76,12 +82,28 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewToReviewResponseDTO(review);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method retrieves all {@link Review} entities from the database.
+     *
+     * @return a list of review response data transfer objects
+     */
     @Override
     public List<ReviewResponseDTO> findAll() {
         List<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc();
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method retrieves a {@link Review} entity by its ID.
+     *
+     * @param id the review ID
+     * @return the review response data transfer object
+     * @throws EntityNotFoundException if the review is not found
+     */
     @Override
     public ReviewResponseDTO findById(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -94,6 +116,14 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewToReviewResponseDTO(review);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method retrieves all {@link Review} entities by customer ID.
+     *
+     * @param customerId the customer ID
+     * @return a list of review response data transfer objects
+     */
     @Override
     public List<ReviewResponseDTO> findAllByCustomer(long customerId) {
         List<Review> reviews = reviewRepository
@@ -101,6 +131,14 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method retrieves all {@link Review} entities by restaurant ID.
+     *
+     * @param restaurantId the restaurant ID
+     * @return a list of review response data transfer objects
+     */
     @Override
     public List<ReviewResponseDTO> findAllByRestaurant(long restaurantId) {
         List<Review> reviews = reviewRepository
@@ -108,6 +146,14 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method retrieves all {@link Review} entities by dish ID.
+     *
+     * @param dishId the dish ID
+     * @return a list of review response data transfer objects
+     */
     @Override
     public List<ReviewResponseDTO> findAllByDish(long dishId) {
         List<Review> reviews = reviewRepository
@@ -115,6 +161,16 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewMapper.reviewsToReviewResponseDTOs(reviews);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method removes a {@link Review} entity by its ID.
+     *
+     * @param id the review ID
+     * @return true if the review was successfully removed, false otherwise
+     * @throws EntityNotFoundException if the review is not found
+     * @throws EntityDeletionException if there is an error during review deletion
+     */
     @Override
     public boolean remove(long id) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -134,6 +190,13 @@ public class ReviewServiceImpl implements ReviewService {
         return true;
     }
 
+    /**
+     * Sets the dish for a review or throws an exception if the dish is not found.
+     *
+     * @param review the review
+     * @param dishId the dish ID
+     * @throws EntityNotFoundException if the dish is not found
+     */
     private void setReviewDishOrThrow(Review review, long dishId) {
         Dish dish = dishRepository
                 .findById(dishId)
@@ -141,33 +204,58 @@ public class ReviewServiceImpl implements ReviewService {
         review.setDish(dish);
     }
 
-    /*
-        (Restaurant's review) Check if there is a booking with:
-        - in the past
-        - customer_id equal to that of the review
-        - restaurant_id equal to that of the review
-        (Dish's review) Check if there is a order with:
-        - buyer_id equal to that of the review
-        - dish_id equal to that of the review
+    /**
+     * Checks if the review can be created or throws an exception if not.
+     *
+     * @param user   the user
+     * @param review the review
+     * @throws ReviewNotAllowedException if the review is not allowed
      */
     private void checkReviewCreationOrThrow(User user, Review review) {
         checkPastActiveBookingOrThrow(user, review);
         Optional.ofNullable(review.getDish()).ifPresent(dish -> checkDishReviewCreationOrThrow(user, review));
     }
 
+    /**
+     * Checks if there is a past active booking for the review or throws an exception if not.
+     *
+     * @param user   the user
+     * @param review the review
+     * @throws ReviewNotAllowedException if there is no past active booking
+     */
     private void checkPastActiveBookingOrThrow(User user, Review review) {
-        if (bookingRepository.existsPastActiveBookingByCustomer_IdAndRestaurant_Id(user.getId(), review.getRestaurant().getId()))
-            return;
+        if (bookingRepository.existsPastActiveBookingByCustomer_IdAndRestaurant_Id(
+                user.getId(),
+                review.getRestaurant().getId()
+        )) return;
 
-        throw new ReviewNotAllowedException("restaurant", review.getRestaurant().getId(), "there are no past active bookings for the restaurant");
+        throw new ReviewNotAllowedException(
+                "restaurant",
+                review.getRestaurant().getId(),
+                "there are no past active bookings for the restaurant"
+        );
     }
 
+    /**
+     * Checks if the dish review can be created or throws an exception if not.
+     *
+     * @param user   the user
+     * @param review the review
+     * @throws ReviewNotAllowedException if the dish review is not allowed
+     */
     private void checkDishReviewCreationOrThrow(User user, Review review) {
         if (orderRepository.existsByBuyer_IdAndDish_Id(user.getId(), review.getDish().getId())) return;
 
         throw new ReviewNotAllowedException("dish", review.getDish().getId(), "there are no orders for the dish");
     }
 
+    /**
+     * Checks if the user has access to the review or throws an exception if not.
+     *
+     * @param user   the user
+     * @param review the review
+     * @throws ForbiddenReviewAccessException if the user does not have access to the review
+     */
     private void checkReviewAccessOrThrow(User user, Review review) {
         if (!UserRoleUtils.isCustomer(user) && !UserRoleUtils.isRestaurateur(user) && !UserRoleUtils.isEmployee(user))
             return;
@@ -179,6 +267,13 @@ public class ReviewServiceImpl implements ReviewService {
         throw new ForbiddenReviewAccessException();
     }
 
+    /**
+     * Checks if the review can be deleted or throws an exception if not.
+     *
+     * @param user   the user
+     * @param review the review
+     * @throws ForbiddenReviewAccessException if the review cannot be deleted
+     */
     private void checkReviewDeletionOrThrow(User user, Review review) {
         if (!UserRoleUtils.isCustomer(user)) return;
         if (review.getCustomer().getId() == user.getId()) return;
@@ -186,16 +281,31 @@ public class ReviewServiceImpl implements ReviewService {
         throw new ForbiddenReviewAccessException();
     }
 
+    /**
+     * Notifies listeners that a new review has been created.
+     *
+     * @param review the review
+     */
     private void notifyNewReviewListeners(Review review) {
         subscribeNewReviewListeners(review);
         eventManager.notifyListeners(EventType.NEW_REVIEW, review);
     }
 
+    /**
+     * Subscribes listeners for new review events.
+     *
+     * @param review the review
+     */
     private void subscribeNewReviewListeners(Review review) {
         subscribeRestaurateurUserNewReviewListener(review);
         subscribeEmployeesNewReviewListeners(review);
     }
 
+    /**
+     * Subscribes the restaurateur user as a listener for new review events.
+     *
+     * @param review the review
+     */
     private void subscribeRestaurateurUserNewReviewListener(Review review) {
         eventManager.subscribe(
                 EventType.NEW_REVIEW,
@@ -203,6 +313,11 @@ public class ReviewServiceImpl implements ReviewService {
         );
     }
 
+    /**
+     * Subscribes the employees as listeners for new review events.
+     *
+     * @param review the review
+     */
     private void subscribeEmployeesNewReviewListeners(Review review) {
         review.getRestaurant().getEmployees().forEach(employee ->
                 eventManager.subscribe(

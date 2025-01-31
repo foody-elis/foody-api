@@ -5,17 +5,28 @@ import com.example.foody.model.user.BuyerUser;
 import com.example.foody.model.user.User;
 import com.example.foody.utils.state.OrderStateUtils;
 import jakarta.persistence.EntityManager;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the {@link CustomizedOrderRepository} interface.
+ * <p>
+ * Provides custom query methods for specific order-related operations.
+ */
+@AllArgsConstructor
 public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository {
+
     private final EntityManager entityManager;
 
-    public CustomizedOrderRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also processes each order by setting the order state and the buyer user.
+     *
+     * @return a list of all orders
+     */
     @Override
     public List<Order> findAll() {
         return entityManager
@@ -26,6 +37,14 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also processes the order by setting the order state and the buyer user.
+     *
+     * @param id the ID of the order
+     * @return an {@link Optional} containing the order if found, or empty if not found
+     */
     @Override
     public Optional<Order> findById(long id) {
         return entityManager
@@ -40,6 +59,14 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
                 });
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also processes each order by setting the order state and the buyer user.
+     *
+     * @param buyerId the ID of the buyer
+     * @return a list of all orders by the buyer
+     */
     @Override
     public List<Order> findAllByBuyer_IdOrderByCreatedAtDesc(long buyerId) {
         return entityManager
@@ -51,6 +78,14 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also processes each order by setting the order state and the buyer user.
+     *
+     * @param restaurantId the ID of the restaurant
+     * @return a list of all orders by the restaurant
+     */
     @Override
     public List<Order> findAllByRestaurant_IdOrderByCreatedAtDesc(long restaurantId) {
         return entityManager
@@ -62,6 +97,15 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Also processes each order by setting the order state and the buyer user.
+     *
+     * @param restaurantId the ID of the restaurant
+     * @param statuses     the list of statuses
+     * @return a list of all orders by the restaurant with the specified statuses
+     */
     @Override
     public List<Order> findAllByRestaurant_IdAndStatusInOrderByCreatedAtDesc(long restaurantId, List<String> statuses) {
         return entityManager
@@ -80,17 +124,32 @@ public class CustomizedOrderRepositoryImpl implements CustomizedOrderRepository 
                 .toList();
     }
 
+    /**
+     * Processes the order by setting the order state and the buyer user.
+     *
+     * @param order the order entity
+     */
     private void processOrder(Order order) {
         setOrderState(order);
         setBuyerUser(order.getBuyer());
     }
 
+    /**
+     * Sets the state of the order based on its status.
+     *
+     * @param order the order entity
+     */
     private void setOrderState(Order order) {
         if (order.getState() == null && order.getStatus() != null) {
             order.setState(OrderStateUtils.getState(order.getStatus()));
         }
     }
 
+    /**
+     * Sets the buyer user of the order.
+     *
+     * @param buyer the buyer entity
+     */
     private void setBuyerUser(BuyerUser buyer) {
         if (buyer == null || buyer.getId() == null) return;
 

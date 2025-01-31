@@ -7,7 +7,17 @@ import com.example.foody.state.order.impl.PaidState;
 import com.example.foody.state.order.impl.PreparingState;
 import com.example.foody.utils.enums.OrderStatus;
 
+/**
+ * Utility class for handling order states.
+ */
 public class OrderStateUtils {
+
+    /**
+     * Returns the appropriate OrderState instance based on the given OrderStatus.
+     *
+     * @param status the order status
+     * @return the corresponding OrderState instance
+     */
     public static OrderState getState(OrderStatus status) {
         return switch (status) {
             case CREATED -> new CreatedState();

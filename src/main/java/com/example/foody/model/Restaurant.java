@@ -86,7 +86,7 @@ public class Restaurant extends DefaultEntity {
     protected List<EmployeeUser> employees = new ArrayList<>();
 
     @Column(name = "photo_url")
-    private String photoUrl;
+    protected String photoUrl;
 
     /**
      * Marks the restaurant as deleted by setting the deletedAt timestamp to the current time.
