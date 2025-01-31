@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link JwtAuthFilter} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class JwtAuthFilterTest {
 

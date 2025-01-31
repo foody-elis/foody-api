@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for the endpoints in the {@link RestaurantController} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class RestaurantControllerTest {
 

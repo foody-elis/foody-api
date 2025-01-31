@@ -16,6 +16,9 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link RestaurantStaffNewReviewEventListener} class using mock services.
+ */
 public class RestaurantStaffNewReviewEventListenerTest {
 
     private EmailService emailService;

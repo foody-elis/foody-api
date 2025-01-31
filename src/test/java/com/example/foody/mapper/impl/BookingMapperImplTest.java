@@ -1,6 +1,5 @@
 package com.example.foody.mapper.impl;
 
-import com.example.foody.TestDataUtil;
 import com.example.foody.builder.BookingBuilder;
 import com.example.foody.dto.request.BookingRequestDTO;
 import com.example.foody.dto.response.BookingResponseDTO;
@@ -28,6 +27,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link BookingMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class BookingMapperImplTest {
 

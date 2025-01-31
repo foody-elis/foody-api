@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link DishMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class DishMapperImplTest {
 

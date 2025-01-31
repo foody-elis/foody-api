@@ -1,6 +1,5 @@
 package com.example.foody.mapper.impl;
 
-import com.example.foody.TestDataUtil;
 import com.example.foody.builder.CustomerUserBuilder;
 import com.example.foody.builder.UserBuilder;
 import com.example.foody.builder.impl.*;
@@ -13,20 +12,18 @@ import com.example.foody.model.CreditCard;
 import com.example.foody.model.Restaurant;
 import com.example.foody.model.user.*;
 import com.example.foody.utils.enums.Role;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link UserMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class UserMapperImplTest {
 

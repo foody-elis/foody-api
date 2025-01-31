@@ -21,6 +21,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for creating test data for the Foody application.
+ * <p>
+ * This class provides static methods to create various entities and DTOs with pre-defined data.
+ */
 public class TestDataUtil {
 
     public static AdminUser createTestAdminUser() {

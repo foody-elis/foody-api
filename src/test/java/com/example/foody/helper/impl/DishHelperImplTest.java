@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link DishHelperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class DishHelperImplTest {
 

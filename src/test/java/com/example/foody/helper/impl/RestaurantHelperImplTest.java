@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link RestaurantHelperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class RestaurantHelperImplTest {
 

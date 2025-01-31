@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link CustomRoleAuthorizationManager} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class CustomRoleAuthorizationManagerTest {
 

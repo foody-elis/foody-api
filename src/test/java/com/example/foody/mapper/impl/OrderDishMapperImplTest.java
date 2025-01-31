@@ -20,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link OrderDishMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class OrderDishMapperImplTest {
 

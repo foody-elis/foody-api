@@ -19,6 +19,9 @@ import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link AddressServiceImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class AddressServiceImplTest {
 

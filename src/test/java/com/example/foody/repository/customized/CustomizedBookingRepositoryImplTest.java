@@ -14,6 +14,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link CustomizedBookingRepositoryImpl} class using mock services.
+ */
 public class CustomizedBookingRepositoryImplTest {
 
     private EntityManager entityManager;

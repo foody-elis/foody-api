@@ -18,6 +18,9 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link CustomerUserOrderCompletedEventListener} class using mock services.
+ */
 public class CustomerUserOrderCompletedEventListenerTest {
 
     private EmailService emailService;

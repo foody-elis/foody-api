@@ -19,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for the endpoints in the {@link AuthenticationController} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationControllerTest {
 

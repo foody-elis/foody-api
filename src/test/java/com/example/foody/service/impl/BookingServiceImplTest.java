@@ -40,6 +40,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link BookingServiceImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceImplTest {
 

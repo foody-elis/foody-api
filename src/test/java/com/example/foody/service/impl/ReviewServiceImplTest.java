@@ -30,6 +30,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link ReviewServiceImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceImplTest {
 

@@ -38,6 +38,9 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link OrderServiceImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceImplTest {
 

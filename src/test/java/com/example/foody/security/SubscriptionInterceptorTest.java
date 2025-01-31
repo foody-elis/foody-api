@@ -17,6 +17,9 @@ import org.springframework.messaging.support.GenericMessage;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link SubscriptionInterceptor} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 class SubscriptionInterceptorTest {
 

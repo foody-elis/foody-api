@@ -33,6 +33,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link WeekDayInfoServiceImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 class WeekDayInfoServiceImplTest {
 

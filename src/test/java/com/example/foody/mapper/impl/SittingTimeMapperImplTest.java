@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link SittingTimeMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class SittingTimeMapperImplTest {
 

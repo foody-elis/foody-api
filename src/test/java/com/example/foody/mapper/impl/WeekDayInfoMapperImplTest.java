@@ -20,6 +20,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for {@link WeekDayInfoMapperImpl} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class WeekDayInfoMapperImplTest {
 

@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for the endpoints in the {@link UserController} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 

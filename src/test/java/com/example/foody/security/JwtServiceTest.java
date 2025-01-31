@@ -20,6 +20,9 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link JwtService} class using mock services.
+ */
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
 
