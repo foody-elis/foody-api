@@ -5,9 +5,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +22,7 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
 
     /**
-     * Provides a UserDetailsService bean that loads user-specific data.
+     * Provides a {@link UserDetailsService} bean that loads user-specific data.
      *
      * @return the UserDetailsService implementation
      */
@@ -34,34 +33,21 @@ public class ApplicationConfig {
     }
 
     /**
-     * Provides an AuthenticationProvider bean that uses a DAO-based authentication mechanism.
+     * Provides an {@link AuthenticationManager} bean for managing authentication.
      *
-     * @return the AuthenticationProvider implementation
+     * @return the AuthenticationManager implementation
      */
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
-        return authenticationProvider;
+        return new ProviderManager(authenticationProvider);
     }
 
     /**
-     * Provides an AuthenticationManager bean for managing authentication.
-     *
-     * @param config the AuthenticationConfiguration
-     * @return the AuthenticationManager implementation
-     * @throws Exception if an error occurs while getting the AuthenticationManager
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    /**
-     * Provides a PasswordEncoder bean that uses BCrypt hashing algorithm.
+     * Provides a {@link PasswordEncoder} bean that uses BCrypt hashing algorithm.
      *
      * @return the PasswordEncoder implementation
      */

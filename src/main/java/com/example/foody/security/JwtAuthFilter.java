@@ -1,6 +1,5 @@
 package com.example.foody.security;
 
-import com.example.foody.exceptions.entity.EntityNotFoundException;
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.model.user.User;
 import com.example.foody.repository.UserRepository;
@@ -11,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -57,22 +55,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring("Bearer ".length());
             String username = jwtService.extractUsername(token);
 
-            User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new EntityNotFoundException("user", "email", username));
-
-            if (!user.isActive()) {
-                throw new UserNotActiveException(user.getEmail());
-            }
-
             // If the token is valid and the user is not authenticated, set the authentication
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                User user = (User) userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.validateToken(token, userDetails)) {
+                if (!user.isActive()) throw new UserNotActiveException(username);
+
+                if (jwtService.validateToken(token, user)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            user,
                             null,
-                            userDetails.getAuthorities()
+                            user.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
