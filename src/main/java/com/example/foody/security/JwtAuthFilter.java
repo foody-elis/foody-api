@@ -20,7 +20,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
  * Filter that processes JWT authentication for each request.
- * Extends OncePerRequestFilter to ensure a single execution per request.
+ * <p>
+ * Extends {@link OncePerRequestFilter} to ensure a single execution per request.
  */
 @Component
 @AllArgsConstructor
@@ -34,8 +35,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     /**
      * Filters incoming requests to process JWT authentication.
      *
-     * @param request the HTTP request
-     * @param response the HTTP response
+     * @param request     the HTTP request
+     * @param response    the HTTP response
      * @param filterChain the filter chain
      */
     @Override

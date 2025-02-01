@@ -143,6 +143,12 @@ public class TestDataUtil {
                 .address(createTestAddress())
                 .restaurateur(createTestRestaurateurUser())
                 .employees(List.of(createTestCookUser(), createTestWaiterUser()))
+                .categories(new ArrayList<>())
+                .dishes(new ArrayList<>())
+                .reviews(new ArrayList<>())
+                .weekDayInfos(new ArrayList<>())
+                .orders(new ArrayList<>())
+                .bookings(new ArrayList<>())
                 .build();
     }
 
@@ -155,6 +161,7 @@ public class TestDataUtil {
                 .street("Test Street")
                 .civicNumber("123")
                 .postalCode("12345")
+                .restaurant(null)
                 .build();
     }
 
@@ -163,6 +170,7 @@ public class TestDataUtil {
         return categoryBuilder
                 .id(1L)
                 .name("Test Category")
+                .restaurants(new ArrayList<>())
                 .build();
     }
 
@@ -212,6 +220,8 @@ public class TestDataUtil {
                 .photoUrl("http://example.com/dish-photo.jpg")
                 .price(BigDecimal.valueOf(10.0))
                 .restaurant(createTestRestaurant())
+                .reviews(new ArrayList<>())
+                .orderDishes(new ArrayList<>())
                 .build();
     }
 

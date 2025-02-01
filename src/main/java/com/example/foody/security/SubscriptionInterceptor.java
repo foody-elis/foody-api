@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Interceptor for handling WebSocket subscription requests.
+ * <p>
  * Ensures that only authorized users can subscribe to protected topics.
  */
 @Component
@@ -69,7 +70,7 @@ public class SubscriptionInterceptor implements ChannelInterceptor {
     /**
      * Checks if the user is a cook at the specified restaurant.
      *
-     * @param username the username of the user
+     * @param username     the username of the user
      * @param restaurantId the ID of the restaurant
      * @return true if the user is a cook at the restaurant, false otherwise
      */

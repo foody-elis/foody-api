@@ -368,7 +368,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void findByIdWhenUserIsNotCustomerNorRestaurateurReturnsBookingResponseDTO() {
+    void findByIdWhenUserIsAdminReturnsBookingResponseDTO() {
         // Arrange
         AdminUser admin = TestDataUtil.createTestAdminUser();
         Booking booking = TestDataUtil.createTestBooking();

@@ -271,7 +271,6 @@ public class ReviewServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> reviewService.findById(1L));
     }
 
-    // todo change methods that contains "Nor", rename like this ("WhenUserIsAdmin")
     @Test
     void findByIdWhenUserIsAdminReturnsReviewResponseDTO() {
         // Arrange

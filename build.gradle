@@ -39,16 +39,9 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
-	// MapStruct
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// MapStruct-Lombok binding
-	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -65,10 +58,6 @@ dependencies {
 
 	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-
-	// todo If you have a "strange" problems, try to add the following dependencies
-//	implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
-//	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
 }
 
 tasks.named('test') {

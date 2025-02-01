@@ -252,7 +252,7 @@ public class RestaurantServiceImplTest {
     }
 
     @Test
-    void findAllWhenUserIsNotAdminNorModeratorReturnsApprovedRestaurants() {
+    void findAllWhenUserIsCustomerReturnsApprovedRestaurants() {
         // Arrange
         CustomerUser customer = TestDataUtil.createTestCustomerUser();
         List<Restaurant> approvedRestaurants = List.of(TestDataUtil.createTestRestaurant());
@@ -429,7 +429,7 @@ public class RestaurantServiceImplTest {
     }
 
     @Test
-    void findAllByCategoryWhenUserIsNotAdminNorModeratorReturnsDetailedRestaurantResponseDTOs() {
+    void findAllByCategoryWhenUserIsCustomerReturnsDetailedRestaurantResponseDTOs() {
         // Arrange
         CustomerUser customer = TestDataUtil.createTestCustomerUser();
         Category category = TestDataUtil.createTestCategory();

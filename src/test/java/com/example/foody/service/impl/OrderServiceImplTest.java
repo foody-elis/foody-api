@@ -380,7 +380,7 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void findByIdWhenUserIsNotRestaurateurNorBuyerReturnsOrderResponseDTO() {
+    void findByIdWhenUserIsAdminReturnsOrderResponseDTO() {
         // Arrange
         AdminUser admin = TestDataUtil.createTestAdminUser();
         Order order = TestDataUtil.createTestOrder();
@@ -515,7 +515,7 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void findAllByRestaurantWhenUserIsNotRestaurateurNorEmployeeReturnsOrderResponseDTOs() {
+    void findAllByRestaurantWhenUserIsAdminReturnsOrderResponseDTOs() {
         // Arrange
         AdminUser admin = TestDataUtil.createTestAdminUser();
         List<Order> orders = List.of(TestDataUtil.createTestOrder());
