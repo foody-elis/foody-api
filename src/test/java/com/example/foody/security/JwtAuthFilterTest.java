@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,11 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -95,17 +94,14 @@ public class JwtAuthFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtService.extractUsername(token)).thenReturn(username);
-        when(userRepository.findByEmail(username)).thenReturn(java.util.Optional.of(user));
-
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
-        when(jwtService.validateToken(token, userDetails)).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(username)).thenReturn(user);
+        when(jwtService.validateToken(token, user)).thenReturn(true);
 
         // Act
         jwtAuthFilter.doFilterInternal(request, response, filterChain);
 
         // Assert
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+        Assertions.assertNotNull(SecurityContextHolder.getContext().getAuthentication());
         assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordAuthenticationToken);
         verify(filterChain, times(1)).doFilter(request, response);
     }
@@ -120,7 +116,7 @@ public class JwtAuthFilterTest {
         when(jwtService.extractUsername(token)).thenReturn(username);
 
         User user = mock(User.class);
-        when(userRepository.findByEmail(username)).thenReturn(java.util.Optional.of(user));
+        when(userDetailsService.loadUserByUsername(username)).thenReturn(user);
         when(user.isActive()).thenReturn(false);
 
         // Act
@@ -140,7 +136,7 @@ public class JwtAuthFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtService.extractUsername(token)).thenReturn(username);
-        when(userRepository.findByEmail(username)).thenThrow(new EntityNotFoundException("user", "email", username));
+        when(userDetailsService.loadUserByUsername(username)).thenThrow(new EntityNotFoundException("user", "email", username));
 
         // Act
         jwtAuthFilter.doFilterInternal(request, response, filterChain);

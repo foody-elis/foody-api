@@ -2,7 +2,6 @@ package com.example.foody.security;
 
 import com.example.foody.exceptions.user.UserNotActiveException;
 import com.example.foody.model.user.User;
-import com.example.foody.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +25,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
 

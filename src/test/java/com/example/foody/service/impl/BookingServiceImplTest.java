@@ -216,7 +216,7 @@ public class BookingServiceImplTest {
         SittingTime sittingTime = TestDataUtil.createTestSittingTime();
         Restaurant restaurant = TestDataUtil.createTestRestaurant();
         sittingTime.getWeekDayInfo().setWeekDay(LocalDate.now().getDayOfWeek().getValue());
-        sittingTime.setStart(LocalTime.now().minusHours(2));
+        sittingTime.setStart(LocalTime.now().minusMinutes(2));
         booking.setSittingTime(sittingTime);
         booking.setDate(LocalDate.now());
         mockSecurityContext(customer);
