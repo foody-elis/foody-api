@@ -79,8 +79,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
 
     /**
      * Checks if there is an active booking for a specific customer and restaurant.
-     * <p>
-     * {@code weekday()} returns the day of the week (0 = Monday, ..., 6 = Sunday)
      *
      * @param customerId   the ID of the customer
      * @param restaurantId the ID of the restaurant
@@ -92,8 +90,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
             WHERE b.status = 'ACTIVE'
             AND b.customer.id = :customerId
             AND b.restaurant.id = :restaurantId
-            AND b.date >= CURRENT_DATE
-            AND b.sittingTime.weekDayInfo.weekDay = (CAST(WEEKDAY(CURDATE()) AS int) + 1)
+            AND b.date = CURRENT_DATE
             AND b.sittingTime.start <= CURTIME()
             AND b.sittingTime.end >= CURTIME()
             """)
@@ -101,8 +98,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
 
     /**
      * Finds all current active bookings for a specific customer.
-     * <p>
-     * {@code weekday()} returns the day of the week (0 = Monday, ..., 6 = Sunday)
      *
      * @param customerId the ID of the customer
      * @return a list of current active bookings for the specified customer
@@ -112,8 +107,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Customi
             FROM Booking b
             WHERE b.status = 'ACTIVE'
             AND b.customer.id = :customerId
-            AND b.date >= CURRENT_DATE
-            AND b.sittingTime.weekDayInfo.weekDay = (CAST(WEEKDAY(CURDATE()) AS int) + 1)
+            AND b.date = CURRENT_DATE
             AND b.sittingTime.start <= CURTIME()
             AND b.sittingTime.end >= CURTIME()
             """)

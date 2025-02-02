@@ -444,13 +444,7 @@ public class OrderServiceImpl implements OrderService {
      * <li>Must have a status of ACTIVE.</li>
      * <li>Must have the same customer ID as the order.</li>
      * <li>Must have the same restaurant ID as the order.</li>
-     * <li>Must have a sitting time that meets both conditions:
-     * <ul>
-     * <li>The weekday must match that of the order.</li>
-     * <li>The order time must fall within the sitting time range
-     * (<code>startTime <= orderTime <= endTime</code>).</li>
-     * </ul>
-     * </li>
+     * <li>Must have a sitting time that meets this condition: (<code>startTime <= currentTime <= endTime</code>).</li>
      * </ul>
      * <p>
      * This method throws an {@link OrderNotAllowedException} if there is no active booking for the order.
