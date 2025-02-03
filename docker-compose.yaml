@@ -1,0 +1,56 @@
+name: foody
+
+services:
+  mariadb:
+    container_name: foody-mariadb
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MARIADB_DATABASE=foody
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./docker/init/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    networks:
+      - mariadb
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    secrets:
+      - db_root_password
+
+  backend:
+    container_name: foody-api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      MARIADB_HOST: foody-mariadb
+      MARIADB_PORT: 3306
+      MARIADB_USER: root
+      MARIADB_PASSWORD_FILE: /run/secrets/db_root_password
+      MARIADB_DB: foody
+    networks:
+      - mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: on-failure:5
+    secrets:
+      - db_root_password
+
+networks:
+  mariadb:
+
+volumes:
+  mariadb_data:
+
+secrets:
+  db_root_password:
+    file: ./docker/secrets/db_root_password.txt
