@@ -183,3 +183,13 @@ can access protected resources while preventing unauthorized access to sensitive
 
 Whenever an exception is thrown, the API returns a standardized error response in the form of an `ErrorDTO`.  
 This ensures consistent error reporting across all endpoints.
+
+```java
+public class ErrorDTO {
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private Object message; // String | Map<String, String> | Map<String, List<String>>
+    private String path;
+}
+```
