@@ -6,6 +6,11 @@
   - [Useful Links](#useful-links)
   - [What is Foody](#what-is-foody)
   - [What is Foody API](#what-is-foody-api)
+- [Usage](#usage)
+  - [Clone the repository](#clone-the-repository)
+  - [Set up the environment](#set-up-the-environment)
+  - [Build and run the containers](#build-and-run-the-containers)
+  - [Access the backend](#access-the-backend)
 - [API Endpoints](#api-endpoints)
   - [User](#user)
   - [Authentication](#authentication)
@@ -60,6 +65,32 @@ With its **scalable**, **high-performance**, and **well-structured** architectur
 interaction within the Foody platform is **fast, reliable, and secure**.  
 By leveraging **JWT tokens**, the API enforces authentication and authorization, ensuring that only authenticated users
 can access protected resources while preventing unauthorized access to sensitive endpoints.
+
+## Usage
+
+To run the backend using Docker, follow these steps:
+
+### Clone the repository
+
+```sh
+$ git clone https://github.com/foody-elis/foody-api.git
+$ cd foody-api
+```
+
+### Set up the environment
+
+Create a file named `db_root_password.txt` in the `docker/secrets` directory and add your desired root password for the
+MariaDB database.
+
+### Build and run the containers
+
+```sh
+$ docker-compose up --build
+```
+
+### Access the backend
+
+The backend API will be available at: **http://localhost:8080/api/v1**
 
 ## API Endpoints
 
