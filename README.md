@@ -214,3 +214,13 @@ The backend API will be available at: **http://localhost:8080/api/v1**
 
 Whenever an exception is thrown, the API returns a standardized error response in the form of an `ErrorDTO`.  
 This ensures consistent error reporting across all endpoints.
+
+```java
+public class ErrorDTO {
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private Object message; // String | Map<String, String> | Map<String, List<String>>
+    private String path;
+}
+```
