@@ -5,9 +5,12 @@ import com.example.foody.service.EmailTemplateService;
 import com.example.foody.utils.enums.EmailPlaceholder;
 import com.example.foody.utils.enums.EmailTemplateType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -81,7 +84,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
     private String readTemplateContent(EmailTemplateType emailTemplateType) {
         try {
             Path templatePath = Path.of(TEMPLATES_PATH, emailTemplateType.getTemplateName() + ".txt");
-            return Files.readString(templatePath);
+            ClassPathResource classPathResource = new ClassPathResource(templatePath.toString());
+            return classPathResource.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new EmailSendingException(
                     "Error while reading email template: " + emailTemplateType.getTemplateName()
