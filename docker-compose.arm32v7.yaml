@@ -3,19 +3,19 @@ name: foody
 services:
   mariadb:
     container_name: foody-mariadb
-    image: mariadb:latest
+    image: linuxserver/mariadb:arm32v7-10.6.13
     ports:
-      - "3306:3306"
+      - "12000:3306"
     environment:
-      - MARIADB_DATABASE=foody
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_DATABASE=foody
+      - FILE__MYSQL_ROOT_PASSWORD=/run/secrets/db_root_password
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./docker/init/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - mariadb_data:/config
+      - ./docker/init/dump_arm32v7.sql:/config/initdb.d/dump.sql
     networks:
       - mariadb
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$(cat /run/secrets/db_root_password)"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -27,9 +27,9 @@ services:
     container_name: foody-api
     build:
       context: .
-      dockerfile: docker/Dockerfile-spring
+      dockerfile: docker/Dockerfile-spring-arm32v7
     ports:
-      - "8080:8080"
+      - "12001:8080"
     environment:
       MARIADB_HOST: foody-mariadb
       MARIADB_PORT: 3306
