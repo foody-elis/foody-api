@@ -20,6 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    restart: unless-stopped
     secrets:
       - db_root_password
 
@@ -41,7 +42,7 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    restart: on-failure:5
+    restart: unless-stopped
     secrets:
       - db_root_password
 
